@@ -4,9 +4,9 @@ const { loginSchema, refreshSchema, validateReq, registerSchema } = require('../
 const { requireAppLogin } = require('../middleware/require-auth');
 
 const router = Router();
-router.post('/app/auth/login', validateReq(loginSchema), userLoginApp);
-router.post('/app/auth/logout', requireAppLogin, userLogoutApp);
-router.post('/app/auth/refresh_token', validateReq(refreshSchema), refreshAT);
+router.post('/auth/login', validateReq(loginSchema), userLoginApp);
+router.post('/auth/logout', requireAppLogin, userLogoutApp);
+router.post('/refreshToken', validateReq(refreshSchema), refreshAT);
 router.post('/register', validateReq(registerSchema), registerUser);
 
 module.exports = router;
