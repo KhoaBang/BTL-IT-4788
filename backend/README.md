@@ -1,10 +1,10 @@
 #IT-4788
 ### UseCase tổng quan
-![UseCase tổng quan](assets\UseCaseTongQuan.png)
+![UseCase tổng quan](./assets/UseCaseTongQuan.png)
 
 #IT-4788/quản_lý_thông_tin_người_dùng
 ### Usecase quản lý thông tin người dùng
-![Usecase quản lý thông tin người dùng](assets\UseCaseQuanLyNguoiDung.png)
+![Usecase quản lý thông tin người dùng](./assets/UseCaseQuanLyNguoiDung.png)
 
 
 | Method | URL                                       | Param type  | Param                                    | Description                                                                                                 | ROLE | require      |
@@ -28,7 +28,7 @@
 
 #IT-4788/quản_lý_thành_viên_nhóm 
 ### UseCase quản lý thành viên nhóm
-![UseCase quản lý thành viên nhóm](assets\UseCaseQuanLyThanhVien.png)
+![UseCase quản lý thành viên nhóm](./assets/UseCaseQuanLyThanhVien.png)
 
 | Method | URL                                   | Param type | Param                         | Description                                                                            | ROLE | require                         |
 | ------ | ------------------------------------- | ---------- | ----------------------------- | -------------------------------------------------------------------------------------- | ---- | ------------------------------- |
@@ -43,7 +43,7 @@
 
 #IT-4788/quản_lý_tài_nguyên_nhóm
 ### UseCase quản lý tài nguyên nhóm
-![UseCase quản lý tài nguyên nhóm](assets\UseCaseQuanLyTaiNguyen.png)
+![UseCase quản lý tài nguyên nhóm](./assets/UseCaseQuanLyTaiNguyen.png)
 
 
 | Method | URL                            | Param type  | Param                                   | Description                                    | ROLE | require                         |
@@ -56,7 +56,7 @@
 
 #IT-4788/giao_nhiệm_vụ
 ### UseCase giao nhiệm vụ
-![UseCase giao nhiệm vụ](assets\UseCaseGiaoNhiemVu.png)
+![UseCase giao nhiệm vụ](./assets/UseCaseGiaoNhiemVu.png)
 
 
 | Method | URL                                                        | Param type | Param                                          | Description                                                                                                                             | ROLE | require                         |
@@ -73,7 +73,7 @@
 
 #IT-4788/lập_kế_hoạch
 ### UseCase lập kế hoạch
-![UseCase lập kế hoạch](assets\UseCaseLapKeHoach.png)
+![UseCase lập kế hoạch](./assets/UseCaseLapKeHoach.png)
 
 | Method | URL                           | Param type | Param                                                 | Description      | ROLE | require                         |
 | ------ | ----------------------------- | ---------- | ----------------------------------------------------- | ---------------- | ---- | ------------------------------- |
