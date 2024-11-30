@@ -17,10 +17,16 @@ const sequelize = new Sequelize(
 
 (async () => {
   try {
-    const isProduction = process.env.NODE_ENV === 'production';
-
-    // Sync models with database
-    await sequelize.sync({ force: !isProduction }); // Force only in non-production
+    const forceSync = process.env.DB_SYNC_FORCE === 'true';
+    if(forceSync){
+      await sequelize.sync({ force: forceSync });
+    }
+    else{
+      // Sync models with database
+    await sequelize.sync({ alter: !forceSync });
+    }
+    
+ // Force only in non-production
     console.log('All tables have been synchronized successfully!');
   } catch (error) {
     console.error('Error syncing tables:', error);

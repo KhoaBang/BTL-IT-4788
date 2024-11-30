@@ -30,15 +30,15 @@
 ### UseCase quản lý thành viên nhóm
 ![UseCase quản lý thành viên nhóm](./assets/UseCaseQuanLyThanhVien.png)
 
-| Method | URL                                   | Param type | Param                         | Description                                                                            | ROLE | require                         |
-| ------ | ------------------------------------- | ---------- | ----------------------------- | -------------------------------------------------------------------------------------- | ---- | ------------------------------- |
-| post   | /group                                | body       | {groupName}                   | tạo nhóm                                                                               |      | requireLogin                    |
-| get    | /group/:groupId/invite                |            |                               | lấy mã mời                                                                             |      | requireLogin, requireGroupAdmin |
-| get    | /group/:groupId/members               |            |                               | lấy danh sách thành viên nhóm                                                          |      | requireLogin, requireMember     |
-| patch  | /group/:groupId/members/:memberId/ban | body       | {memberId, reason}            | kick thành viên (cho vào blacklist/ remove khỏi danh sách thành viên?, mark là banned) |      | requireLogin ,requireGroupAdmin |
-| POST   | /group/join?groupcode=                | query      | groupcode                     | tham gia nhóm                                                                          |      | requireLogin                    |
-| delete | /group/:groupId/leave                 |            | get user id from cookie/token | rời nhóm                                                                               |      | requireLogin, requireMember     |
-| patch  | /group/:groupId/delete                | body       | {status}                      | admin đóng nhóm, chuyển status của nhóm thành 'deleted'                                |      | equireLogin, requireGroupAdmin  |
+| Method | URL                                   | Param type | Param                         | Description                                                                            | ROLE | require                         |implementation status|
+| ------ | ------------------------------------- | ---------- | ----------------------------- | -------------------------------------------------------------------------------------- | ---- | ------------------------------- |--|
+| post   | /group                                | body       | {groupName}                   | tạo nhóm                                                                               |      | requireLogin                    |done|
+| get    | /group/:GID/invite                |            |                               | lấy mã mời                                                                             |      | requireLogin, requireGroupAdmin |done|
+| get    | /group/:GID/members               |            |                               | lấy danh sách thành viên nhóm                                                          |      | requireLogin, requireMember     |done|
+| patch  | /group/:GID/members/:memberId/ban | body       | {memberId, reason}            | kick thành viên (cho vào blacklist/ remove khỏi danh sách thành viên?, mark là banned) |      | requireLogin ,requireGroupAdmin |
+| POST   | /group/join/:group_code               | param      | groupcode                     | tham gia nhóm                                                                          |      | requireLogin                    |done |
+| delete | /group/:GID/leave                 |            | get user id from cookie/token | rời nhóm                                                                               |      | requireLogin, requireMember     |
+| patch  | /group/:GID/delete                | body       | {status}                      | admin đóng nhóm, chuyển status của nhóm thành 'deleted'                                |      | equireLogin, requireGroupAdmin  |
 
 
 #IT-4788/quản_lý_tài_nguyên_nhóm
@@ -83,7 +83,7 @@
 | delete | /group/:groupId/meals/:mealId |            |                                                       | Xóa bữa ăn       |      | requireLogin, requireGroupAdmin |
 
 #IT-4788/auth
-### UseCase auth
+### UseCase auth (done)
 
 | Method | URL           | Param type | Param                             | Description                                         | ROLE | require      |
 | ------ | ------------- | ---------- | --------------------------------- | --------------------------------------------------- | ---- | ------------ |

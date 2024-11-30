@@ -155,11 +155,13 @@ const signRefreshToken = (payload) =>
         email,
         password:hashedPassword,
         phone
-      });
+      }); 
+      const { password:pass, ...restUserData } = newUser.dataValues;
       res.status(201).json({
         status: 1,
         message: 'User registered successfully',
-        data: newUser,
+        data: restUserData,
+
       });
     } catch (error) {
       next(error);

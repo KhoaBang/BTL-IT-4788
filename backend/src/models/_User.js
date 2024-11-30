@@ -127,7 +127,7 @@ _User.init(
   {
     sequelize,
     modelName: '_User',
-    tableName: '_user',
+    tableName: 'users',
     timestamps: false,
   }
 );
