@@ -1,5 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'signup_page.dart';
+import 'home_page.dart'; // Giả sử đây là trang HomePage
 
 class SignInPage extends StatefulWidget {
   @override
@@ -10,15 +15,83 @@ class _SignInPageState extends State<SignInPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+  bool _isLoading = false; // Hiển thị trạng thái tải
   String? _emailError;
   String? _passwordError;
 
-  void _login() {
-    String email = _emailController.text;
-    String password = _passwordController.text;
+  // Hàm xử lý logic đăng nhập
+  Future<void> _login() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
 
-    print('Email: $email, Password: $password');
-    // Thêm logic xác thực tại đây
+    // Kiểm tra dữ liệu hợp lệ
+    if (!email.endsWith("@gmail.com")) {
+      setState(() {
+        _emailError = "Email must end with @gmail.com";
+      });
+      return;
+    }
+    if (password.length < 8) {
+      setState(() {
+        _passwordError = "Password must be at least 8 characters long";
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true; // Hiển thị trạng thái tải
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://localhost:9000/api/auth/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+
+        if (responseData['status'] == 1) {
+          // Lưu token vào SharedPreferences
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('access_token', responseData['data']['access_token']);
+          await prefs.setString('refresh_token', responseData['data']['refresh_token']);
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Login Successful!')),
+          );
+
+          // Chuyển đến HomePage
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomePage()), // Giả sử HomePage đã có
+          );
+        } else {
+          // Xử lý lỗi đăng nhập
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(responseData['message'] ?? 'Login failed!')),
+          );
+        }
+      } else {
+        // Xử lý lỗi HTTP
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Something went wrong! Please try again later.')),
+        );
+      }
+    } catch (error) {
+      // Xử lý lỗi kết nối
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $error')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false; // Ẩn trạng thái tải
+      });
+    }
   }
 
   void _navigateToRegister() {
@@ -32,7 +105,10 @@ class _SignInPageState extends State<SignInPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sign In', style: TextStyle(fontSize: 20),),
+        title: const Text(
+          'Sign In',
+          style: TextStyle(fontSize: 20),
+        ),
         centerTitle: true,
       ),
       body: Padding(
@@ -72,16 +148,9 @@ class _SignInPageState extends State<SignInPage> {
                 suffixIcon: _emailError == null && _emailController.text.isNotEmpty
                     ? const Icon(Icons.check, color: Colors.orange)
                     : null,
+                errorText: _emailError,
               ),
             ),
-            if (_emailError != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  _emailError!,
-                  style: const TextStyle(color: Colors.red, fontSize: 12),
-                ),
-              ),
             const SizedBox(height: 16.0),
 
             // Password Field
@@ -120,21 +189,23 @@ class _SignInPageState extends State<SignInPage> {
             // SIGN IN Button
             Center(
               child: GestureDetector(
-                onTap: _login,
+                onTap: _isLoading ? null : _login,
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 50),
                   decoration: BoxDecoration(
-                    color: Colors.yellow[700],
+                    color: _isLoading ? Colors.grey : Colors.yellow[700],
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Text(
-                    "SIGN IN",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text(
+                          "SIGN IN",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ),
             ),

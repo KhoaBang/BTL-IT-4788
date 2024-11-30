@@ -13,7 +13,21 @@ dotenv.config();
 
 const app = express();
 app.set('trust proxy', true);
+const FRONTEND_URL = process.env.FRONTEND_URL ?? false;
 
+const corsURLs = [FRONTEND_URL].filter(
+  (v) => v,
+);
+
+app.use(
+  cors({
+    //credentials: true,
+    origin: corsURLs.length > 0 ? corsURLs : '*',
+    methods: ['POST', 'GET', 'PUT', 'DELETE'],
+    optionsSuccessStatus: 200,
+    preflightContinue: true,
+  }),
+);
 app.use(morgan('tiny'));
 
 app.use(express.json());
