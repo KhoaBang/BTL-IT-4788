@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:frontend/api/api_service.dart'; // Đảm bảo import đúng đường dẫn
 
 import 'signup_page.dart';
 import 'home_page.dart'; // Giả sử đây là trang HomePage
@@ -43,49 +43,28 @@ class _SignInPageState extends State<SignInPage> {
     });
 
     try {
-      final response = await http.post(
-        Uri.parse('http://localhost:9000/api/auth/login'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': email,
-          'password': password,
-        }),
+      final response = await ApiService()
+          .login(email, password); // Gọi hàm login từ api_service.dart
+
+      // Lưu token vào SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('access_token', response['data']['access_token']);
+      await prefs.setString('refresh_token', response['data']['refresh_token']);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Login Successful!')),
       );
 
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-
-        if (responseData['status'] == 1) {
-          // Lưu token vào SharedPreferences
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('access_token', responseData['data']['access_token']);
-          await prefs.setString('refresh_token', responseData['data']['refresh_token']);
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Login Successful!')),
-          );
-
-          // Chuyển đến HomePage
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => HomePage()), // Giả sử HomePage đã có
-          );
-        } else {
-          // Xử lý lỗi đăng nhập
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(responseData['message'] ?? 'Login failed!')),
-          );
-        }
-      } else {
-        // Xử lý lỗi HTTP
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Something went wrong! Please try again later.')),
-        );
-      }
+      // Chuyển đến HomePage
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => HomePage()), // Giả sử HomePage đã có
+      );
     } catch (error) {
       // Xử lý lỗi kết nối
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $error')),
+        SnackBar(content: Text('$error')),
       );
     } finally {
       setState(() {
@@ -134,20 +113,26 @@ class _SignInPageState extends State<SignInPage> {
             // Email Field
             const Text(
               "EMAIL ADDRESS",
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey),
+              style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey),
             ),
             TextField(
               controller: _emailController,
               onChanged: (value) {
                 setState(() {
-                  _emailError = value.endsWith("@gmail.com") ? null : "Email must end with @gmail.com";
+                  _emailError = value.endsWith("@gmail.com")
+                      ? null
+                      : "Email must end with @gmail.com";
                 });
               },
               decoration: InputDecoration(
                 hintText: "abc@gmail.com",
-                suffixIcon: _emailError == null && _emailController.text.isNotEmpty
-                    ? const Icon(Icons.check, color: Colors.orange)
-                    : null,
+                suffixIcon:
+                    _emailError == null && _emailController.text.isNotEmpty
+                        ? const Icon(Icons.check, color: Colors.orange)
+                        : null,
                 errorText: _emailError,
               ),
             ),
@@ -156,7 +141,10 @@ class _SignInPageState extends State<SignInPage> {
             // Password Field
             const Text(
               "PASSWORD",
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey),
+              style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey),
             ),
             TextField(
               controller: _passwordController,
@@ -172,7 +160,9 @@ class _SignInPageState extends State<SignInPage> {
                 hintText: "********",
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    _isPasswordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off,
                     color: Colors.grey,
                   ),
                   onPressed: () {
@@ -191,7 +181,8 @@ class _SignInPageState extends State<SignInPage> {
               child: GestureDetector(
                 onTap: _isLoading ? null : _login,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 50),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 50),
                   decoration: BoxDecoration(
                     color: _isLoading ? Colors.grey : Colors.yellow[700],
                     borderRadius: BorderRadius.circular(8),
