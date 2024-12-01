@@ -70,6 +70,7 @@ const signRefreshToken = (payload) =>
         data: {
           refresh_token: refreshToken,
           access_token: accessToken,
+          info: user,
         },
       })
     } catch (error) {

@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const { NotAuthenticateError, ForbiddenError } = require("../errors/error");
+const { NotAuthenticateError, ForbiddenError,BadRequestError } = require("../errors/error");
+const _Group = require("../models/_Group");
 
 const { findGroupById } = require("../services/group.services");
 
@@ -49,10 +50,14 @@ const requireAppLogin = (req, res, next) => {
 const requireMangager = async (req, res, next) => {
   const { GID } = req.params;
   const { UUID } = req.Userdata;
-  const Groupdata = await findGroupById(GID);
+  const Groupdata = await _Group.findOne({ where: { GID: GID } });
+  if (!!!Groupdata) {
+    next(new BadRequestError(`No group found with ID: ${GID}`));
+  }
   req.Groupdata = Groupdata;
-  if (Groupdata.manager_id !== UUID) {
-    throw new ForbiddenError("You are not the manager of this group");
+  console.log("day la : " + GID);
+  if (Groupdata?.manager_id !== UUID) {
+    next(new ForbiddenError("You are not the manager of this group"));
   } else next();
 };
 
@@ -62,22 +67,20 @@ const requireMember = async (req, res, next) => {
 
   let Groupdata; // Declare outside the try block
   try {
-    Groupdata = await findGroupById(GID);
-    if (!Groupdata) {
+    const Groupdata = await _Group.findOne({ where: { GID: GID } });
+    if (!!!Groupdata) {
       throw new BadRequestError(`No group found with ID: ${GID}`);
     }
   } catch (error) {
-    return next(new BadRequestError(`Error fetching group with ID ${GID}: ${error.message}`));
+    return next(
+      new BadRequestError(
+        `Error fetching group with ID ${GID}: ${error.message}`
+      )
+    );
   }
 
   // Check if user is a member or the manager of the group
-
-  let isMember = false;
-  Groupdata.member_ids.map((member) => {
-    if (member.UUID ===UUID) {
-      isMember = true;
-    }
-  });
+  let isMember = Groupdata.member_ids.some((member) => member.UUID === UUID);
   const isManager = Groupdata.manager_id === UUID;
 
   if (isMember || isManager) {
@@ -88,6 +91,4 @@ const requireMember = async (req, res, next) => {
   }
 };
 
-
-
-module.exports = { requireAppLogin, requireMangager,requireMember };
+module.exports = { requireAppLogin, requireMangager, requireMember };

@@ -33,6 +33,18 @@ const tagSchema = {
   },
 };
 
+const groupListSchema = {
+  type: 'array',
+  items: {
+    type: 'object',
+    required: ['GID', 'group_name'],
+    properties: {
+      GID: { type: 'string' },
+      group_name: { type: 'string' },
+    },
+  },
+}
+
 class _User extends Model {}
 
 _User.init(
@@ -122,7 +134,37 @@ _User.init(
       type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: 'Active',
-    }
+    },
+    member_of: {
+      type: DataTypes.JSON,
+      defaultValue: [],
+      allowNull: true,
+      validate: {
+        isValidJson(value) {
+          let validate = ajv.compile(groupListSchema);
+          if (!validate(value)) {
+            console.error('Validation errors:', validate.errors);
+            let errorMessage = ajv.errorsText(validate.errors);
+            throw new Error(`Invalid JSON for member_of: ${errorMessage}`);
+          }
+        },
+        },
+      },
+      manager_of: {
+      type: DataTypes.JSON,
+      defaultValue: [],
+      allowNull: true,
+      validate: {
+        isValidJson(value) {
+          let validate = ajv.compile(groupListSchema);
+          if (!validate(value)) {
+            console.error('Validation errors:', validate.errors);
+            let errorMessage = ajv.errorsText(validate.errors);
+            throw new Error(`Invalid JSON for manager_of: ${errorMessage}`);
+          }
+        },
+      },
+    },
   },
   {
     sequelize,

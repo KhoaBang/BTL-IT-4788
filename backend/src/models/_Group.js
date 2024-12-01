@@ -16,19 +16,32 @@ class _Group extends Model {
   }
 }
 
+// Define and compile AJV schemas once
 const groupMemberListSchema = {
-    type:'array',
-    items:{
-        type:'object',
-        required:['UUID',"email"],
-        properties:{
-            UUID:{type:'string'},
-            email:{type:'string'}
-        }
-    }
+  type: 'array',
+  items: {
+    type: 'object',
+    required: ['UUID', 'email'],
+    properties: {
+      UUID: { type: 'string' },
+      email: { type: 'string' },
+    },
+  },
+};
+const valideMemberList = ajv.compile(groupMemberListSchema);
 
-}
+const groupBlacklistSchema = {
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: {
+      UUID: { type: 'string' },
+    },
+  },
+};
+const valideBlacklist = ajv.compile(groupBlacklistSchema);
 
+// Define the Group model
 _Group.init(
   {
     GID: {
@@ -50,19 +63,31 @@ _Group.init(
         notEmpty: true,
       },
     },
+    blacklist: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: [],
+      validate: {
+        isValidBlacklist(value) {
+          if (!valideBlacklist(value)) {
+            const errorMessage = ajv.errorsText(valideBlacklist.errors);
+            throw new Error(`Invalid JSON for blacklist: ${errorMessage}`);
+          }
+        },
+      },
+    },
     member_ids: {
       type: DataTypes.JSON, // Use JSON to store array-like data
       allowNull: true,
       defaultValue: [],
-      validate:{
-        isValidmemberList(value){
-            const valid = ajv.compile(groupMemberListSchema);
-            if(!valid(value)){
-                let errorMessage = ajv.errorsText(valid.errors);
-                throw new Error(`Invalid JSON for member_ids: ${errorMessage}`);
-            }
-        }
-      }
+      validate: {
+        isValidmemberList(value) {
+          if (!valideMemberList(value)) {
+            const errorMessage = ajv.errorsText(valideMemberList.errors);
+            throw new Error(`Invalid JSON for member_ids: ${errorMessage}`);
+          }
+        },
+      },
     },
     group_code: {
       type: DataTypes.STRING(255),
