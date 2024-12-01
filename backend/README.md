@@ -35,11 +35,144 @@
 | post   | /group                                | body       | {groupName}                   | tạo nhóm                                                                               |      | requireLogin                    |done|
 | get    | /group/:GID/invite                |            |                               | lấy mã mời                                                                             |      | requireLogin, requireGroupAdmin |done|
 | get    | /group/:GID/members               |            |                               | lấy danh sách thành viên nhóm                                                          |      | requireLogin, requireMember     |done|
-| patch  | /group/:GID/members/:memberId/ban | body       | {memberId, reason}            | kick thành viên (cho vào blacklist/ remove khỏi danh sách thành viên?, mark là banned) |      | requireLogin ,requireGroupAdmin |
+| post  | /group/:GID/members/ban | body       | {memberId, reason}            | kick thành viên (cho vào blacklist/ remove khỏi danh sách thành viên?, mark là banned) |      | requireLogin ,requireGroupAdmin |done|
 | POST   | /group/join/:group_code               | param      | groupcode                     | tham gia nhóm                                                                          |      | requireLogin                    |done |
-| delete | /group/:GID/leave                 |            | get user id from cookie/token | rời nhóm                                                                               |      | requireLogin, requireMember     |
-| patch  | /group/:GID/delete                | body       | {status}                      | admin đóng nhóm, chuyển status của nhóm thành 'deleted'                                |      | equireLogin, requireGroupAdmin  |
+| delete | /group/:GID/leave                 |            | get user id from cookie/token | rời nhóm                                                                               |      | requireLogin, requireMember     |done|
+| delete  | /group/:GID/delete                | body       | {status}                      | admin đóng nhóm, chuyển status của nhóm thành 'deleted'                                |      | equireLogin, requireGroupAdmin  |done|
 
+#### /group
+req.param 
+```text
+http://localhost:9000/api/group
+```
+req.body
+```json
+{
+    "group_name": "Hello world"
+}
+```
+res:
+```js
+{
+    "createdAt": "2024-12-01T15:25:42.742Z",
+    "updatedAt": "2024-12-01T15:25:42.742Z",
+    "GID": "e5f75852-31ae-4fc4-b43d-eda2bf53d8c0",
+    "blacklist": [],
+    "member_ids": [],
+    "group_code": "jUzKGO1",
+    "group_name": "Hello world",
+    "manager_id": "ae83d2e2-ecee-4251-990d-696b00dea251"
+}
+```
+#### /group/:GID/invite
+req.param:
+```param
+http://localhost:9000/api/group/e5f75852-31ae-4fc4-b43d-eda2bf53d8c0/invite
+```
+res:
+```json
+{
+    "group_code": "jUzKGO1"
+}
+```
+#### /group/join/:group_code
+req.param
+```param
+http://localhost:9000/api/group/join/E4F5G6H
+```
+res
+khi người bị ban join group
+```json
+{
+    "error": {
+        "name": "ForbiddenError",
+        "message": "You are banned from this group."
+    }
+}
+```
+khi thành viên join group
+```json
+{
+    "error": {
+        "name": "ForbiddenError",
+        "message": "You are already a member of this group."
+    }
+}
+```
+ok
+```json
+{
+    "message": "Joined group successfully"
+}
+```
+#### /group/:GID/members
+req.param
+```text
+http://localhost:9000/api/group/123e4567-e89b-12d3-a456-426614174000/members
+```
+res
+```json
+[
+    {
+        "UUID": "cdd7f5fe-00d6-4647-9115-030acbb7fd33",
+        "email": "NgocMinh@gmail.com",
+        "username": "NgocMinh"
+    },
+    {
+        "UUID": "c7f3b1fc-6b5d-4bb9-aa8d-94f239f327cb",
+        "email": "AnhKhoi@gmail.com",
+        "username": "AnhKhoi"
+    }
+]
+```
+#### /group/:GID/leave
+req
+```param
+http://localhost:9000/api/group/bfebd365-aed2-436f-9664-c6faa9c4820a/leave
+```
+res
+```text
+{
+    "message": "Left group successfully"
+}
+```
+
+#### /group/:GID/members/:memberId/ban
+req:
+```
+http://localhost:9000/api/group/123e4567-e89b-12d3-a456-426614174000/members/ban
+
+body:
+{
+    "UUID": "cdd7f5fe-00d6-4647-9115-030acbb7fd33"
+}
+```
+
+res:
+```
+{
+    "error": {
+        "name": "ForbiddenError",
+        "message": "User is already banned"
+    }
+}
+```
+```
+{
+    "message": "User banned successfully"
+}
+```
+#### /group/:GID
+req:
+```
+http://localhost:9000/api/group/123e4567-e89b-12d3-a456-426614174000
+```
+res:
+```
+{
+    "message": "Group deleted successfully"
+}
+```
 
 #IT-4788/quản_lý_tài_nguyên_nhóm
 ### UseCase quản lý tài nguyên nhóm
