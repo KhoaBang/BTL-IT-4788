@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'pages/signin_page.dart' as signin_page;  // Sử dụng alias cho SignInPage
-// import 'pages/signup_page.dart' as signup_page;  // Sử dụng alias cho SignUpPage
+import 'pages/signin_page.dart' as signin_page; // Sử dụng alias cho SignInPage
+import 'pages/test.dart' as test_page;
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       ),
       // Sử dụng alias để tránh xung đột
       home: signin_page.SignInPage(),
-      debugShowCheckedModeBanner: false,  // Dùng alias signin_page.SignInPage
+      debugShowCheckedModeBanner: false, // Dùng alias signin_page.SignInPage
     );
   }
 }

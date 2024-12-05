@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'widgets/header.dart';
 import 'widgets/footer.dart';
+import 'widgets/popup_menu.dart'; // Import the helper file
 
-class GroupDetailPage extends StatelessWidget {
+class GroupDetailPage extends StatefulWidget {
   final String groupName; // Tên nhóm được truyền từ trang groups_page.dart
 
   const GroupDetailPage({super.key, required this.groupName});
+
+  @override
+  _GroupDetailPageState createState() => _GroupDetailPageState();
+}
+
+class _GroupDetailPageState extends State<GroupDetailPage> {
+  final GlobalKey _moreIconKey = GlobalKey(); // Global key for the IconButton
 
   @override
   Widget build(BuildContext context) {
@@ -39,16 +47,23 @@ class GroupDetailPage extends StatelessWidget {
                 children: [
                   // Tên nhóm căn trái
                   Text(
-                    groupName, // Lấy tên nhóm từ tham số
+                    widget.groupName, // Lấy tên nhóm từ tham số
                     style: const TextStyle(
                       fontSize: 14,
                       color: Color(0xFF010F07),
                     ),
                   ),
                   // Icon 3 chấm căn phải
-                  const Icon(
-                    Icons.more_horiz, // Biểu tượng 3 chấm
-                    color: Color(0xFFC1B9B9),
+                  IconButton(
+                    key: _moreIconKey, // Set the GlobalKey here
+                    icon: const Icon(
+                      Icons.more_horiz, // Biểu tượng 3 chấm
+                      color: Color(0xFFC1B9B9),
+                    ),
+                    onPressed: () {
+                      showAddMenu(
+                          context, _moreIconKey); // Call the helper function
+                    },
                   ),
                 ],
               ),
@@ -70,7 +85,8 @@ class GroupDetailPage extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: Footer(currentIndex: -1), // Footer không active mục nào
+      bottomNavigationBar:
+          Footer(currentIndex: -1), // Footer không active mục nào
     );
   }
 

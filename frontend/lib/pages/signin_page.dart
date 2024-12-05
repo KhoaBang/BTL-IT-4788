@@ -51,9 +51,9 @@ class _SignInPageState extends State<SignInPage> {
       await prefs.setString('access_token', response['data']['access_token']);
       await prefs.setString('refresh_token', response['data']['refresh_token']);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login Successful!')),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(content: Text('Login Successful!')),
+      // );
 
       // Chuyển đến HomePage
       Navigator.pushReplacement(

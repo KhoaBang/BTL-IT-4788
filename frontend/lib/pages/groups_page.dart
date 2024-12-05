@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'widgets/header.dart';
 import 'widgets/footer.dart';
 import 'groupDetail_page.dart';
+import 'widgets/confirmation_dialog.dart';
+import 'widgets/input_dialog.dart';
 
 class GroupsPage extends StatefulWidget {
   const GroupsPage({super.key});
@@ -64,7 +66,21 @@ class _GroupsPageState extends State<GroupsPage> {
                   title: "Manager of",
                   groups: managedGroups,
                   onAdd: () {
-                    print("Add new managed group");
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return InputDialog(
+                          title: 'Create new group',
+                          hintText: 'Type group name here',
+                          confirmText: 'Create',
+                          cancelText: 'Cancel',
+                          onConfirm: (input) {
+                            // Handle the input
+                            print('User Input: $input');
+                          },
+                        );
+                      },
+                    );
                   },
                 ),
                 SizedBox(height: 32),
@@ -73,7 +89,21 @@ class _GroupsPageState extends State<GroupsPage> {
                   title: "Member of",
                   groups: memberGroups,
                   onAdd: () {
-                    print("Join new group");
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return InputDialog(
+                          title: 'Join a group',
+                          hintText: 'Type group code here',
+                          confirmText: 'Join',
+                          cancelText: 'Cancel',
+                          onConfirm: (input) {
+                            // Handle the input
+                            print('User Input: $input');
+                          },
+                        );
+                      },
+                    );
                   },
                 ),
               ],
