@@ -1,4 +1,5 @@
-const _Group = require('../models/_Group');
+const sequelize= require('../config/database');
+const {_Group,_User,_Unit} = sequelize.models
 
 // Create a new group
 const createGroupservice = async (groupData) => {

@@ -9,6 +9,7 @@ Import routes here:
 */
 const authRoutes = require('./routes/auth.routes');
 const groupRoutes = require('./routes/group.routes.js');
+const userRoutes = require('./routes/user.routes.js');
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ app.get('/', (req, res) => res.send('Hello from MealPrep!'));
 app.get('/api', (req, res) => res.send('Hello from MealPrep API!'));
 app.use('/api', authRoutes);
 app.use('/api', groupRoutes);
+app.use('/api', userRoutes);
 
 // Error Handling Middleware
 app.use(errorHandler);

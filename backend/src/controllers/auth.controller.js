@@ -1,7 +1,9 @@
 const { compare } = require('bcrypt');
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
-const _User = require('../models/_User');
+const sequelize= require('../config/database');
+const {_Group,_User,_Unit} = sequelize.models
+
 const { updateUserByUUID } = require('../services/user.services');
 const { 
     NotAuthenticateError,
@@ -74,6 +76,7 @@ const signRefreshToken = (payload) =>
         },
       })
     } catch (error) {
+      console.log(_User);
       next(error);
     }
   }

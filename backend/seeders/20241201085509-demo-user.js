@@ -76,8 +76,61 @@ module.exports = {
         role: 'User',
         refresh_token: 'EMPTY',
         status: 'Active',
-        tag_list: JSON.stringify([]), // Corrected empty JSON array
-        personal_ingredient_list: JSON.stringify([]), // Corrected empty JSON array
+        tag_list: JSON.stringify(["rau","thịt","hải sản","hương liệu","nguyên liệu nấu phở","nguyên liệu làm bánh","gia vị"]), // Corrected empty JSON array
+        personal_ingredient_list: JSON.stringify(
+            [
+                {
+                    "ingredient_name": "Cà rốt",
+                    "unit_id": 1,
+                    "tags": [
+                        {"tag_name": "rau"},
+                        {"tag_name": "nguyên liệu nấu phở"}
+                    ]
+                },
+                {
+                    "ingredient_name": "Thịt gà",
+                    "unit_id": 2,
+                    "tags": [
+                        {"tag_name": "thịt"},
+                        {"tag_name": "nguyên liệu nấu phở"}
+                    ]
+                },
+                {
+                    "ingredient_name": "Tôm",
+                    "unit_id": 3,
+                    "tags": [
+                        {"tag_name": "hải sản"},
+                        {"tag_name": "nguyên liệu làm bánh"}
+                    ]
+                },
+                {
+                    "ingredient_name": "Hành lá",
+                    "unit_id": 4,
+                    "tags": [
+                        {"tag_name": "rau"},
+                        {"tag_name": "hương liệu"}
+                    ]
+                },
+                {
+                    "ingredient_name": "Muối",
+                    "unit_id": 5,
+                    "tags": [
+                        {"tag_name": "gia vị"},
+                        {"tag_name": "nguyên liệu nấu phở"}
+                    ]
+                },
+                {
+                    "ingredient_name": "Bột mì",
+                    "unit_id": 6,
+                    "tags": [
+                        {"tag_name": "nguyên liệu làm bánh"},
+                        {"tag_name": "gia vị"}
+                    ]
+                }
+            ]
+
+        
+        ), // Corrected empty JSON array
         member_of: JSON.stringify([{'GID':'bfebd365-aed2-436f-9664-c6faa9c4820a','group_name':'Group B'}]), // Corrected empty JSON array
         manager_of: JSON.stringify([]), // Corrected empty JSON array
       },

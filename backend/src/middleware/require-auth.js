@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const { NotAuthenticateError, ForbiddenError,BadRequestError } = require("../errors/error");
-const _Group = require("../models/_Group");
+const sequelize= require('../config/database');
+const {_Group,_User,_Unit} = sequelize.models
 
 const { findGroupById } = require("../services/group.services");
 

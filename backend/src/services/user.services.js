@@ -1,7 +1,7 @@
 const { UUID } = require("sequelize");
-const _User = require("../models/_User");
+const sequelize= require('../config/database');
+const {_Group,_User,_Unit} = sequelize.models
 const { findGroupById } = require("../services/group.services");
-const { use } = require("../routes/auth.routes");
 /*
 user management services
 */

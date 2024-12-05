@@ -1,5 +1,6 @@
-const { Model, where } = require("sequelize");
-const _Group = require("../models/_Group.js");
+const sequelize= require('../config/database');
+const {_Group,_User,_Unit} = sequelize.models
+
 const {
   getUserByUUID,
   addGroupToManagerList,
@@ -20,7 +21,6 @@ const {
   InternalServerError,
   ForbiddenError,
 } = require("../errors/error");
-const _User = require("../models/_User.js");
 
 /*
  * Create a new group:
