@@ -30,11 +30,13 @@ const sequelize = new Sequelize(
     if (forceSync) {
       await sequelize.sync({ force: "true" }); // This will drop and recreate tables
       console.log("Database tables dropped and recreated.\n");
-    }
-    const queryInterface = sequelize.getQueryInterface(); // Get queryInterface from sequelize
-    await userSeederUp(queryInterface, sequelize); // Pass queryInterface to up function
-    await groupSeederUp(queryInterface, sequelize); // Run group seeder as well
-    await unitSeederUP(queryInterface, sequelize); // Run unit seeder as well
+      const queryInterface = sequelize.getQueryInterface(); // Get queryInterface from sequelize
+      await userSeederUp(queryInterface, sequelize); // Pass queryInterface to up function
+      await groupSeederUp(queryInterface, sequelize); // Run group seeder as well
+      await unitSeederUP(queryInterface, sequelize); // Run unit seeder as well
+    }else{
+      await sequelize.sync({alter: "true"})}
+
     console.log("Seed data inserted successfully.");
   } catch (error) {
     console.error("Error syncing tables:", error);

@@ -27,7 +27,7 @@ const {
  * +, tao group moi voi manager_id la UUID cua user
  * +, them GID vao manger_of cua user
  */
-const createGroup = async (req, res) => {
+const createGroup = async (req, res,next) => {
   const { UUID, ...restUserData } = req.Userdata;
   const { group_name } = req.body;
   if (!group_name)
@@ -109,7 +109,7 @@ const listMembers = async (req, res, next) => {
   const { GID } = req.params;
 
   try {
-    const group = await _Group.findByPk(GID);
+    const group = await sequelize.models._Group.findByPk(GID);
     if (!group) {
       throw new NotFoundError(`No group found with ID: ${GID}`);
     }
@@ -187,7 +187,7 @@ const banMember = async (req, res, next) => {
     const { GID } = req.params;
     //find group by GID
     console.log(GID);
-    const group = await _Group.find({where:{GID:GID}});
+    const group = await sequelize.models._Group.find({where:{GID:GID}});
     const { blacklist, member_ids } = group;
     //push UUID to blacklist of group
     const isBanned = blacklist.some((member) => member.UUID === UUID);

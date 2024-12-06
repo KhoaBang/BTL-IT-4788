@@ -4,7 +4,7 @@ const {_Group,_User,_Unit} = sequelize.models
 // Create a new group
 const createGroupservice = async (groupData) => {
   try {
-    const group = await _Group.create(groupData);
+    const group = await sequelize.models._Group.create(groupData);
     return group;
   } catch (error) {
     throw new Error(`Error creating group: ${error.message}`);
@@ -14,7 +14,7 @@ const createGroupservice = async (groupData) => {
 // Find a group by ID
 const findGroupById = async (groupId) => {
   try {
-    const group = await _Group.findByPk(groupId);
+    const group = await sequelize.models._Group.findByPk(groupId);
     if (!group) {
       throw new Error('Group not found');
     }
@@ -27,7 +27,7 @@ const findGroupById = async (groupId) => {
 // Update a group by ID
 const updateGroupById = async (groupId, updateData) => {
   try {
-    const group = await _Group.findByPk(groupId);
+    const group = await sequelize.models._Group.findByPk(groupId);
     if (!group) {
       throw new Error('Group not found');
     }
@@ -41,7 +41,7 @@ const updateGroupById = async (groupId, updateData) => {
 // Delete a group by ID
 const deleteGroupById = async (groupId) => {
   try {
-    const group = await _Group.findByPk(groupId);
+    const group = await sequelize.models._Group.findByPk(groupId);
     if (!group) {
       throw new Error('Group not found');
     }
@@ -54,7 +54,7 @@ const deleteGroupById = async (groupId) => {
 //get group by groupcode
 const getGroupByGroupCode = async (groupCode) => {
   try {
-    const group = await _Group.findOne({
+    const group = await sequelize.models._Group.findOne({
       where: { group_code: groupCode },
     });
     return group;
@@ -66,7 +66,7 @@ const getGroupByGroupCode = async (groupCode) => {
 // Find all groups
 const findAllGroups = async () => {
   try {
-    const groups = await _Group.findAll();
+    const groups = await sequelize.models._Group.findAll();
     return groups;
   } catch (error) {
     throw new Error(`Error finding groups: ${error.message}`);

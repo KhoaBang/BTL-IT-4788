@@ -1,7 +1,7 @@
 const app = require("./app");
 const { Sequelize } = require("sequelize");
 const dotenv = require("dotenv");
-const {sequelize} = require('./config/database');
+const sequelize = require('./config/database');
 
 dotenv.config();
 
@@ -20,7 +20,7 @@ const start = async () => {
   }
 
   try {
-    // await sequelize.authenticate();
+    await sequelize.sync();
     console.log("=========== Connected to Mariadb ===========");
     console.log(sequelize)
     // Chỉ dùng force: true trong môi trường phát triển
