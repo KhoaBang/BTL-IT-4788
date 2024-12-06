@@ -187,7 +187,7 @@ const banMember = async (req, res, next) => {
     const { GID } = req.params;
     //find group by GID
     console.log(GID);
-    const group = await sequelize.models._Group.find({where:{GID:GID}});
+    const group = await sequelize.models._Group.findOne({where:{GID:GID}});
     const { blacklist, member_ids } = group;
     //push UUID to blacklist of group
     const isBanned = blacklist.some((member) => member.UUID === UUID);

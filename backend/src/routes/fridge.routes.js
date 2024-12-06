@@ -1,9 +1,13 @@
 const { Router } = require('express');
 const { requireAppLogin,requireMangager, requireMember } = require('../middleware/require-auth');
-const {ingredientList} = require('../controllers/fridge.controller');
+const {ingredientList, addIngred,updateIngred,deleteIngred} = require('../controllers/fridge.controller');
 const router = Router();
 
 router.get('/group/:GID/fridge',requireAppLogin,requireMember,ingredientList)//lấy danh sách đồ trong tủ lạnh
+router.post('/group/:GID/fridge',requireAppLogin,requireMangager,addIngred)//thêm thực phẩm vào tủ lạnh
+router.patch('/group/:GID/fridge',requireAppLogin,requireMangager,updateIngred)//chỉnh sửa thực phẩm trong tủ lạnh
+router.delete('/group/:GID/fridge',requireAppLogin,requireMangager,deleteIngred)//chỉnh sửa thực phẩm trong tủ lạnh
+
 // fridge có dạng:
 /**
 [
