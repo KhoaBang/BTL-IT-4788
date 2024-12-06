@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
+import '../MemberTablePage.dart';
 import 'confirmation_dialog.dart';
 
 void showAddMenu(BuildContext context, GlobalKey iconKey) {
   final RenderBox renderBox =
       iconKey.currentContext!.findRenderObject() as RenderBox;
-  final position =
-      renderBox.localToGlobal(Offset.zero); // Get the position of the icon
+  final position = renderBox.localToGlobal(Offset.zero);
+
+  final List<Map<String, String>> members = [
+    {'name': 'John', 'email': 'john@gmail.com'},
+    {'name': 'Jane', 'email': 'jane.doe@example.com'},
+    {'name': 'Alice', 'email': 'alice.wonderland@mail.com'},
+  ];
 
   showMenu<String>(
     context: context,
     position: RelativeRect.fromLTRB(
-      position.dx, // X position of the IconButton
-      position.dy + renderBox.size.height, // Y position right below the button
-      position.dx, // Same X position for the right
-      position.dy, // Same Y position
+      position.dx,
+      position.dy + renderBox.size.height,
+      position.dx,
+      position.dy,
     ),
     items: [
       PopupMenuItem<String>(
@@ -30,7 +36,7 @@ void showAddMenu(BuildContext context, GlobalKey iconKey) {
         value: 'Delete',
         child: Text(
           'Delete Group',
-          style: TextStyle(color: Colors.red), // Red text color for Delete
+          style: TextStyle(color: Colors.red),
         ),
       ),
       PopupMenuDivider(),
@@ -38,7 +44,7 @@ void showAddMenu(BuildContext context, GlobalKey iconKey) {
         value: 'Leave',
         child: Text(
           'Leave',
-          style: TextStyle(color: Colors.red), // Red text color for Leave
+          style: TextStyle(color: Colors.red),
         ),
       ),
     ],
@@ -46,7 +52,12 @@ void showAddMenu(BuildContext context, GlobalKey iconKey) {
     if (value != null) {
       switch (value) {
         case 'View Members':
-          print('View Members selected');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MemberTablePage(members: members),
+            ),
+          );
           break;
         case 'Get Code':
           print('Get Code selected');
