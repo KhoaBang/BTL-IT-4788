@@ -10,6 +10,7 @@ Import routes here:
 const authRoutes = require('./routes/auth.routes');
 const groupRoutes = require('./routes/group.routes.js');
 const userRoutes = require('./routes/user.routes.js');
+const fridgeRoutes = require('./routes/fridge.routes.js');
 
 dotenv.config();
 
@@ -24,7 +25,7 @@ const corsURLs = [FRONTEND_URL].filter(
 app.use(
   cors({
     origin: corsURLs.length > 0 ? corsURLs : '*',
-    methods: ['POST', 'GET', 'PUT', 'DELETE'],
+    methods: ['POST', 'GET', 'PUT', 'DELETE','PATCH'],
     optionsSuccessStatus: 200,
     preflightContinue: true,
   }),
@@ -40,6 +41,7 @@ app.get('/api', (req, res) => res.send('Hello from MealPrep API!'));
 app.use('/api', authRoutes);
 app.use('/api', groupRoutes);
 app.use('/api', userRoutes);
+app.use('/api', fridgeRoutes);
 
 // Error Handling Middleware
 app.use(errorHandler);

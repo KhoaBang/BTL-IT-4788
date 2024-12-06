@@ -1,7 +1,9 @@
 const { DataTypes } = require("sequelize");
-const { v4: uuidv4 } = require("uuid");
+const { v4: uuidv4, validate } = require("uuid");
 const Ajv = require("ajv");
+const addFormats = require("ajv-formats")
 const ajv = new Ajv();
+addFormats(ajv)
 
 const createInviteCode = () => {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -36,6 +38,47 @@ const groupBlacklistSchema = {
   },
 };
 const valideBlacklist = ajv.compile(groupBlacklistSchema);
+
+// [
+//   {
+//     "ingredient_name": "Mỳ ý",
+//     "unit_id": 2,
+//     "detail": [
+//       {
+//         "quantity": 2,
+//         "createdAt": "2024-12-01" // chỉ có ngày theo format yyyy-mm-dd
+//       },
+//       {
+//         "quantity": 3,
+//         "createdAt": "2024-12-03"
+//       }
+//     ]
+//   }
+// ]
+
+const groupFridgeSchema = {
+  type : "array",
+  items:{
+    type:"object",
+    required:["ingredient_name","unit_id"],
+    properties:{
+      ingredient_name:{type:"string"},
+      unit_id:{"type":"number"},
+      detail:{
+        type:"array",
+        items:{
+          type:"object",
+          properties:{
+            quantity:{type:"number"},
+            createdAt:{type:"string",format:"date"}
+          }
+        }
+      }
+    }
+  }
+}
+const validateGroupFridge = ajv.compile(groupFridgeSchema);
+
 
 // main function
 module.exports = async (sequelize) => {
@@ -117,6 +160,18 @@ module.exports = async (sequelize) => {
         allowNull: false,
         defaultValue: DataTypes.NOW,
       },
+      fridge:{
+        type: DataTypes.JSON,
+        defaultValue: [],
+        validate:{
+          isValidFridge(value){
+            if(!validateGroupFridge(value)){
+              const errorMessage = ajv.errorsText(validateGroupFridge.errors);
+              throw new Error(`Invalid JSON for fridge: ${errorMessage}`);
+            }
+          }
+        }
+      }
     },
     {
       tableName: "groups",

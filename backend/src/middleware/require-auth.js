@@ -2,7 +2,6 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const { NotAuthenticateError, ForbiddenError,BadRequestError } = require("../errors/error");
 const sequelize= require('../config/database');
-const {_Group,_User,_Unit} = sequelize.models
 
 const { findGroupById } = require("../services/group.services");
 
@@ -51,7 +50,7 @@ const requireAppLogin = (req, res, next) => {
 const requireMangager = async (req, res, next) => {
   const { GID } = req.params;
   const { UUID } = req.Userdata;
-  const Groupdata = await _Group.findOne({ where: { GID: GID } });
+  const Groupdata = await sequelize.models._Group.findOne({ where: { GID: GID } });
   if (!!!Groupdata) {
     next(new BadRequestError(`No group found with ID: ${GID}`));
   }
@@ -67,29 +66,34 @@ const requireMember = async (req, res, next) => {
   const { UUID } = req.Userdata;
 
   let Groupdata; // Declare outside the try block
-  try {
-    const Groupdata = await _Group.findOne({ where: { GID: GID } });
-    if (!!!Groupdata) {
-      throw new BadRequestError(`No group found with ID: ${GID}`);
+  try{
+    try {
+       Groupdata = await sequelize.models._Group.findOne({ where: { GID: GID } });
+      if (!!!Groupdata) {
+        throw new BadRequestError(`No group found with ID: ${GID}`);
+      }
+    } catch (error) {
+      return next(
+        new BadRequestError(
+          `Error fetching group with ID ${GID}: ${error.message}`
+        )
+      );
     }
-  } catch (error) {
-    return next(
-      new BadRequestError(
-        `Error fetching group with ID ${GID}: ${error.message}`
-      )
-    );
+  
+    // Check if user is a member or the manager of the group
+    let isMember = Groupdata.member_ids.some((member) => member.UUID === UUID);
+    const isManager = Groupdata.manager_id === UUID;
+  
+    if (isMember || isManager) {
+      req.Groupdata = Groupdata; // Attach group data to request
+      return next(); // Proceed to the next middleware
+    } else {
+      return next(new ForbiddenError("You are not a member of this group"));
+    }
+  }catch(error){
+    next(error);
   }
-
-  // Check if user is a member or the manager of the group
-  let isMember = Groupdata.member_ids.some((member) => member.UUID === UUID);
-  const isManager = Groupdata.manager_id === UUID;
-
-  if (isMember || isManager) {
-    req.Groupdata = Groupdata; // Attach group data to request
-    return next(); // Proceed to the next middleware
-  } else {
-    return next(new ForbiddenError("You are not a member of this group"));
-  }
+  
 };
 
 module.exports = { requireAppLogin, requireMangager, requireMember };
