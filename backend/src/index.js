@@ -1,6 +1,7 @@
 const app = require("./app");
 const { Sequelize } = require("sequelize");
 const dotenv = require("dotenv");
+const sequelize = require('./config/database');
 
 dotenv.config();
 
@@ -19,12 +20,9 @@ const start = async () => {
   }
 
   try {
-    const sequelize = new Sequelize(
-      `mariadb://${process.env.DB_USERNAME}:${process.env.DB_PASS}@${process.env.DB_IP}:${process.env.DB_PORT}/${process.env.DB_NAME}`
-    );
-    await sequelize.authenticate();
+    await sequelize.sync();
     console.log("=========== Connected to Mariadb ===========");
-
+    console.log(sequelize)
     // Chỉ dùng force: true trong môi trường phát triển
   } catch (err) {
     console.error("Unable to connect to the database:", err);

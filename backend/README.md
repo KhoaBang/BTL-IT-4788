@@ -7,39 +7,172 @@
 ![Usecase quản lý thông tin người dùng](./assets/UseCaseQuanLyNguoiDung.png)
 
 
-| Method | URL                                       | Param type  | Param                                    | Description                                                                                                 | ROLE | require      |
-| ------ | ----------------------------------------- | ----------- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ---- | ------------ |
-| get    | /userInfo/profile/me                      |             |                                          | người dùng lấy thông tin                                                                                    |      | requireLogin |
-| post   | /userInfo/profile/update_info/me          | body        | { name, các trường thông tin,… }         | User cập nhật thông tin của chính mình (trừ số điện thoại và password).                                     |      | requireLogin |
-| post   | /userInfo/update_pass/me                  | body        | { oldpass, newpass }                     | người dùng đặt lại mật khẩu                                                                                 |      | requireLogin |
-| get    | /userInfo/store/ingredients/me?query      |             | { keyword, page, limit, tag, sort }      | người dùng lấy thông tin nguyên liệu trong kho cá nhân, hỗ trợ tra cứu nguyên liệu (theo keyword, theo tag) |      | requireLogin |
-| post   | /userInfo/store/ingredients/              | body        | { ingredientId, các trường thông tin,… } | tạo nguyên liệu mới                                                                                         |      | requireLogin |
-| put    | /userInfo/store/ingredients/:ingredientId | param,body  | { ingredientId, các trường thông tin,… } | cập nhật nguyên liệu cũ                                                                                     |      | requireLogin |
-| del    | /userInfo/store/ingredients/:ingredientId | param       | ingredientId                             | Xóa nguyên liệu (xóa cứng)                                                                                  |      | requireLogin |
-| get    | /userInfo/store/ingredients/tag?status=1  |             |                                          | xem danh sách tag nguyên liệu (các nguyên liệu có status=1)                                                 |      | requireLogin |
-| post   | /userInfo/store/ingredients/tag           | body        | {tagName}                                | tạo tag nguyên liệu mới                                                                                     |      | requireLogin |
-| put    | /userInfo/store/ingredients/tag/:tagId    | param,body  | tagId,{newtagName}                       | Chỉnh sửa tag                                                                                               |      | requireLogin |
-| del    | /userInfo/store/ingredients/tag/:tagId    | param       | tagId                                    | xóa tag (có thể xóa mềm. thuộc tính status =1/0 rồi thực hiện validate ở front end)                         |      | requireLogin |
-| post   | /userInfo/store/ingredients/addtag        | body        | {ingredientId, tagId}                    | add tag vào thực phẩm                                                                                       |      | requireLogin |
-| post   | /userInfo/store/recipe                    | body        | {recipeName, info...}                    | tạo ct mới                                                                                                  |      | requireLogin |
-| get    | /userInfo/store/recipe?keyword=           | query       |                                          | xem, tra cứu công thức                                                                                      |      | requireLogin |
-| put    | /userInfo/store/recipe/:recipeId          | param, body | {updated info...}                        | cập nhật ct cũ                                                                                              |      | requireLogin |
-| del    | /userInfo/store/recipe/:recipeId          | param       |                                          | xóa ct cũ                                                                                                   |      | requireLogin |
+| Method | URL                                 | Param type  | Param                                                                                                                                                                                                                                                                                                                       | Description                                                                             | ROLE | require      | status |
+| ------ | ----------------------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ---- | ------------ | ------ |
+| get    | /userInfo/profile/me                |             |                                                                                                                                                                                                                                                                                                                             | người dùng lấy thông tin                                                                |      | requireLogin |        |
+| post   | /userInfo/profile/update_info/me    | body        | { name, các trường thông tin,… }                                                                                                                                                                                                                                                                                            | User cập nhật thông tin của chính mình (trừ số điện thoại và password).                 |      | requireLogin |        |
+| post   | /userInfo/update_pass/me            | body        | { oldpass, newpass }                                                                                                                                                                                                                                                                                                        | người dùng đặt lại mật khẩu                                                             |      | requireLogin |        |
+| get    | /userInfo/store/ingredients/me      |             |                                                                                                                                                                                                                                                                                                                             | lấy danh sách nguyên liệu cá nhân                                                       |      | requireLogin | done   |
+| post   | /userInfo/store/ingredients         | body        | {"ingredient":{<br> "ingredient_name": "Mỳ ý",<br>    "unit_id": 2,<br>     "tags": [<br>                    {"tag_name": "Món ý"},<br>                    {"tag_name": "Món mì"}<br>                ]<br>            }<br>}                                                                                                | tạo nguyên liệu thông tin để trong body                                                 |      | requireLogin | done   |
+| del    | /userInfo/store/ingredients         | param       | {<br>    "ingredient_name":"Cà rốt"<br>}                                                                                                                                                                                                                                                                                    | phải gửi nguyên liệu cũ trong body lên để tìm xóa                                       |      | requireLogin | done   |
+| patch  | /userInfo/store/ingredients         | body        | {<br>    "old_ingredient_name":"Thịt gà",<br>    "new_ingredient":<br>        {<br>            "ingredient_name":"Thịt tê giác",<br>            "unit_id":2,<br>            "tags":[<br>                {"tag_name":"thịt"},<br>                {"tag_name":"siêu quý hiếm"}<br>                ]<br>        }<br>    <br>} | không có id nên phải gửi nguyên liệu cũ (tên) trong body để server tìm cập nhật         |      | requireLogin | done   |
+| get    | /userInfo/store/ingredients/tag     |             |                                                                                                                                                                                                                                                                                                                             | lấy danh sách tag                                                                       |      | requireLogin | done   |
+| post   | /userInfo/store/ingredients/tag     | body        | {<br>    "tag_name":"rau thơm"<br>}                                                                                                                                                                                                                                                                                         | tạo tag nguyên liệu mới                                                                 |      | requireLogin | done   |
+| del    | /userInfo/store/ingredients/tag     | param       | {<br>    "tag_name":"thịt"<br>}                                                                                                                                                                                                                                                                                             | xóa tag, gửi tên tag cũ trong body                                                      |      | requireLogin | done   |
+| put    | /userInfo/store/ingredients/tag     | body        | {<br>    "old_tag_name":"a",<br>    "new_tag_name":"Thịt"<br>}                                                                                                                                                                                                                                                              | sửa tag, gửi tên tag cũ trong body                                                      |      | requireLogin | done   |
+| patch  | /userInfo/store/ingredients/add_tag | body        | {<br>    "tag_name":"thịt",<br>    "ingredient_name":"Cà rốt"<br>}                                                                                                                                                                                                                                                          | thêm 1 tag vào 1 nguyên liệu -> gửi tên nguyên liệu + tên tag (đòi hỏi tag phải có sẵn) |      | requireLogin | done   |
+| post   | /userInfo/store/recipe              | body        | {recipeName, info...}                                                                                                                                                                                                                                                                                                       | tạo ct mới                                                                              |      | requireLogin |        |
+| get    | /userInfo/store/recipe?keyword=     | query       |                                                                                                                                                                                                                                                                                                                             | xem, tra cứu công thức                                                                  |      | requireLogin |        |
+| put    | /userInfo/store/recipe/:recipeId    | param, body | {updated info...}                                                                                                                                                                                                                                                                                                           | cập nhật ct cũ                                                                          |      | requireLogin |        |
+| del    | /userInfo/store/recipe/:recipeId    | param       |                                                                                                                                                                                                                                                                                                                             | xóa ct cũ                                                                               |      | requireLogin |        |
 
 #IT-4788/quản_lý_thành_viên_nhóm 
 ### UseCase quản lý thành viên nhóm
 ![UseCase quản lý thành viên nhóm](./assets/UseCaseQuanLyThanhVien.png)
 
-| Method | URL                                   | Param type | Param                         | Description                                                                            | ROLE | require                         |
-| ------ | ------------------------------------- | ---------- | ----------------------------- | -------------------------------------------------------------------------------------- | ---- | ------------------------------- |
-| post   | /group                                | body       | {groupName}                   | tạo nhóm                                                                               |      | requireLogin                    |
-| get    | /group/:groupId/invite                |            |                               | lấy mã mời                                                                             |      | requireLogin, requireGroupAdmin |
-| get    | /group/:groupId/members               |            |                               | lấy danh sách thành viên nhóm                                                          |      | requireLogin, requireMember     |
-| patch  | /group/:groupId/members/:memberId/ban | body       | {memberId, reason}            | kick thành viên (cho vào blacklist/ remove khỏi danh sách thành viên?, mark là banned) |      | requireLogin ,requireGroupAdmin |
-| POST   | /group/join?groupcode=                | query      | groupcode                     | tham gia nhóm                                                                          |      | requireLogin                    |
-| delete | /group/:groupId/leave                 |            | get user id from cookie/token | rời nhóm                                                                               |      | requireLogin, requireMember     |
-| patch  | /group/:groupId/delete                | body       | {status}                      | admin đóng nhóm, chuyển status của nhóm thành 'deleted'                                |      | equireLogin, requireGroupAdmin  |
+| Method | URL                                   | Param type | Param                         | Description                                                                            | ROLE | require                         |implementation status|
+| ------ | ------------------------------------- | ---------- | ----------------------------- | -------------------------------------------------------------------------------------- | ---- | ------------------------------- |--|
+| post   | /group                                | body       | {groupName}                   | tạo nhóm                                                                               |      | requireLogin                    |done|
+| get    | /group/:GID/invite                |            |                               | lấy mã mời                                                                             |      | requireLogin, requireGroupAdmin |done|
+| get    | /group/:GID/members               |            |                               | lấy danh sách thành viên nhóm                                                          |      | requireLogin, requireMember     |done|
+| post  | /group/:GID/members/ban | body       | {memberId, reason}            | kick thành viên (cho vào blacklist/ remove khỏi danh sách thành viên?, mark là banned) |      | requireLogin ,requireGroupAdmin |done|
+| POST   | /group/join/:group_code               | param      | groupcode                     | tham gia nhóm                                                                          |      | requireLogin                    |done |
+| delete | /group/:GID/leave                 |            | get user id from cookie/token | rời nhóm                                                                               |      | requireLogin, requireMember     |done|
+| delete  | /group/:GID/delete                | body       | {status}                      | admin đóng nhóm, chuyển status của nhóm thành 'deleted'                                |      | equireLogin, requireGroupAdmin  |done|
 
+#### /group
+req.param 
+```text
+http://localhost:9000/api/group
+```
+req.body
+```json
+{
+    "group_name": "Hello world"
+}
+```
+res:
+```js
+{
+    "createdAt": "2024-12-01T15:25:42.742Z",
+    "updatedAt": "2024-12-01T15:25:42.742Z",
+    "GID": "e5f75852-31ae-4fc4-b43d-eda2bf53d8c0",
+    "blacklist": [],
+    "member_ids": [],
+    "group_code": "jUzKGO1",
+    "group_name": "Hello world",
+    "manager_id": "ae83d2e2-ecee-4251-990d-696b00dea251"
+}
+```
+#### /group/:GID/invite
+req.param:
+```param
+http://localhost:9000/api/group/e5f75852-31ae-4fc4-b43d-eda2bf53d8c0/invite
+```
+res:
+```json
+{
+    "group_code": "jUzKGO1"
+}
+```
+#### /group/join/:group_code
+req.param
+```param
+http://localhost:9000/api/group/join/E4F5G6H
+```
+res
+khi người bị ban join group
+```json
+{
+    "error": {
+        "name": "ForbiddenError",
+        "message": "You are banned from this group."
+    }
+}
+```
+khi thành viên join group
+```json
+{
+    "error": {
+        "name": "ForbiddenError",
+        "message": "You are already a member of this group."
+    }
+}
+```
+ok
+```json
+{
+    "message": "Joined group successfully"
+}
+```
+#### /group/:GID/members
+req.param
+```text
+http://localhost:9000/api/group/123e4567-e89b-12d3-a456-426614174000/members
+```
+res
+```json
+[
+    {
+        "UUID": "cdd7f5fe-00d6-4647-9115-030acbb7fd33",
+        "email": "NgocMinh@gmail.com",
+        "username": "NgocMinh"
+    },
+    {
+        "UUID": "c7f3b1fc-6b5d-4bb9-aa8d-94f239f327cb",
+        "email": "AnhKhoi@gmail.com",
+        "username": "AnhKhoi"
+    }
+]
+```
+#### /group/:GID/leave
+req
+```param
+http://localhost:9000/api/group/bfebd365-aed2-436f-9664-c6faa9c4820a/leave
+```
+res
+```text
+{
+    "message": "Left group successfully"
+}
+```
+
+#### /group/:GID/members/:memberId/ban
+req:
+```
+http://localhost:9000/api/group/123e4567-e89b-12d3-a456-426614174000/members/ban
+
+body:
+{
+    "UUID": "cdd7f5fe-00d6-4647-9115-030acbb7fd33"
+}
+```
+
+res:
+```
+{
+    "error": {
+        "name": "ForbiddenError",
+        "message": "User is already banned"
+    }
+}
+```
+```
+{
+    "message": "User banned successfully"
+}
+```
+#### /group/:GID
+req:
+```
+http://localhost:9000/api/group/123e4567-e89b-12d3-a456-426614174000
+```
+res:
+```
+{
+    "message": "Group deleted successfully"
+}
+```
 
 #IT-4788/quản_lý_tài_nguyên_nhóm
 ### UseCase quản lý tài nguyên nhóm
@@ -83,7 +216,7 @@
 | delete | /group/:groupId/meals/:mealId |            |                                                       | Xóa bữa ăn       |      | requireLogin, requireGroupAdmin |
 
 #IT-4788/auth
-### UseCase auth
+### UseCase auth (done)
 
 | Method | URL           | Param type | Param                             | Description                                         | ROLE | require      |
 | ------ | ------------- | ---------- | --------------------------------- | --------------------------------------------------- | ---- | ------------ |

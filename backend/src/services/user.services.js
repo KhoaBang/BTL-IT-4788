@@ -1,4 +1,7 @@
-const _User = require('../models/_User');
+const { UUID } = require("sequelize");
+const sequelize= require('../config/database');
+const {_Group,_User,_Unit} = sequelize.models
+const { findGroupById } = require("../services/group.services");
 /*
 user management services
 */
@@ -89,6 +92,7 @@ const addIngredientToUserList = async (uuid, ingredient) => {
     ingredientList.push(ingredient);
 
     user.Personal_ingredient_list = ingredientList;
+    user.changed("Personal_ingredient_list", true);
     await user.save();
 
     return user.Personal_ingredient_list;
@@ -111,6 +115,7 @@ const removeIngredientFromUserList = async (uuid, ingredientName) => {
     );
 
     user.Personal_ingredient_list = updatedList;
+    user.changed("Personal_ingredient_list", true);
     await user.save();
 
     return user.Personal_ingredient_list;
@@ -151,6 +156,7 @@ const addTagToUserList = async (uuid, tag) => {
     tagList.push(tag);
 
     user.Tag_list = tagList;
+    user.changed("Tag_list", true);
     await user.save();
 
     return user.Tag_list;
@@ -171,6 +177,7 @@ const removeTagFromUserList = async (uuid, tagId) => {
     const updatedList = tagList.filter((tag) => tag.tag_id !== tagId);
 
     user.Tag_list = updatedList;
+    user.changed("Tag_list", true);
     await user.save();
 
     return user.Tag_list;
@@ -193,6 +200,121 @@ const getUserTagList = async (uuid) => {
   }
 };
 
+// Add new group to manger_of list of user
+const addGroupToManagerList = async (uuid, GID) => {
+  try {
+    const user = await _User.findOne({ where: { UUID: uuid } });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const groupList = user.manager_of || [];
+    const groupData = await findGroupById(GID);
+    const { GID: group_id, group_name } = groupData;
+    // use some() for checking condition because it will return true when the condition is true
+    const groupExists = groupList.some((group) => group.GID === group_id);
+    if (groupExists) {
+      throw new Error("Group already exists in manager list");
+    }
+    groupList.push({ GID: group_id, group_name: group_name });
+    user.manager_of = groupList;
+    user.changed("manager_of", true);
+    await user.save();
+  } catch (error) {
+    throw new Error(`Error adding group to manager list: ${error.message}`);
+  }
+};
+
+// Add new group to member_of list of user
+/**
+ * flow:
+ * 1. Find user by UUID
+ * 2. Check if user exists
+ * 3. find group by GID
+ * 4. Check if group exists
+ * 5. get group name
+ * 6. get member_of list of user
+ * 7. check if the group exists in the list
+ * 8. add the group to the list
+ * 9. save the user
+ */
+const addGroupToMemberList = async (uuid, GID) => {
+  try{
+    const user = await _User.findOne({where:{UUID:uuid}});
+    if(!user){
+      throw new Error("User not found");
+    }
+    const groupData = await findGroupById(GID);
+    const {GID:group_id,group_name} = groupData;
+    const groupList = user.member_of || [];
+    const groupExists = groupList.some((group) => group.GID === group_id);
+    if(groupExists){
+      throw new Error("Group already exists in member list");
+    }
+    groupList.push({GID:group_id,group_name:group_name});
+    user.member_of = groupList;
+    user.changed("member_of",true);
+    await user.save();
+  }catch(error){
+    throw new Error(`Error adding group to member list: ${error.message}`);
+  }
+}
+
+// delete group from member_of list of user
+/**
+ * flow:
+ * 1. find user by UUID
+ * 2. check if user exists
+ * 3. get the group list of the user
+ * 4. check if the group exists in the list
+ * 5. remove the group from the list
+ */
+const deleteGroupFromMemberList = async (uuid, GID) => {
+  try {
+    // Fetch the user by UUID
+    const user = await _User.findOne({ where: { UUID: uuid } });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    user.member_of = user.member_of.filter((group) => group.GID !== GID);
+    user.changed("member_of", true);
+    await user.save();
+  } catch (error) {
+    throw new Error(`Error deleting group from member list: ${error.message}`);
+  }
+};
+
+
+//delete group from manger_of list of user
+/*
+flow: 
+1. find user by UUID
+2. check if user exists
+3. get the group list of the user
+4. check if the group exists in the list
+5. remove the group from the list
+*/
+const deleteGroupFromManagerList = async (uuid, GID) => {
+  try {
+    const user = await _User.findOne({ where: { UUID: uuid } });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const groupList = user.manager_of || [];
+    const index = groupList.findIndex((group) => group.GID === GID);
+    if (index === -1) {
+      throw new Error("Group not found in manager list");
+    }
+    groupList.splice(index, 1);
+    user.manager_of = groupList;
+    user.changed("manager_of", true);
+    await user.save();
+  } catch (error) {
+    throw new Error(`Error deleting group from manager list: ${error.message}`);
+  }
+};
+
 module.exports = {
   createUser,
   getUserByUUID,
@@ -208,4 +330,9 @@ module.exports = {
   addTagToUserList,
   removeTagFromUserList,
   getUserTagList,
+  // Export the user group list management services
+  addGroupToManagerList,
+  addGroupToMemberList,
+  deleteGroupFromMemberList,
+  deleteGroupFromManagerList,
 };

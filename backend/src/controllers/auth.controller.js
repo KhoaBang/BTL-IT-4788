@@ -1,7 +1,9 @@
 const { compare } = require('bcrypt');
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
-const _User = require('../models/_User');
+const sequelize= require('../config/database');
+const {_Group,_User,_Unit} = sequelize.models
+
 const { updateUserByUUID } = require('../services/user.services');
 const { 
     NotAuthenticateError,
@@ -70,9 +72,11 @@ const signRefreshToken = (payload) =>
         data: {
           refresh_token: refreshToken,
           access_token: accessToken,
+          info: user,
         },
       })
     } catch (error) {
+      console.log(_User);
       next(error);
     }
   }
@@ -155,11 +159,13 @@ const signRefreshToken = (payload) =>
         email,
         password:hashedPassword,
         phone
-      });
+      }); 
+      const { password:pass, ...restUserData } = newUser.dataValues;
       res.status(201).json({
         status: 1,
         message: 'User registered successfully',
-        data: newUser,
+        data: restUserData,
+
       });
     } catch (error) {
       next(error);

@@ -8,11 +8,15 @@ const { errorHandler } = require('./middleware/errorHandler');
 Import routes here:
 */
 const authRoutes = require('./routes/auth.routes');
+const groupRoutes = require('./routes/group.routes.js');
+const userRoutes = require('./routes/user.routes.js');
 
 dotenv.config();
 
 const app = express();
 app.set('trust proxy', true);
+const FRONTEND_URL = process.env.FRONTEND_URL ?? false;
+
 const FRONTEND_URL = process.env.FRONTEND_URL ?? false;
 
 const corsURLs = [FRONTEND_URL].filter(
@@ -21,7 +25,6 @@ const corsURLs = [FRONTEND_URL].filter(
 
 app.use(
   cors({
-    //credentials: true,
     origin: corsURLs.length > 0 ? corsURLs : '*',
     methods: ['POST', 'GET', 'PUT', 'DELETE'],
     optionsSuccessStatus: 200,
@@ -37,6 +40,8 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/', (req, res) => res.send('Hello from MealPrep!'));
 app.get('/api', (req, res) => res.send('Hello from MealPrep API!'));
 app.use('/api', authRoutes);
+app.use('/api', groupRoutes);
+app.use('/api', userRoutes);
 
 // Error Handling Middleware
 app.use(errorHandler);
