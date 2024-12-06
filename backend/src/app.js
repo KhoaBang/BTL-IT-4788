@@ -17,8 +17,6 @@ const app = express();
 app.set('trust proxy', true);
 const FRONTEND_URL = process.env.FRONTEND_URL ?? false;
 
-const FRONTEND_URL = process.env.FRONTEND_URL ?? false;
-
 const corsURLs = [FRONTEND_URL].filter(
   (v) => v,
 );
