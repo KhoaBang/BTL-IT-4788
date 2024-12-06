@@ -20,7 +20,7 @@ const start = async () => {
   }
 
   try {
-    await sequelize.sync();
+    // await sequelize.sync();
     console.log("=========== Connected to Mariadb ===========");
     console.log(sequelize)
     // Chỉ dùng force: true trong môi trường phát triển
