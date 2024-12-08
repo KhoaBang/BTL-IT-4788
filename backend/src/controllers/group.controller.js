@@ -99,7 +99,8 @@ const joinGroup = async (req, res, next) => {
     newMember.changed('member_of', true);
     const result = await newMember.update({member_of: newMember.member_of});
     console.log(result)
-    res.status(200).json({ message: "Joined group successfully" });
+    
+    res.status(200).json({ message: "Joined group successfully", group_detail: {GID: Groupdata.GID, name: Groupdata.group_name} });
   } catch (error) {
     next(error);
   }
