@@ -3,12 +3,9 @@ import 'widgets/header.dart';
 import 'widgets/footer.dart';
 import 'widgets/confirmation_dialog.dart';
 import 'widgets/input_dialog.dart';
-// import 'widgets/list_section.dart';
-// import 'widgets/list_section_noicon.dart';
+import 'widgets/list_section.dart';
+import 'widgets/list_section_noicon.dart';
 import 'shopping_list_details_page.dart';
-
-import 'widgets/test_list_section.dart';
-import 'widgets/test_list_section_noicon.dart';
 
 class ShoppingListPage extends StatefulWidget {
   const ShoppingListPage({super.key});

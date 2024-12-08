@@ -54,7 +54,9 @@ class _SignInPageState extends State<SignInPage> {
       // ScaffoldMessenger.of(context).showSnackBar(
       //   const SnackBar(content: Text('Login Successful!')),
       // );
-
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Login successful!')),
+      );
       // Chuyển đến HomePage
       Navigator.pushReplacement(
         context,

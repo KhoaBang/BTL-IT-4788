@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/api/api_service.dart';
+import 'package:frontend/pages/signin_page.dart';
 
 class Header extends StatelessWidget implements PreferredSizeWidget {
   final bool canGoBack;
@@ -32,7 +34,46 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
         fit: BoxFit.contain,
       ),
       actions: [
-        _UserMenu(onChangeProfile: onChangeProfile, onLogout: onLogout),
+        _UserMenu(
+            onChangeProfile: onChangeProfile,
+            onLogout: () async {
+              try {
+                // Hiển thị trạng thái đang logout
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (BuildContext context) {
+                    return Center(child: CircularProgressIndicator());
+                  },
+                );
+
+                // Gọi API logout
+                await ApiService().logout();
+
+                // Đóng dialog
+                Navigator.pop(context);
+
+                // Chuyển hướng về trang đăng nhập
+                // Navigator.pushReplacementNamed(context, '/login'); // Đảm bảo route '/login' được khai báo
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Logout successful!')),
+                );
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          SignInPage()), // Giả sử HomePage đã có
+                );
+              } catch (error) {
+                // Đóng dialog
+                Navigator.pop(context);
+
+                // Hiển thị thông báo lỗi
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Logout failed: $error')),
+                );
+              }
+            }),
       ],
     );
   }
@@ -54,7 +95,8 @@ class _UserMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<int>(
-      icon: Icon(Icons.person, color: Colors.black, size: 24), // Biểu tượng người dùng
+      icon: Icon(Icons.person,
+          color: Colors.black, size: 24), // Biểu tượng người dùng
       color: Colors.white, // Nền trắng
       onSelected: (value) {
         if (value == 0) {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'widgets/header.dart';
 import 'widgets/footer.dart';
 import 'widgets/popup_menu.dart'; // Import the helper file
+import 'shopping_lists_page.dart';
 
 class GroupDetailPage extends StatefulWidget {
   final String groupName; // Tên nhóm được truyền từ trang groups_page.dart
@@ -74,14 +75,17 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildFeatureBox("Fridge"),
-                  const SizedBox(height: 30), // Khoảng cách giữa các box
-                  _buildFeatureBox("Shopping"),
-                  const SizedBox(height: 30), // Khoảng cách giữa các box
-                  _buildFeatureBox("Meals"),
+                  _buildFeatureBox(
+                      "Fridge", ShoppingListPage()), // Navigate to FridgePage
+                  const SizedBox(height: 30),
+                  _buildFeatureBox("Shopping",
+                      ShoppingListPage()), // Navigate to ShoppingPage
+                  const SizedBox(height: 30),
+                  _buildFeatureBox(
+                      "Meals", ShoppingListPage()), // Navigate to MealsPage
                 ],
               ),
-            ),
+            )
           ],
         ),
       ),
@@ -90,22 +94,30 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     );
   }
 
-  // Widget tạo box với nội dung truyền vào
-  Widget _buildFeatureBox(String title) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
-      width: double.infinity, // Độ rộng box chiếm toàn bộ màn hình
-      decoration: BoxDecoration(
-        color: Color(0xFFEF9920), // Nền màu cam
-        borderRadius: BorderRadius.circular(20), // Bo góc
-      ),
-      child: Center(
-        child: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white, // Màu chữ trắng
+  // Widget tạo box với nội dung truyền vào và hỗ trợ điều hướng
+  Widget _buildFeatureBox(String title, Widget destinationPage) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => destinationPage),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        width: double.infinity, // Độ rộng box chiếm toàn bộ màn hình
+        decoration: BoxDecoration(
+          color: Color(0xFFEF9920), // Nền màu cam
+          borderRadius: BorderRadius.circular(20), // Bo góc
+        ),
+        child: Center(
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white, // Màu chữ trắng
+            ),
           ),
         ),
       ),
