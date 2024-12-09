@@ -150,7 +150,7 @@ class ApiService {
     }
   }
 
-  Future<void> joinGroup(String groupCode) async {
+  Future<Map<String, dynamic>> joinGroup(String groupCode) async {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('access_token');
     if (accessToken == null) throw Exception('Access token missing');
@@ -166,8 +166,11 @@ class ApiService {
 
     if (response.statusCode == 401) {
       await refreshAccessToken();
-      return joinGroup(groupCode);
-    } else if (response.statusCode != 200 && response.statusCode != 201) {
+      return joinGroup(groupCode); // Thử lại với token mới
+    } else if (response.statusCode == 200 || response.statusCode == 201) {
+      final responseData = jsonDecode(response.body);
+      return responseData['group_detail']; // Trả về thông tin nhóm
+    } else {
       throw Exception('Failed to join group: ${response.body}');
     }
   }

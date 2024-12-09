@@ -35,11 +35,14 @@ class _GroupsPageState extends State<GroupsPage> {
 
   void _joinGroup(String groupCode) async {
     try {
-      await apiService.joinGroup(groupCode);
+      final groupDetail = await apiService
+          .joinGroup(groupCode); // Lấy thông tin nhóm sau khi tham gia
+
       setState(() {
         memberGroups
-            .add('Group with code $groupCode'); // Add nhóm vào danh sách
+            .add(groupDetail['name']); // Thêm tên nhóm thực tế vào danh sách
       });
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Joined group successfully!')),
       );
