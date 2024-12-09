@@ -105,7 +105,7 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
               ],
             ),
           ),
-          Footer(currentIndex: 2),
+          Footer(currentIndex: -1),
         ],
       ),
     );
