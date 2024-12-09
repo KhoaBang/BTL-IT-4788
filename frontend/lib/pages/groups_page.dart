@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'widgets/header.dart';
 import 'widgets/footer.dart';
 import 'groupDetail_page.dart';
-import 'widgets/confirmation_dialog.dart';
 import 'widgets/input_dialog.dart';
+import 'package:frontend/api/api_service.dart';
 
 class GroupsPage extends StatefulWidget {
   const GroupsPage({super.key});
@@ -13,18 +13,45 @@ class GroupsPage extends StatefulWidget {
 }
 
 class _GroupsPageState extends State<GroupsPage> {
-  // Dữ liệu ví dụ cho danh sách các nhóm
-  final List<String> managedGroups = [
-    "Group A",
-    "Group B",
-    "Flutter Devs",
-    "My Team",
-    "Dep trai"
-  ];
-  final List<String> memberGroups = List.generate(
-    100,
-    (index) => "Group ${index + 1}",
-  ); // Tạo danh sách 100 nhóm để kiểm tra cuộn
+  List<String> managedGroups = [];
+  List<String> memberGroups = [];
+  final ApiService apiService = ApiService();
+
+  void _createGroup(String groupName) async {
+    try {
+      final groupData = await apiService.createGroup(groupName);
+      setState(() {
+        managedGroups.add(groupData['group_name']);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Group created successfully!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to create group: $e')),
+      );
+    }
+  }
+
+  void _joinGroup(String groupCode) async {
+    try {
+      final groupDetail = await apiService
+          .joinGroup(groupCode); // Lấy thông tin nhóm sau khi tham gia
+
+      setState(() {
+        memberGroups
+            .add(groupDetail['name']); // Thêm tên nhóm thực tế vào danh sách
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Joined group successfully!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to join group: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,10 +101,7 @@ class _GroupsPageState extends State<GroupsPage> {
                           hintText: 'Type group name here',
                           confirmText: 'Create',
                           cancelText: 'Cancel',
-                          onConfirm: (input) {
-                            // Handle the input
-                            print('User Input: $input');
-                          },
+                          onConfirm: (input) => _createGroup(input),
                         );
                       },
                     );
@@ -97,10 +121,7 @@ class _GroupsPageState extends State<GroupsPage> {
                           hintText: 'Type group code here',
                           confirmText: 'Join',
                           cancelText: 'Cancel',
-                          onConfirm: (input) {
-                            // Handle the input
-                            print('User Input: $input');
-                          },
+                          onConfirm: (input) => _joinGroup(input),
                         );
                       },
                     );

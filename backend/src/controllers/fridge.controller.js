@@ -101,8 +101,8 @@ const deleteIngred = async (req,res,next)=>{
  */
 const consumeIngred = async (req,res,next)=>{
     const {GID}= req.params;
-    const {ingredient_name,quantity}=req.body
     try{
+        let { ingredient_name, quantity } = req.body;
         const group = await sequelize.models._Group.findOne({where:{GID:GID}})
         const {fridge}= group
         const ingreIndex = fridge.findIndex((item)=>item.ingredient_name===ingredient_name)
@@ -116,17 +116,32 @@ const consumeIngred = async (req,res,next)=>{
             return res.status(200).json(newFridge)
         }
         // nếu quantity>=sum_quantity thì trừ quantity từ detail có createdAt nhỏ nhất tới lớn nhất
-        //sort theo trường createdAt
+        //sort theo trường createdAt ngày nhỏ nhất tới ngày lớn nhất
         fridge[ingreIndex].detail.sort((a,b)=> new Date(a.createdAt)-new Date(b.createdAt))
+        // tiêu thụ số lượng quantity từ ngày gần nhất
+        let index =0
+        
+        // let soluong = Number
         while(quantity!=0){
-
+            if(fridge[ingreIndex].detail[index].quantity>quantity){
+                fridge[ingreIndex].detail[index].quantity-=quantity;
+                quantity=0;
+            }
+            else{
+                quantity-=fridge[ingreIndex].detail[index].quantity;
+                fridge[ingreIndex].detail.splice(index,1);
+            }  
         }
+         
+        group.fridge=fridge;
+        group.changed('fridge',true);
+        await group.save();
+        return res.status(200).json(fridge)
     }catch(error){
         next(error)
     }
-
 }
 
 module.exports = {
-    ingredientList, addIngred, updateIngred, deleteIngred
+    ingredientList, addIngred, updateIngred, deleteIngred,consumeIngred
 }

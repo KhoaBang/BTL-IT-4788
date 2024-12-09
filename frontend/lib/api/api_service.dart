@@ -9,16 +9,11 @@ class ApiService {
 
   static String _initializeBaseUrl() {
     if (kIsWeb) {
-      return 'http://localhost:9000/api'; // Địa chỉ cho Web
+      return 'http://localhost:9000/api'; // Web
     } else if (Platform.isAndroid) {
-      return 'http://10.0.2.2:9000/api'; // Địa chỉ cho Android Emulator
-    } else if (Platform.isIOS ||
-        Platform.isMacOS ||
-        Platform.isLinux ||
-        Platform.isWindows) {
-      return 'http://localhost:9000/api'; // Địa chỉ cho các nền tảng khác
+      return 'http://10.0.2.2:9000/api'; // Android Emulator
     } else {
-      throw UnsupportedError("Unsupported platform");
+      return 'http://localhost:9000/api'; // Các nền tảng khác
     }
   }
 
@@ -29,18 +24,18 @@ class ApiService {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email, 'password': password}),
     );
-    final responseData = jsonDecode(response.body);
+
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
-    } else if (response.statusCode == 400 || response.statusCode == 404) {
-      throw Exception('Login failed: ${responseData['error']['message']}');
     } else {
-      throw Exception('Unexpected Error');
+      final responseData = jsonDecode(response.body);
+      throw Exception('Login failed: ${responseData['error']['message']}');
     }
   }
 
   Future<Map<String, dynamic>> signup(
       String fullName, String email, String phone, String password) async {
+    final url = Uri.parse('$_baseUrl/register');
     final payload = {
       'username': fullName,
       'email': email,
@@ -48,36 +43,36 @@ class ApiService {
       'password': password,
     };
     final response = await http.post(
-      Uri.parse('http://localhost:9000/api/register'),
+      url,
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
       body: jsonEncode(payload),
     );
-    final responseData = jsonDecode(response.body);
+
     if (response.statusCode == 201) {
       return jsonDecode(response.body);
-    } else if ("Email already exists." == responseData['error']['message']) {
-      throw (Exception('Email already exists.'));
     } else {
-      throw (Exception('Unexpected Error'));
+      final responseData = jsonDecode(response.body);
+      if (responseData['error']['message'] == "Email already exists.") {
+        throw Exception('Email already exists.');
+      } else {
+        throw Exception('Signup failed: ${responseData['error']['message']}');
+      }
     }
   }
 
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
-    String? accessToken = prefs.getString('access_token');
-    String? refreshToken = prefs.getString('refresh_token');
-    final logoutUrl = Uri.parse('$_baseUrl/auth/logout');
-    final refreshTokenUrl = Uri.parse('$_baseUrl/refreshToken');
-
+    final accessToken = prefs.getString('access_token');
+    final refreshToken = prefs.getString('refresh_token');
     if (accessToken == null || refreshToken == null) {
       throw Exception('Tokens are missing');
     }
 
+    final logoutUrl = Uri.parse('$_baseUrl/auth/logout');
     try {
-      // Gọi API Logout
       final response = await http.post(
         logoutUrl,
         headers: {
@@ -87,63 +82,96 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        final responseBody = jsonDecode(response.body);
-        if (responseBody['status'] == 1) {
-          // Xóa token khỏi SharedPreferences
-          await prefs.remove('access_token');
-          await prefs.remove('refresh_token');
-          return;
-        } else {
-          throw Exception(responseBody['message']);
-        }
+        // Xóa token sau khi logout thành công
+        await prefs.remove('access_token');
+        await prefs.remove('refresh_token');
       } else if (response.statusCode == 401) {
-        // Access token hết hạn, gọi refreshToken
-        final refreshResponse = await http.post(
-          refreshTokenUrl,
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({'refresh_token': refreshToken}),
-        );
-
-        if (refreshResponse.statusCode == 200) {
-          final refreshBody = jsonDecode(refreshResponse.body);
-          if (refreshBody['status'] == 1) {
-            // Cập nhật access token mới
-            String newAccessToken = refreshBody['data']['access_token'];
-            await prefs.setString('access_token', newAccessToken);
-
-            // Thử logout lại với token mới
-            final retryResponse = await http.post(
-              logoutUrl,
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer $newAccessToken',
-              },
-            );
-
-            if (retryResponse.statusCode == 200) {
-              final retryBody = jsonDecode(retryResponse.body);
-              if (retryBody['status'] == 1) {
-                await prefs.remove('access_token');
-                await prefs.remove('refresh_token');
-                return;
-              } else {
-                throw Exception(retryBody['message']);
-              }
-            } else {
-              throw Exception('Logout failed on retry');
-            }
-          } else {
-            throw Exception(refreshBody['message']);
-          }
-        } else {
-          throw Exception('Failed to refresh token');
-        }
+        // Nếu token hết hạn, làm mới token
+        await refreshAccessToken();
+        return logout(); // Thử lại logout
       } else {
-        throw Exception(
-            'Logout failed with status code ${response.statusCode}');
+        final responseData = jsonDecode(response.body);
+        throw Exception('Logout failed: ${responseData['message']}');
       }
     } catch (e) {
       throw Exception('Logout error: $e');
+    }
+  }
+
+  Future<void> refreshAccessToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    final refreshToken = prefs.getString('refresh_token');
+    if (refreshToken == null) {
+      throw Exception('No refresh token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/refreshToken');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'refresh_token': refreshToken}),
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      if (responseData['status'] == 1) {
+        final newAccessToken = responseData['data']['access_token'];
+        await prefs.setString('access_token', newAccessToken);
+      } else {
+        throw Exception('Refresh token failed: ${responseData['message']}');
+      }
+    } else {
+      throw Exception('Failed to refresh token: ${response.body}');
+    }
+  }
+
+  Future<Map<String, dynamic>> createGroup(String groupName) async {
+    final prefs = await SharedPreferences.getInstance();
+    final accessToken = prefs.getString('access_token');
+    if (accessToken == null) throw Exception('Access token missing');
+
+    final url = Uri.parse('$_baseUrl/group');
+    final response = await http.post(
+      url,
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({'group_name': groupName}),
+    );
+
+    if (response.statusCode == 401) {
+      await refreshAccessToken();
+      return createGroup(groupName);
+    } else if (response.statusCode == 200 || response.statusCode == 201) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to create group: ${response.body}');
+    }
+  }
+
+  Future<Map<String, dynamic>> joinGroup(String groupCode) async {
+    final prefs = await SharedPreferences.getInstance();
+    final accessToken = prefs.getString('access_token');
+    if (accessToken == null) throw Exception('Access token missing');
+
+    final url = Uri.parse('$_baseUrl/group/join/$groupCode');
+    final response = await http.post(
+      url,
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 401) {
+      await refreshAccessToken();
+      return joinGroup(groupCode); // Thử lại với token mới
+    } else if (response.statusCode == 200 || response.statusCode == 201) {
+      final responseData = jsonDecode(response.body);
+      return responseData['group_detail']; // Trả về thông tin nhóm
+    } else {
+      throw Exception('Failed to join group: ${response.body}');
     }
   }
 }
