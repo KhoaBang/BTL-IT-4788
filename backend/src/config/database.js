@@ -6,6 +6,8 @@ const { up: unitSeederUP } = require("../../seeders/unit.seeder");
 const User_define_fuction = require("../models/_User");
 const Group_define_fuction = require("../models/_Group");
 const Unit_define_fuction = require("../models/_Unit");
+const Shopping_define_function = require("../models/_Shopping")
+const Task_define_function = require("../models/_Task")
 
 dotenv.config();
 
@@ -26,6 +28,8 @@ const sequelize = new Sequelize(
      const _User= await User_define_fuction(sequelize);
      const _Group= await Group_define_fuction(sequelize);
      const _Unit= await Unit_define_fuction(sequelize);
+     const _Shopping = await Shopping_define_function(sequelize)
+     const _Task = await Task_define_function(sequelize)
     // Sync database (use force only for development or testing environments)
     if (forceSync) {
       await sequelize.sync({ force: "true" }); // This will drop and recreate tables
