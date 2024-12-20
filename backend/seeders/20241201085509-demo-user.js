@@ -121,7 +121,7 @@ module.exports = {
                 },
                 {
                     "ingredient_name": "Bột mì",
-                    "unit_id": 6,
+                    "unit_id": 2,
                     "tags": [
                         {"tag_name": "nguyên liệu làm bánh"},
                         {"tag_name": "gia vị"}

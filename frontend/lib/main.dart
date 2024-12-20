@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       // Sử dụng alias để tránh xung đột
-      home: test_page.IngredientsPage(),
+      home: signin_page.SignInPage(),
       debugShowCheckedModeBanner: false, // Dùng alias signin_page.SignInPage
     );
   }
