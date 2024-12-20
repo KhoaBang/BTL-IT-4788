@@ -13,6 +13,7 @@ const {
   getTaskById,
   updateTaskById,
   deleteTaskById,
+  memCompleteTask
 } = require("../controllers/shopping.controller");
 
 const router = Router();
@@ -65,8 +66,14 @@ router.delete(
 router.patch(
   "/group/:GID/shopping/:shopping_id/task/:task_id",
   requireAppLogin,
-  requireMember,
+  requireMangager,
   updateTaskById
 );
+router.patch(
+    "/group/:GID/shopping/:shopping_id/task/:task_id/completed",
+    requireAppLogin,
+    requireMember,
+    memCompleteTask
+  );
 
 module.exports = router;

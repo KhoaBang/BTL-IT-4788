@@ -1,6 +1,4 @@
 'use strict';
-const { Json } = require('sequelize/lib/utils');
-const { v4: uuidv4 } = require('uuid');
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -16,7 +14,37 @@ module.exports = {
           { UUID: 'c7f3b1fc-6b5d-4bb9-aa8d-94f239f327cb', email: 'AnhKhoi@gmail.com' }
         ]), // Example members
         group_code: 'A1B2C3D', // Sample 7-character invite code
-        fridge: JSON.stringify([]), // Empty fridge
+        fridge: JSON.stringify(
+          [
+            {
+              "ingredient_name": "Cà rốt",
+              "unit_id": 1,
+              "detail": [
+                {
+                  "quantity": 2,
+                  "createdAt": "2024-12-01"
+                },
+                {
+                  "quantity": 5,
+                  "createdAt": "2024-12-03"
+                }
+              ]
+            },
+            {
+              "ingredient_name": "Thịt gà",
+              "unit_id": 2,
+              "detail": [
+                {
+                  "quantity": 1,
+                  "createdAt": "2024-12-02"
+                },
+                {
+                  "quantity": 3,
+                  "createdAt": "2024-12-04"
+                }
+              ]
+            }]
+        ),
         createdAt: new Date(),
         updatedAt: new Date(),
       },

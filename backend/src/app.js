@@ -12,6 +12,7 @@ const groupRoutes = require('./routes/group.routes.js');
 const userRoutes = require('./routes/user.routes.js');
 const fridgeRoutes = require('./routes/fridge.routes.js');
 const shoppingRoutes = require('./routes/shopping.routes.js')
+const mealRoutes = require('./routes/meal.routes.js')
 
 dotenv.config();
 
@@ -46,6 +47,7 @@ app.use('/api', groupRoutes);
 app.use('/api', userRoutes);
 app.use('/api', fridgeRoutes);
 app.use('/api', shoppingRoutes);
+app.use('/api',mealRoutes)
 
 // Error Handling Middleware
 app.use(errorHandler);

@@ -6,10 +6,8 @@ module.exports = async (sequelize) => {
     {
       assigned_to: {
         type: DataTypes.UUID,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
+        allowNull: true,
+        defaultValue:""
       },
       task_id: {
         type: DataTypes.UUID,
