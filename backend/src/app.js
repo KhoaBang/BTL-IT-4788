@@ -13,7 +13,7 @@ const userRoutes = require('./routes/user.routes.js');
 const fridgeRoutes = require('./routes/fridge.routes.js');
 const shoppingRoutes = require('./routes/shopping.routes.js')
 const mealRoutes = require('./routes/meal.routes.js')
-
+const recipeRoutes = require('./routes/recipe.routes.js')
 dotenv.config();
 
 const app = express();
@@ -48,7 +48,7 @@ app.use('/api', userRoutes);
 app.use('/api', fridgeRoutes);
 app.use('/api', shoppingRoutes);
 app.use('/api',mealRoutes)
-
+app.use('/api',recipeRoutes)
 // Error Handling Middleware
 app.use(errorHandler);
 

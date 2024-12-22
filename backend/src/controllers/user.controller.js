@@ -53,7 +53,9 @@ const addIngredient = async (req, res, next) => {
     try{
         const { UUID } = req.Userdata;
         const {ingredient}= req.body;
-        const {ingredient_name,unit_id,tags }= ingredient;
+        let {ingredient_name,unit_id,tags=[] }= ingredient;
+        // lowercase the ingredient_name
+        ingredient_name = ingredient_name.toLowerCase();
         if(!ingredient_name&&!unit_id){
             throw new BadRequestError('Missing ingredient_name or unit_id');
         }
@@ -65,8 +67,11 @@ const addIngredient = async (req, res, next) => {
             throw new BadRequestError('Ingredient already exists');
         }
         const newIngredient = {ingredient_name,unit_id};
-        if(!!tags){
-            newIngredient.tags = tags;
+        if(tags.length>0){
+            newIngredient.tags =[]
+            for (let i =0; i<tags.length;i++){
+                newIngredient.tags.push({tag_name:tags[i].tag_name.toLowerCase()})
+            }
         }
         tags.forEach(async (tag)=>{
             if(!tag_list.includes(tag)){
@@ -160,7 +165,8 @@ const getTagList = async (req, res, next)=>{
 const addTag = async (req, res, next)=>{
     try{
         const {UUID}= req.Userdata
-        const {tag_name}= req.body
+        let {tag_name}= req.body
+        tag_name=tag_name.toLowerCase()
         const user = await _User.findOne({where:{UUID:UUID}})
         const {tag_list}= user
         if(tag_list.includes(tag_name)){
