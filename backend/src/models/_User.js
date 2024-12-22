@@ -108,11 +108,6 @@ module.exports = async (sequelize) => {
           notEmpty: true,
         },
       },
-      dob: {
-        type: DataTypes.DATEONLY,
-        allowNull: true,
-        defaultValue: null,
-      },
       email: {
         type: DataTypes.STRING(255),
         allowNull: false,

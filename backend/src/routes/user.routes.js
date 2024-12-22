@@ -1,16 +1,29 @@
-const { Router } = require('express');
-const { requireAppLogin } = require('../middleware/require-auth');
-const { getIngredientList,addIngredient, deleteIngredient,updateIngredient,getTagList,addTag,deleteTag,updateTag,matchTagAndIngredient } = require('../controllers/user.controller');
+const { Router } = require("express");
+const { requireAppLogin } = require("../middleware/require-auth");
+const {
+  getIngredientList,
+  addIngredient,
+  deleteIngredient,
+  updateIngredient,
+  getTagList,
+  addTag,
+  deleteTag,
+  updateTag,
+  matchTagAndIngredient,
+  getUserProfile,
+  updateUserProfile,
+  updateUserPassword,
+} = require("../controllers/user.controller");
 
 const router = Router();
 
 // route chỉnh hồ sơ cá nhân
-router.get('/userInfo/profile/me')
-router.post('/userInfo/profile/update_info/me')
-router.post('/userInfo/update_pass/me')
+router.get("/userInfo/profile/me",requireAppLogin,getUserProfile);
+router.post("/userInfo/profile/update_info/me",requireAppLogin,updateUserProfile);
+router.post("/userInfo/update_pass/me",requireAppLogin, updateUserPassword);
 
 // route chỉnh danh sách nguyên liệu
-// nguyên liệu có dạng: 
+// nguyên liệu có dạng:
 /**Sample:
  *  {
                 "ingredient_name": "Mỳ ý",
@@ -21,16 +34,24 @@ router.post('/userInfo/update_pass/me')
                 ]
             },
  */
-router.get('/userInfo/store/ingredients/me',requireAppLogin,getIngredientList)// lấy danh sách nguyên liệu
-router.post('/userInfo/store/ingredients', requireAppLogin, addIngredient)// tạo nguyên liệu thông tin để trong body (tag ở front- phải để droopdown)
-router.delete('/userInfo/store/ingredients',requireAppLogin,deleteIngredient) // phải gửi nguyên liệu cũ trong body lên để tìm xóa
-router.patch('/userInfo/store/ingredients',requireAppLogin,updateIngredient)// không có id nên phải gửi nguyên liệu cũ (tên) trong body để server tìm cập nhật 
-router.get('/userInfo/store/ingredients/tag',requireAppLogin,getTagList)// lấy danh sách tag 
-// router.get('/userInfo/store/ingredients/tag') // lấy danh sách tag 
-router.post('/userInfo/store/ingredients/tag',requireAppLogin,addTag) // tạo thêm tag
-router.delete('/userInfo/store/ingredients/tag',requireAppLogin,deleteTag) // xóa tag, gửi tên tag cũ trong body
-router.put('/userInfo/store/ingredients/tag',requireAppLogin,updateTag)// sửa tag, gửi tên tag cũ trong body
-router.patch('/userInfo/store/ingredients/add_tag',requireAppLogin,matchTagAndIngredient)// thêm 1 tag vào 1 nguyên liệu -> gửi tên nguyên liệu + tên tag (đòi hỏi tag phải có sẵn)
+router.get(
+  "/userInfo/store/ingredients/me",
+  requireAppLogin,
+  getIngredientList
+); // lấy danh sách nguyên liệu
+router.post("/userInfo/store/ingredients", requireAppLogin, addIngredient); // tạo nguyên liệu thông tin để trong body (tag ở front- phải để droopdown)
+router.delete("/userInfo/store/ingredients", requireAppLogin, deleteIngredient); // phải gửi nguyên liệu cũ trong body lên để tìm xóa
+router.patch("/userInfo/store/ingredients", requireAppLogin, updateIngredient); // không có id nên phải gửi nguyên liệu cũ (tên) trong body để server tìm cập nhật
+router.get("/userInfo/store/ingredients/tag", requireAppLogin, getTagList); // lấy danh sách tag
+// router.get('/userInfo/store/ingredients/tag') // lấy danh sách tag
+router.post("/userInfo/store/ingredients/tag", requireAppLogin, addTag); // tạo thêm tag
+router.delete("/userInfo/store/ingredients/tag", requireAppLogin, deleteTag); // xóa tag, gửi tên tag cũ trong body
+router.put("/userInfo/store/ingredients/tag", requireAppLogin, updateTag); // sửa tag, gửi tên tag cũ trong body
+router.patch(
+  "/userInfo/store/ingredients/add_tag",
+  requireAppLogin,
+  matchTagAndIngredient
+); // thêm 1 tag vào 1 nguyên liệu -> gửi tên nguyên liệu + tên tag (đòi hỏi tag phải có sẵn)
 
 // tương tác tag và nguyên liệu:
 /**

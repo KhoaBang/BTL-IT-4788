@@ -9,7 +9,6 @@ module.exports = {
       {
         UUID: 'cdd7f5fe-00d6-4647-9115-030acbb7fd33',
         username: 'NgocMinh',
-        dob: '1990-01-01',
         email: 'NgocMinh@gmail.com',
         password: bcrypt.hashSync('1234567890', 10), // Hash the password for storage
         phone: '0901729618',
@@ -25,7 +24,6 @@ module.exports = {
       {
         UUID: 'ae83d2e2-ecee-4251-990d-696b00dea251',
         username: 'koba',
-        dob: '1985-05-15',
         email: 'koba@gmail.com',
         password: bcrypt.hashSync('1234567890', 10),
         phone: '0901729617',
@@ -41,7 +39,6 @@ module.exports = {
       {
         UUID: 'c7f3b1fc-6b5d-4bb9-aa8d-94f239f327cb',
         username: 'AnhKhoi',
-        dob: '1985-05-15',
         email: 'AnhKhoi@gmail.com',
         password: bcrypt.hashSync('1234567890', 10),
         phone: '0901729619',
@@ -57,7 +54,6 @@ module.exports = {
       {
         UUID: 'b87fbe35-cfd3-4450-9b2c-cef151d6f5d5',
         username: 'NhatLinh',
-        dob: '1985-05-15',
         email: 'NhatLinh@gmail.com',
         password: bcrypt.hashSync('1234567890', 10),
         phone: '0901729620',
@@ -124,7 +120,6 @@ module.exports = {
       {
         UUID: '973e79a6-d04e-4cf2-a807-fd5de7f3ab0d',
         username: 'HaiNam',
-        dob: '1985-05-15',
         email: 'HaiNam@gmail.com',
         password: bcrypt.hashSync('1234567890', 10),
         phone: '0901729621',
