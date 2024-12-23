@@ -1,27 +1,29 @@
-import 'dart:io' show Platform;  // Importing Platform for Android/iOS
+import 'dart:io' show Platform; // Importing Platform for Android/iOS
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class BaseQuery {
   final Dio _dio = Dio();
   late final String _baseUrl;
-
+  late final String refreshTokenUrl;
   BaseQuery() {
-    // Assign platform-specific base URL
-    if (kIsWeb) {
-      _baseUrl = 'http://localhost:9000/api';
-    } else if (Platform.isAndroid) {
-      _baseUrl = 'http://10.0.2.2:9000/api';
-    } else if (Platform.isIOS) {
-      _baseUrl = 'http://localhost:9000/api'; // Default for iOS
-    } else {
-      _baseUrl = 'http://localhost:9000/api'; // Default for other platforms
-    }
+    // Initialize dotenv in a Future or ensure it’s loaded before accessing the environment variables
+    _initialize();
   }
 
-  // Define these URLs
-  final String refreshTokenUrl = 'http://localhost:9000/api/refreshToken';
+  Future<void> _initialize() async {
+    await dotenv.load(fileName: ".env");
+
+    // Assign platform-specific base URL
+    if (dotenv.env['MODE'] == 'android') {
+      _baseUrl = 'http://10.0.2.2:9000/api';
+    } else {
+      _baseUrl = 'http://localhost:9000/api';
+    }
+    refreshTokenUrl = _baseUrl + '/refreshToken';
+  }
 
   Future<void> refreshToken() async {
     try {
