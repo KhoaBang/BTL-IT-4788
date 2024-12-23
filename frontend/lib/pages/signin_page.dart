@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/api/auth_service.dart'; // Đảm bảo import đúng đường dẫn
 import 'signup_page.dart';
 import 'home_page.dart'; // Giả sử đây là trang HomePage
+import 'package:frontend/pages/widgets/notification_box.dart';
 
 class SignInPage extends StatefulWidget {
   @override
@@ -26,6 +27,42 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
+  // Future<void> _handleSignIn() async {
+  //   setState(() {
+  //     _isLoading = true;
+  //   });
+
+  //   String email = _emailController.text.trim();
+  //   String password = _passwordController.text.trim();
+
+  //   try {
+  //     // Gọi hàm login và kiểm tra kết quả
+  //     bool isSuccess = await _authService.login(email, password);
+
+  //     if (isSuccess) {
+  //       // Hiển thị thông báo thành công
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text('Login successful!')),
+  //       );
+
+  //       // Chuyển sang trang HomePage
+  //       Navigator.pushReplacement(
+  //         context,
+  //         MaterialPageRoute(builder: (context) => HomePage()),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     // Hiển thị lỗi nếu đăng nhập thất bại
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Login failed: $e')),
+  //     );
+  //   } finally {
+  //     setState(() {
+  //       _isLoading = false;
+  //     });
+  //   }
+  // }
+
   Future<void> _handleSignIn() async {
     setState(() {
       _isLoading = true;
@@ -40,8 +77,10 @@ class _SignInPageState extends State<SignInPage> {
 
       if (isSuccess) {
         // Hiển thị thông báo thành công
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login successful!')),
+        NotificationBox.show(
+          context: context,
+          status: 200,
+          message: 'Login successful!',
         );
 
         // Chuyển sang trang HomePage
@@ -49,11 +88,22 @@ class _SignInPageState extends State<SignInPage> {
           context,
           MaterialPageRoute(builder: (context) => HomePage()),
         );
+      } else {
+        // Hiển thị thông báo thất bại
+        NotificationBox.show(
+          context: context,
+          status: 400,
+          message: 'Login failed. Please check your credentials.',
+        );
       }
     } catch (e) {
-      // Hiển thị lỗi nếu đăng nhập thất bại
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login failed: $e')),
+      print('Login error: $e');
+
+      // Hiển thị thông báo lỗi không mong muốn
+      NotificationBox.show(
+        context: context,
+        status: 400,
+        message: 'An unexpected error occurred during login.',
       );
     } finally {
       setState(() {

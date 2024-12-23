@@ -1,7 +1,5 @@
-import 'dart:io' show Platform; // Importing Platform for Android/iOS
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class BaseQuery {
@@ -13,9 +11,7 @@ class BaseQuery {
     _initialize();
   }
 
-  Future<void> _initialize() async {
-    await dotenv.load(fileName: ".env");
-
+  void _initialize() {
     // Assign platform-specific base URL
     if (dotenv.env['MODE'] == 'android') {
       _baseUrl = 'http://10.0.2.2:9000/api';

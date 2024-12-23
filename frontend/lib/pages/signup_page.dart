@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'signin_page.dart';
 import 'package:frontend/api/auth_service.dart';
+import 'package:frontend/pages/widgets/notification_box.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -26,6 +27,39 @@ class _SignUpPageState extends State<SignUpPage> {
   String? _phoneError;
   String? _passwordError;
 
+  // Future<void> _handleSignUp() async {
+  //   setState(() {
+  //     _isLoading = true;
+  //   });
+
+  //   String username = _usernameController.text.trim();
+  //   String email = _emailController.text.trim();
+  //   String password = _passwordController.text.trim();
+  //   String phone = _phoneController.text.trim();
+
+  //   try {
+  //     await _authService.signup(username, email, password, phone);
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text('Signup successful!')),
+  //     );
+
+  //     // Chuyển sang trang SignInPage sau khi đăng ký thành công
+  //     Navigator.pushReplacement(
+  //       context,
+  //       MaterialPageRoute(builder: (context) => SignInPage()),
+  //     );
+  //   } catch (e) {
+  //     // Hiển thị thông báo lỗi nếu đăng ký thất bại
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Signup failed: $e')),
+  //     );
+  //   } finally {
+  //     setState(() {
+  //       _isLoading = false;
+  //     });
+  //   }
+  // }
+
   Future<void> _handleSignUp() async {
     setState(() {
       _isLoading = true;
@@ -37,20 +71,39 @@ class _SignUpPageState extends State<SignUpPage> {
     String phone = _phoneController.text.trim();
 
     try {
-      await _authService.signup(username, email, password, phone);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Signup successful!')),
-      );
+      // Gọi hàm signup từ AuthService
+      final bool result =
+          await _authService.signup(username, email, password, phone);
 
-      // Chuyển sang trang SignInPage sau khi đăng ký thành công
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => SignInPage()),
-      );
+      if (result) {
+        // Hiển thị thông báo thành công
+        NotificationBox.show(
+          context: context,
+          status: 201,
+          message: 'Signup successful!',
+        );
+
+        // Chuyển đến trang SignInPage
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignInPage()),
+        );
+      } else {
+        // Hiển thị thông báo thất bại
+        NotificationBox.show(
+          context: context,
+          status: 400,
+          message: 'Signup failed. Please check your email or phone number.',
+        );
+      }
     } catch (e) {
-      // Hiển thị thông báo lỗi nếu đăng ký thất bại
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Signup failed: $e')),
+      print('Signup error: $e');
+
+      // Hiển thị thông báo lỗi không mong muốn
+      NotificationBox.show(
+        context: context,
+        status: 400,
+        message: 'An unexpected error occurred during signup.',
       );
     } finally {
       setState(() {
@@ -231,8 +284,8 @@ class _SignUpPageState extends State<SignUpPage> {
               child: GestureDetector(
                 onTap: _isLoading ? null : _handleSignUp,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 12, horizontal: 50),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 50),
                   decoration: BoxDecoration(
                     color: _isLoading ? Colors.grey : Colors.yellow[700],
                     borderRadius: BorderRadius.circular(8),

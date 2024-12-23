@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/api/auth_service.dart';
 import 'package:frontend/api/user_service.dart';
 import 'package:frontend/pages/signin_page.dart';
-// import 'package:frontend/pages/widgets/notification_box.dart';
+import 'package:frontend/pages/widgets/notification_box.dart';
 
 class Header extends StatefulWidget {
   final bool canGoBack;
@@ -95,17 +95,30 @@ class _HeaderState extends State<Header> {
           TextButton(
             onPressed: () async {
               if (formKey.currentState?.validate() == true) {
-                try {
-                  await _userService.updatePassword(
-                    oldPasswordController.text,
-                    newPasswordController.text,
+                final oldPassword = oldPasswordController.text;
+                final newPassword = newPasswordController.text;
+
+                // Xử lý cập nhật mật khẩu
+                final result =
+                    await _userService.updatePassword(oldPassword, newPassword);
+
+                Navigator.pop(context);
+
+                if (result) {
+                  // Thành công
+                  NotificationBox.show(
+                    context: context,
+                    status: 200,
+                    message: 'Password updated successfully.',
                   );
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Password updated successfully.')),
+                } else {
+                  // Thất bại
+                  NotificationBox.show(
+                    context: context,
+                    status: 400,
+                    message:
+                        'Incorrect old Password. Please enter correct password',
                   );
-                } catch (e) {
-                  print('Error updating password: $e');
                 }
               }
             },
@@ -115,95 +128,6 @@ class _HeaderState extends State<Header> {
       ),
     );
   }
-
-  // void _showUpdatePasswordDialog() {
-  //   final oldPasswordController = TextEditingController();
-  //   final newPasswordController = TextEditingController();
-  //   final formKey = GlobalKey<FormState>();
-
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) => AlertDialog(
-  //       title: Text('Update Password'),
-  //       content: Form(
-  //         key: formKey,
-  //         child: Column(
-  //           mainAxisSize: MainAxisSize.min,
-  //           children: [
-  //             TextFormField(
-  //               controller: oldPasswordController,
-  //               decoration: InputDecoration(labelText: 'Old Password'),
-  //               obscureText: true,
-  //               validator: (value) {
-  //                 if (value == null || value.isEmpty) {
-  //                   return 'Please enter Old Password';
-  //                 }
-  //                 return null;
-  //               },
-  //             ),
-  //             TextFormField(
-  //               controller: newPasswordController,
-  //               decoration: InputDecoration(labelText: 'New Password'),
-  //               obscureText: true,
-  //               validator: (value) {
-  //                 if (value == null || value.isEmpty) {
-  //                   return 'Please enter New Password';
-  //                 }
-  //                 return null;
-  //               },
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () => Navigator.pop(context),
-  //           child: Text('Cancel'),
-  //         ),
-  //         TextButton(
-  //           onPressed: () async {
-  //             if (formKey.currentState?.validate() == true) {
-  //               try {
-  //                 await _userService.updatePassword(
-  //                   oldPasswordController.text,
-  //                   newPasswordController.text,
-  //                 );
-  //                 Navigator.pop(context);
-  //                 showDialog(
-  //                   context: context,
-  //                   builder: (context) => NotificationBox(
-  //                     message: 'Password updated successfully.',
-  //                     isError: false,
-  //                   ),
-  //                 );
-  //               } catch (e) {
-  //                 if (e.toString().contains('Invalid old password')) {
-  //                   showDialog(
-  //                     context: context,
-  //                     builder: (context) => NotificationBox(
-  //                       message: 'Invalid old password.',
-  //                       isError: true,
-  //                     ),
-  //                   );
-  //                 } else {
-  //                   showDialog(
-  //                     context: context,
-  //                     builder: (context) => NotificationBox(
-  //                       message:
-  //                           'An unexpected error occurred. Please try again.',
-  //                       isError: true,
-  //                     ),
-  //                   );
-  //                 }
-  //               }
-  //             }
-  //           },
-  //           child: Text('Confirm'),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   void _showUpdateProfileDialog() {
     final usernameController = TextEditingController();
@@ -231,11 +155,11 @@ class _HeaderState extends State<Header> {
               ),
               TextFormField(
                 controller: phoneController,
-                decoration: InputDecoration(labelText: 'Phone'),
+                decoration: InputDecoration(labelText: 'Phone number'),
                 keyboardType: TextInputType.phone,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter Phone';
+                    return 'Please enter Phone number';
                   }
                   return null;
                 },
@@ -251,17 +175,30 @@ class _HeaderState extends State<Header> {
           TextButton(
             onPressed: () async {
               if (formKey.currentState?.validate() == true) {
-                try {
-                  await _userService.updateProfile(
-                    usernameController.text,
-                    phoneController.text,
+                final username = usernameController.text;
+                final phone = phoneController.text;
+
+                // Xử lý cập nhật mật khẩu
+                final result =
+                    await _userService.updateProfile(username, phone);
+
+                Navigator.pop(context);
+
+                if (result) {
+                  // Thành công
+                  NotificationBox.show(
+                    context: context,
+                    status: 200,
+                    message: 'Profile updated successfully.',
                   );
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Profile updated successfully.')),
+                } else {
+                  // Thất bại
+                  NotificationBox.show(
+                    context: context,
+                    status: 500,
+                    message:
+                        'Phone number has been used for another account. Please enter another phone number',
                   );
-                } catch (e) {
-                  print('Error updating profile: $e');
                 }
               }
             },
@@ -272,19 +209,59 @@ class _HeaderState extends State<Header> {
     );
   }
 
+  // void _logout() async {
+  //   try {
+  //     await _authService.logout();
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text('Logout successful!')),
+  //     );
+  //     Navigator.pushReplacement(
+  //       context,
+  //       MaterialPageRoute(
+  //           builder: (context) => SignInPage()), // Giả sử HomePage đã có
+  //     );
+  //   } catch (e) {
+  //     print('Error logging out: $e');
+  //   }
+  // }
+
   void _logout() async {
     try {
-      await _authService.logout();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Logout successful!')),
-      );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-            builder: (context) => SignInPage()), // Giả sử HomePage đã có
-      );
+      // Gọi hàm logout từ _authService
+      final bool result = await _authService.logout();
+
+      if (result) {
+        // Hiển thị thông báo thành công
+        NotificationBox.show(
+          context: context,
+          status: 200,
+          message: 'Logout successful!',
+        );
+
+        // Chuyển đến trang SignInPage
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SignInPage(),
+          ),
+        );
+      } else {
+        // Hiển thị thông báo thất bại
+        NotificationBox.show(
+          context: context,
+          status: 400,
+          message: 'Logout failed. Please try again.',
+        );
+      }
     } catch (e) {
       print('Error logging out: $e');
+
+      // Hiển thị thông báo lỗi không mong muốn
+      NotificationBox.show(
+        context: context,
+        status: 400,
+        message: 'An unexpected error occurred during logout.',
+      );
     }
   }
 
