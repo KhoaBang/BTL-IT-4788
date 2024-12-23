@@ -1,9 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/gestures.dart';
 import 'signin_page.dart';
-import 'package:frontend/api/api_service.dart';
+import 'package:frontend/api/auth_service.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -13,73 +11,50 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  final TextEditingController _fullNameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _phoneController =
-      TextEditingController(); // Phone Number Controller
-  final TextEditingController _passwordController = TextEditingController();
+  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _phoneController = TextEditingController();
+
+  final AuthService _authService = AuthService();
 
   bool _isPasswordVisible = false; // Điều khiển hiển thị mật khẩu
+  bool _isLoading = false; // Trạng thái khi nhấn nút Sign Up
+
   String? _fullNameError;
   String? _emailError;
   String? _phoneError;
   String? _passwordError;
-  bool _isLoading = false; // Trạng thái tải
 
-  Future<void> _registerUser() async {
-    final fullName = _fullNameController.text;
-    final email = _emailController.text;
-    final phone = _phoneController.text;
-    final password = _passwordController.text;
-
-    // Kiểm tra dữ liệu hợp lệ
-    if (fullName.isEmpty) {
-      setState(() {
-        _fullNameError = "Full name cannot be empty";
-      });
-      return;
-    }
-    if (!email.endsWith("@gmail.com")) {
-      setState(() {
-        _emailError = "Email must end with @gmail.com";
-      });
-      return;
-    }
-    if (phone.length < 10 || !RegExp(r'^[0-9]+$').hasMatch(phone)) {
-      setState(() {
-        _phoneError = "Phone number must be at least 10 digits";
-      });
-      return;
-    }
-    if (password.length < 8) {
-      setState(() {
-        _passwordError = "Password must be at least 8 characters long";
-      });
-      return;
-    }
-
+  Future<void> _handleSignUp() async {
     setState(() {
-      _isLoading = true; // Hiển thị trạng thái tải
+      _isLoading = true;
     });
 
-    try {
-      final response =
-          await ApiService().signup(fullName, email, phone, password);
+    String username = _usernameController.text.trim();
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+    String phone = _phoneController.text.trim();
 
+    try {
+      await _authService.signup(username, email, password, phone);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Registration successful!')),
+        const SnackBar(content: Text('Signup successful!')),
       );
+
+      // Chuyển sang trang SignInPage sau khi đăng ký thành công
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => SignInPage()),
       );
-    } catch (error) {
+    } catch (e) {
+      // Hiển thị thông báo lỗi nếu đăng ký thất bại
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$error')),
+        SnackBar(content: Text('Signup failed: $e')),
       );
     } finally {
       setState(() {
-        _isLoading = false; // Ẩn trạng thái tải
+        _isLoading = false;
       });
     }
   }
@@ -117,7 +92,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   color: Colors.grey),
             ),
             TextField(
-              controller: _fullNameController,
+              controller: _usernameController,
               onChanged: (value) {
                 setState(() {
                   _fullNameError =
@@ -127,7 +102,7 @@ class _SignUpPageState extends State<SignUpPage> {
               decoration: InputDecoration(
                 hintText: "Your full name",
                 suffixIcon: _fullNameError == null &&
-                        _fullNameController.text.isNotEmpty
+                        _usernameController.text.isNotEmpty
                     ? const Icon(Icons.check, color: Colors.orange)
                     : null,
               ),
@@ -251,17 +226,13 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
             const SizedBox(height: 30),
 
-            // SIGN UP Button
+            // Sign Up Button
             Center(
               child: GestureDetector(
-                onTap: _isLoading
-                    ? null
-                    : () {
-                        _registerUser();
-                      },
+                onTap: _isLoading ? null : _handleSignUp,
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 50),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 12, horizontal: 50),
                   decoration: BoxDecoration(
                     color: _isLoading ? Colors.grey : Colors.yellow[700],
                     borderRadius: BorderRadius.circular(8),
@@ -325,5 +296,14 @@ class _SignUpPageState extends State<SignUpPage> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _phoneController.dispose();
+    super.dispose();
   }
 }

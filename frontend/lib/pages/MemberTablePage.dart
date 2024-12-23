@@ -11,14 +11,11 @@ class MemberTablePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Header(
-        canGoBack: true, // Enable back navigation
-        onChangeProfile: () {
-          print('Change profile selected');
-        },
-        onLogout: () {
-          print('Logout selected');
-        },
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60),
+        child: Header(
+          //canGoBack: false,
+        ),
       ),
       body: Column(
         children: [

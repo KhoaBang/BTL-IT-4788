@@ -1,7 +1,7 @@
 
 const { DataTypes } = require('sequelize');
 const Ajv = require('ajv');
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4, validate } = require('uuid');
 const { default: def } = require('ajv/dist/vocabularies/discriminator');
 
 const ajv = new Ajv();
@@ -59,6 +59,39 @@ const groupListSchema = {
   },
 }
 
+const recipeListSchema ={
+  type: 'array',
+  items:{
+    type:'object',
+    required:['name'],
+    properties:{
+      name:{ type:'string'},
+      description:{ type:'string'},
+      prep_time_minutes:{ type:'number'},
+      cook_time_minutes:{ type:'number'},
+      servings:{ type:'number'},
+      ingredients:{
+        type:'array',
+        items:{
+          type:'object',
+          properties:{
+            ingredient_name:{ type:'string'},
+            quantity:{ type:'number'},
+            unit_id:{ type:'number'}
+          }
+        }
+      },
+      steps:{
+        type:'array',
+        items:{
+          type :'string'
+        }
+      },
+      notes: { type:'string'}
+    }
+  }
+}
+
 module.exports = async (sequelize) => {
   return await sequelize.define(
     '_User',
@@ -74,11 +107,6 @@ module.exports = async (sequelize) => {
         validate: {
           notEmpty: true,
         },
-      },
-      dob: {
-        type: DataTypes.DATEONLY,
-        allowNull: true,
-        defaultValue: null,
       },
       email: {
         type: DataTypes.STRING(255),
@@ -179,6 +207,20 @@ module.exports = async (sequelize) => {
           },
         },
       },
+      recipe_list:{
+        type: DataTypes.JSON,
+        defaultValue:[],
+        validate:{
+            isValidJson(value) {
+              const validate = ajv.compile(recipeListSchema);
+              if (!validate(value)) {
+                console.error('Validation errors:', validate.errors);
+                const errorMessage = ajv.errorsText(validate.errors);
+                throw new Error(`Invalid JSON for recipe_list: ${errorMessage}`);
+              }
+          },
+        }
+      } 
     },
     {
       tableName: 'users',

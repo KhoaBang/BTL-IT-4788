@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'pages/signin_page.dart' as signin_page; // Sử dụng alias cho SignInPage
-import 'pages/test.dart' as test_page;
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +17,7 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       // Sử dụng alias để tránh xung đột
-      home: test_page.IngredientsPage(),
+      home: signin_page.SignInPage(),
       debugShowCheckedModeBanner: false, // Dùng alias signin_page.SignInPage
     );
   }
