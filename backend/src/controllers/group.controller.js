@@ -30,12 +30,12 @@ const {
 const createGroup = async (req, res,next) => {
   const { UUID, ...restUserData } = req.Userdata;
   const { group_name } = req.body;
+  try {
   if (!group_name)
     throw new BadRequestError(`Group name: ${group_name} is required.`);
   if (!UUID) {
     throw new NotAuthenticateError("You are not authenticated.");
   }
-  try {
     const groupData = {
       group_name: group_name,
       manager_id: UUID,
@@ -249,6 +249,18 @@ const deleteGroup = async (req, res, next) => {
     next(error);
   }
 };
+
+// danh sach group cua 1 user
+const getGroupList = async (req,res,next)=>{
+  const {UUID} = req.Userdata
+  try{
+    const user = await _User.findOne({where:{UUID:UUID}})
+    const {member_of,manager_of}= user
+    return res.status(200).json({member_of,manager_of})
+  }catch(error){
+    next(error)
+  }
+}
 module.exports = {
   createGroup,
   inviteCode,
@@ -257,4 +269,5 @@ module.exports = {
   leaveGroup,
   banMember,
   deleteGroup,
+  getGroupList
 };

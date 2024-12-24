@@ -1,10 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:frontend/api/api_service.dart'; // Đảm bảo import đúng đường dẫn
-
+import 'package:frontend/api/auth_service.dart'; // Đảm bảo import đúng đường dẫn
 import 'signup_page.dart';
 import 'home_page.dart'; // Giả sử đây là trang HomePage
+import 'package:frontend/pages/widgets/notification_box.dart';
 
 class SignInPage extends StatefulWidget {
   @override
@@ -14,69 +12,104 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  final AuthService _authService = AuthService();
   bool _isPasswordVisible = false;
-  bool _isLoading = false; // Hiển thị trạng thái tải
+  bool _isLoading = false;
+
   String? _emailError;
   String? _passwordError;
-
-  // Hàm xử lý logic đăng nhập
-  Future<void> _login() async {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text;
-
-    // Kiểm tra dữ liệu hợp lệ
-    if (!email.endsWith("@gmail.com")) {
-      setState(() {
-        _emailError = "Email must end with @gmail.com";
-      });
-      return;
-    }
-    if (password.length < 8) {
-      setState(() {
-        _passwordError = "Password must be at least 8 characters long";
-      });
-      return;
-    }
-
-    setState(() {
-      _isLoading = true; // Hiển thị trạng thái tải
-    });
-
-    try {
-      final response = await ApiService()
-          .login(email, password); // Gọi hàm login từ api_service.dart
-
-      // Lưu token vào SharedPreferences
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('access_token', response['data']['access_token']);
-      await prefs.setString('refresh_token', response['data']['refresh_token']);
-
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   const SnackBar(content: Text('Login Successful!')),
-      // );
-      // Chuyển đến HomePage
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-            builder: (context) => HomePage()), // Giả sử HomePage đã có
-      );
-    } catch (error) {
-      // Xử lý lỗi kết nối
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$error')),
-      );
-    } finally {
-      setState(() {
-        _isLoading = false; // Ẩn trạng thái tải
-      });
-    }
-  }
 
   void _navigateToRegister() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => SignUpPage()),
     );
+  }
+
+  // Future<void> _handleSignIn() async {
+  //   setState(() {
+  //     _isLoading = true;
+  //   });
+
+  //   String email = _emailController.text.trim();
+  //   String password = _passwordController.text.trim();
+
+  //   try {
+  //     // Gọi hàm login và kiểm tra kết quả
+  //     bool isSuccess = await _authService.login(email, password);
+
+  //     if (isSuccess) {
+  //       // Hiển thị thông báo thành công
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text('Login successful!')),
+  //       );
+
+  //       // Chuyển sang trang HomePage
+  //       Navigator.pushReplacement(
+  //         context,
+  //         MaterialPageRoute(builder: (context) => HomePage()),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     // Hiển thị lỗi nếu đăng nhập thất bại
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Login failed: $e')),
+  //     );
+  //   } finally {
+  //     setState(() {
+  //       _isLoading = false;
+  //     });
+  //   }
+  // }
+
+  Future<void> _handleSignIn() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+
+    try {
+      // Gọi hàm login và kiểm tra kết quả
+      bool isSuccess = await _authService.login(email, password);
+
+      if (isSuccess) {
+        // Hiển thị thông báo thành công
+        NotificationBox.show(
+          context: context,
+          status: 200,
+          message: 'Login successful!',
+        );
+
+        // Chuyển sang trang HomePage
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      } else {
+        // Hiển thị thông báo thất bại
+        NotificationBox.show(
+          context: context,
+          status: 400,
+          message: 'Login failed. Please check your credentials.',
+        );
+      }
+    } catch (e) {
+      print('Login error: $e');
+
+      // Hiển thị thông báo lỗi không mong muốn
+      NotificationBox.show(
+        context: context,
+        status: 400,
+        message: 'An unexpected error occurred during login.',
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -175,10 +208,10 @@ class _SignInPageState extends State<SignInPage> {
             ),
             const SizedBox(height: 16.0),
 
-            // SIGN IN Button
+            // Sign In Button
             Center(
               child: GestureDetector(
-                onTap: _isLoading ? null : _login,
+                onTap: _isLoading ? null : _handleSignIn,
                 child: Container(
                   padding:
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 50),
@@ -187,7 +220,10 @@ class _SignInPageState extends State<SignInPage> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: _isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
+                      ? const CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        )
                       : const Text(
                           "SIGN IN",
                           style: TextStyle(
@@ -227,5 +263,12 @@ class _SignInPageState extends State<SignInPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 }

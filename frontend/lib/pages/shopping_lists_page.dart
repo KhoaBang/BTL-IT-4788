@@ -29,14 +29,11 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Header(
-        canGoBack: false,
-        onChangeProfile: () {
-          print('Change profile selected');
-        },
-        onLogout: () {
-          print('Logout selected');
-        },
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60),
+        child: Header(
+          //canGoBack: false,
+        ),
       ),
       body: Column(
         children: [

@@ -19,14 +19,10 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Header(
-        canGoBack: true, // Back quay lại trang groups_page.dart
-        onChangeProfile: () {
-          print('Change profile selected');
-        },
-        onLogout: () {
-          print('Logout selected');
-        },
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60),
+        child: Header(
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

@@ -1,29 +1,63 @@
 import 'package:flutter/material.dart';
-import 'widgets/header.dart';
-import 'widgets/footer.dart';
+import 'package:frontend/pages/widgets/header.dart';
 
 class HomePage extends StatelessWidget {
+  const HomePage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Header(
-        canGoBack: false, // Không có nút Back
-        onChangeProfile: () {
-          print('Change profile selected');
-        },
-        onLogout: () {
-          print('Logout selected');
-        },
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60),
+        child: Header(
+          //canGoBack: false,
+        ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Center(
-              child: Text('Home Page Content'),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Welcome to the Home Page!',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-          ),
-          Footer(currentIndex: 0), // Đặt currentIndex là 0
-        ],
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('This is a simple Home Page!')),
+                );
+              },
+              child: Text('Click Me'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: HomePage(),
+    routes: {
+      '/signIn': (context) => SignInPage(), // Placeholder for SignInPage()
+    },
+  ));
+}
+
+// Placeholder for SignInPage
+class SignInPage extends StatelessWidget {
+  const SignInPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Text(
+          'Sign In Page',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }

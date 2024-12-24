@@ -1,73 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/api/group_provider.dart';
+import 'package:frontend/api/api_service.dart';
 import 'widgets/header.dart';
 import 'widgets/footer.dart';
-import 'groupDetail_page.dart';
 import 'widgets/input_dialog.dart';
-import 'package:frontend/api/api_service.dart';
+import 'groupDetail_page.dart';
+// import 'package:frontend/api/auth_provider.dart';
 
-class GroupsPage extends StatefulWidget {
+class GroupsPage extends ConsumerWidget {
   const GroupsPage({super.key});
 
   @override
-  State<GroupsPage> createState() => _GroupsPageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final groupState = ref.watch(groupProvider);
+    final groupNotifier = ref.read(groupProvider.notifier);
+    final apiService = ApiService();
+    // final authNotifier = ref.read(authProvider.notifier);
 
-class _GroupsPageState extends State<GroupsPage> {
-  List<String> managedGroups = [];
-  List<String> memberGroups = [];
-  final ApiService apiService = ApiService();
-
-  void _createGroup(String groupName) async {
-    try {
-      final groupData = await apiService.createGroup(groupName);
-      setState(() {
-        managedGroups.add(groupData['group_name']);
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Group created successfully!')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to create group: $e')),
-      );
+    Future<void> _createGroup(String groupName) async {
+      try {
+        final groupData = await apiService.createGroup(groupName);
+        await groupNotifier.createGroup(groupData['group_name']);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Group created successfully!')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to create group: $e')),
+        );
+      }
     }
-  }
 
-  void _joinGroup(String groupCode) async {
-    try {
-      final groupDetail = await apiService
-          .joinGroup(groupCode); // Lấy thông tin nhóm sau khi tham gia
-
-      setState(() {
-        memberGroups
-            .add(groupDetail['name']); // Thêm tên nhóm thực tế vào danh sách
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Joined group successfully!')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to join group: $e')),
-      );
+    Future<void> _joinGroup(String groupCode) async {
+      try {
+        final groupDetail = await apiService.joinGroup(groupCode);
+        await groupNotifier.joinGroup(groupDetail['name']);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Joined group successfully!')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to join group: $e')),
+        );
+      }
     }
-  }
 
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Header(
-        canGoBack: false, // Có nút Back
-        onChangeProfile: () {
-          print('Change profile selected');
-        },
-        onLogout: () {
-          print('Logout selected');
-        },
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60),
+        child: Header(
+          //canGoBack: false,
+        ),
       ),
       body: Column(
         children: [
-          // Tiêu đề "Your Groups" căn trái
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Align(
@@ -85,17 +72,16 @@ class _GroupsPageState extends State<GroupsPage> {
           ),
           SizedBox(height: 8),
           Expanded(
-            // Thêm ListView để cho phép cuộn danh sách các nhóm
             child: ListView(
               children: [
-                // Danh sách nhóm "Manager of"
                 _buildGroupSection(
+                  context: context, // Truyền context từ đây
                   title: "Manager of",
-                  groups: managedGroups,
+                  groups: groupState.managedGroups,
                   onAdd: () {
                     showDialog(
                       context: context,
-                      builder: (context) {
+                      builder: (dialogContext) {
                         return InputDialog(
                           title: 'Create new group',
                           hintText: 'Type group name here',
@@ -108,14 +94,14 @@ class _GroupsPageState extends State<GroupsPage> {
                   },
                 ),
                 SizedBox(height: 32),
-                // Danh sách nhóm "Member of"
                 _buildGroupSection(
+                  context: context, // Truyền context từ đây
                   title: "Member of",
-                  groups: memberGroups,
+                  groups: groupState.memberGroups,
                   onAdd: () {
                     showDialog(
                       context: context,
-                      builder: (context) {
+                      builder: (dialogContext) {
                         return InputDialog(
                           title: 'Join a group',
                           hintText: 'Type group code here',
@@ -130,13 +116,14 @@ class _GroupsPageState extends State<GroupsPage> {
               ],
             ),
           ),
-          Footer(currentIndex: 1), // Đặt currentIndex là 1 (GroupsPage)
+          Footer(currentIndex: 1),
         ],
       ),
     );
   }
 
   Widget _buildGroupSection({
+    required BuildContext context,
     required String title,
     required List<String> groups,
     required VoidCallback onAdd,
@@ -151,12 +138,12 @@ class _GroupsPageState extends State<GroupsPage> {
               Text(
                 title,
                 style: TextStyle(
-                  color: Color(0xFFEF9920),
-                  fontSize: 20,
-                  fontFamily: 'Oxygen',
-                  fontWeight: FontWeight.bold,
-                ),
+                    color: Color(0xFFEF9920),
+                    fontSize: 20,
+                    fontFamily: 'Oxygen',
+                    fontWeight: FontWeight.bold),
               ),
+              // Spacer(),
               SizedBox(width: 5),
               Expanded(
                 child: Divider(
@@ -175,7 +162,6 @@ class _GroupsPageState extends State<GroupsPage> {
             ],
           ),
           SizedBox(height: 16),
-          // Cho phép cuộn danh sách nhóm trong mỗi phần
           SizedBox(
             height: 200, // Chiều cao cố định cho từng phần danh sách nhóm
             child: ListView(
@@ -214,3 +200,31 @@ class _GroupsPageState extends State<GroupsPage> {
     );
   }
 }
+//           ...groups.map((group) {
+//             return GestureDetector(
+//               onTap: () {
+//                 Navigator.push(
+//                   context, // Sử dụng context đã được truyền vào
+//                   MaterialPageRoute(
+//                     builder: (buildContext) =>
+//                         GroupDetailPage(groupName: group),
+//                   ),
+//                 );
+//               },
+//               child: Container(
+//                 padding:
+//                     const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+//                 margin: const EdgeInsets.only(bottom: 8),
+//                 decoration: BoxDecoration(
+//                   color: Color(0xFFF1F1F1),
+//                   borderRadius: BorderRadius.circular(8),
+//                 ),
+//                 child: Text(group),
+//               ),
+//             );
+//           }).toList(),
+//         ],
+//       ),
+//     );
+//   }
+// }
