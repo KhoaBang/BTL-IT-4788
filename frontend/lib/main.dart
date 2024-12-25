@@ -1,10 +1,10 @@
-// filepath: /D:/App20241/BTL-IT-4788/frontend/lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/pages/signin_page.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -17,9 +17,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'MealPrep',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.orange,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: SignInPage(), // Start with SignInPage
+      // Sử dụng alias để tránh xung đột
+      home: SignInPage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

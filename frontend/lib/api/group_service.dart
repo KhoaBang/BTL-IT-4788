@@ -53,7 +53,7 @@ class GroupService {
       BaseQuery baseQuery = BaseQuery();
       Response getResponse = await baseQuery.get('/group/$GID/invite');
 
-      if (getResponse.data['status'] == 1) {
+      if (getResponse.statusCode == 200) {
         print('Group invite code: ${getResponse.data}');
         return getResponse.data['group_code'];
       } else {

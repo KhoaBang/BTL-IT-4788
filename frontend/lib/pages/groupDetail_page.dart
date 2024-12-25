@@ -70,8 +70,8 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                       color: Color(0xFFC1B9B9),
                     ),
                     onPressed: () {
-                      showAddMenu(
-                          context, _moreIconKey); // Call the helper function
+                      showAddMenu(context, _moreIconKey,
+                          widget.gid); // Call the helper function
                     },
                   ),
                 ],
