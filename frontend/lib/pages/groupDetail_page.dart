@@ -9,8 +9,12 @@ import 'package:frontend/providers/group_provider.dart'; // Import the chosen gr
 class GroupDetailPage extends ConsumerStatefulWidget {
   final String gid; // Group ID passed from the previous page
   final String groupName;
+  final String role;
   const GroupDetailPage(
-      {super.key, required this.gid, required this.groupName});
+      {super.key,
+      required this.gid,
+      required this.groupName,
+      required this.role});
 
   @override
   _GroupDetailPageState createState() => _GroupDetailPageState();
@@ -70,8 +74,8 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                       color: Color(0xFFC1B9B9),
                     ),
                     onPressed: () {
-                      showAddMenu(context, _moreIconKey,
-                          widget.gid); // Call the helper function
+                      showAddMenu(context, _moreIconKey, widget.gid,
+                          widget.role); // Call the helper function
                     },
                   ),
                 ],

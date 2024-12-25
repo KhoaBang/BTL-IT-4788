@@ -96,6 +96,7 @@ class GroupsPage extends ConsumerWidget {
                       },
                     );
                   },
+                  role: 'manager',
                 ),
                 SizedBox(height: 32),
                 _buildGroupSection(
@@ -117,6 +118,7 @@ class GroupsPage extends ConsumerWidget {
                       },
                     );
                   },
+                  role: 'member',
                 ),
               ],
             ),
@@ -132,6 +134,7 @@ class GroupsPage extends ConsumerWidget {
     required String title,
     required List<Group> groups, // Expecting a list of Group objects
     required VoidCallback onAdd,
+    required String role,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -176,7 +179,9 @@ class GroupsPage extends ConsumerWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => GroupDetailPage(
-                            gid: group.gid, groupName: group.groupName),
+                            gid: group.gid,
+                            groupName: group.groupName,
+                            role: role),
                       ),
                     );
                   },

@@ -78,22 +78,36 @@ class GroupMember {
 class ChosenGroupState {
   final String? GID;
   final List<GroupMember> memberList;
+  final String role; // Thêm trường role để lưu vai trò
+  final GroupListState groupListState;
 
-  ChosenGroupState({this.GID, this.memberList = const []});
+  ChosenGroupState(
+      {this.GID,
+      this.memberList = const [],
+      this.role = '',
+      required this.groupListState});
 
-  // Set the selected group and its members
-  ChosenGroupState selectGroup(String GID, List<GroupMember> members) {
+  // Set the selected group and its members, along with the role
+  ChosenGroupState selectGroup(
+      String GID, List<GroupMember> members, String role) {
     return ChosenGroupState(
       GID: GID,
       memberList: members,
+      role: role, // Lưu vai trò khi chọn nhóm
+      groupListState: this.groupListState,
     );
   }
 
   // Update the member list for the selected group
-  ChosenGroupState updateMemberList(List<GroupMember> members) {
+  ChosenGroupState updateMemberList(List<GroupMember> members, String role) {
     return ChosenGroupState(
       GID: GID,
       memberList: members,
+      role: role, // Cập nhật vai trò khi cập nhật danh sách thành viên
+      groupListState: this.groupListState,
     );
   }
+
+  List<Group> get managerOf => groupListState.managerOf;
+  List<Group> get memberOf => groupListState.memberOf;
 }

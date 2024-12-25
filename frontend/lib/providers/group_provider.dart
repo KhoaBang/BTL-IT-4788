@@ -78,17 +78,19 @@ final groupListProvider =
 });
 
 /// ChosenGroupNotifier
-
 class ChosenGroupNotifier extends StateNotifier<ChosenGroupState> {
   final GroupService _groupService;
 
   ChosenGroupNotifier(this._groupService)
-      : super(ChosenGroupState(GID: "", memberList: []));
+      : super(ChosenGroupState(
+            GID: "",
+            memberList: [],
+            role: '',
+            groupListState: GroupListState(memberOf: [], managerOf: [])));
 
   // Set the currently selected group and load its members
   Future<void> selectGroup(String groupId) async {
     // Fetch the group details
-    // Fetch the members of the group
     final members = await _groupService.getGroupMembers(groupId);
 
     // Map members to GroupMember instances
@@ -97,8 +99,20 @@ class ChosenGroupNotifier extends StateNotifier<ChosenGroupState> {
             (json) => GroupMember.fromJson(json as Map<String, dynamic>))
         .toList();
 
-    // Update the state with selected group and its member list
-    state = state.selectGroup(groupId, memberList);
+    // Check if the group is in the "managerOf" or "memberOf" lists
+    final isManager = state.managerOf.any((group) => group.gid == groupId);
+    final isMember = state.memberOf.any((group) => group.gid == groupId);
+
+    // Set role based on the group being in either "managerOf" or "memberOf"
+    String role = '';
+    if (isManager) {
+      role = 'manager';
+    } else if (isMember) {
+      role = 'member';
+    }
+
+    // Update the state with selected group, its member list, and role
+    state = state.selectGroup(groupId, memberList, role);
   }
 
   // Update the member list for the selected group
@@ -109,8 +123,20 @@ class ChosenGroupNotifier extends StateNotifier<ChosenGroupState> {
             (json) => GroupMember.fromJson(json as Map<String, dynamic>))
         .toList();
 
-    // Update the member list in the state
-    state = state.updateMemberList(memberList);
+    // Check if the group is in the "managerOf" or "memberOf" lists
+    final isManager = state.managerOf.any((group) => group.gid == groupId);
+    final isMember = state.memberOf.any((group) => group.gid == groupId);
+
+    // Set role based on the group being in either "managerOf" or "memberOf"
+    String role = '';
+    if (isManager) {
+      role = 'manager';
+    } else if (isMember) {
+      role = 'member';
+    }
+
+    // Update the member list and role in the state
+    state = state.updateMemberList(memberList, role);
   }
 }
 

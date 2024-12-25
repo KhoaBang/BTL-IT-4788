@@ -5,24 +5,22 @@ import 'confirmation_dialog.dart';
 import '../../api/group_service.dart';
 import '../../pages/widgets/notification_box.dart';
 
-void showAddMenu(BuildContext context, GlobalKey iconKey, String GID) {
+void showAddMenu(
+    BuildContext context, GlobalKey iconKey, String GID, String role) {
   final RenderBox renderBox =
       iconKey.currentContext!.findRenderObject() as RenderBox;
   final position = renderBox.localToGlobal(Offset.zero);
 
-  showMenu<String>(
-    context: context,
-    position: RelativeRect.fromLTRB(
-      position.dx,
-      position.dy + renderBox.size.height,
-      position.dx,
-      position.dy,
+  List<PopupMenuEntry<String>> menuItems = [
+    PopupMenuItem<String>(
+      value: 'View Members',
+      child: Text('View members detail'),
     ),
-    items: [
-      PopupMenuItem<String>(
-        value: 'View Members',
-        child: Text('View members detail'),
-      ),
+  ];
+
+  // Thêm các mục menu dựa trên vai trò
+  if (role == 'manager') {
+    menuItems.addAll([
       PopupMenuDivider(),
       PopupMenuItem<String>(
         value: 'Get Invite Code',
@@ -36,6 +34,9 @@ void showAddMenu(BuildContext context, GlobalKey iconKey, String GID) {
           style: TextStyle(color: Colors.red),
         ),
       ),
+    ]);
+  } else if (role == 'member') {
+    menuItems.addAll([
       PopupMenuDivider(),
       PopupMenuItem<String>(
         value: 'Leave',
@@ -44,12 +45,29 @@ void showAddMenu(BuildContext context, GlobalKey iconKey, String GID) {
           style: TextStyle(color: Colors.red),
         ),
       ),
-    ],
+    ]);
+  }
+
+  // Hiển thị menu
+  showMenu<String>(
+    context: context,
+    position: RelativeRect.fromLTRB(
+      position.dx,
+      position.dy + renderBox.size.height,
+      position.dx,
+      position.dy,
+    ),
+    items: menuItems,
   ).then((value) {
     if (value != null) {
       switch (value) {
         case 'View Members':
-          // Logic for viewing members
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder: (context) => MemberTablePage(members: members),
+          //   ),
+          // );
           break;
         case 'Get Invite Code':
           _getInviteCode(context, GID); // Gọi _getInviteCode với GID
