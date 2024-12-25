@@ -33,7 +33,7 @@ class _FooterState extends State<Footer> {
       case 2:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => IngredientsPage()),
+          MaterialPageRoute(builder: (context) => IngredientPage()),
         );
         break;
     }

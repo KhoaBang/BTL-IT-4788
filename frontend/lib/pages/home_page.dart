@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/widgets/header.dart';
+import 'package:frontend/pages/widgets/footer.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -9,9 +10,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
-        child: Header(
-          //canGoBack: false,
-        ),
+        child: Header(),
       ),
       body: Center(
         child: Column(
@@ -33,6 +32,7 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: const Footer(currentIndex: 0), // Thêm Footer vào đây
     );
   }
 }
