@@ -1,7 +1,12 @@
+// lib/services/auth_service.dart
+
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/api/base_query.dart';
 
 class AuthService {
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
   Future<bool> login(String email, String password) async {
     try {
       BaseQuery baseQuery = BaseQuery();
@@ -13,6 +18,7 @@ class AuthService {
 
       if (postResponse.data['status'] == 1) {
         print('Login successful: ${postResponse.data}');
+        await _storeTokens(postResponse.data['data']);
         return true;
       } else {
         print('Login failed: ${postResponse.data['message']}');
@@ -38,6 +44,7 @@ class AuthService {
 
       if (postResponse.data['status'] == 1) {
         print('Signup successful: ${postResponse.data}');
+        await _storeTokens(postResponse.data['data']);
         return true;
       } else {
         print('Signup failed: ${postResponse.data['message']}');
@@ -57,6 +64,9 @@ class AuthService {
 
       if (postResponse.data['status'] == 1) {
         print('Logout successful.');
+
+        // Clear tokens from storage
+        await _clearTokens();
         return true;
       } else {
         print('Logout failed: ${postResponse.data['message']}');
@@ -66,5 +76,18 @@ class AuthService {
       print('Logout error: $e');
       return false;
     }
+  }
+
+  // Helper methods to handle tokens
+  Future<void> _storeTokens(Map<String, dynamic> data) async {
+    await _storage.write(key: 'access_token', value: data['access_token']);
+    await _storage.write(key: 'refresh_token', value: data['refresh_token']);
+    print('Tokens stored successfully.');
+  }
+
+  Future<void> _clearTokens() async {
+    await _storage.delete(key: 'access_token');
+    await _storage.delete(key: 'refresh_token');
+    print('Tokens cleared from secure storage.');
   }
 }
