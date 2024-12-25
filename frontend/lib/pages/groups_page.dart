@@ -1,27 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/api/group_provider.dart';
-import 'package:frontend/api/api_service.dart';
-import 'widgets/header.dart';
-import 'widgets/footer.dart';
-import 'widgets/input_dialog.dart';
-import 'groupDetail_page.dart';
-// import 'package:frontend/api/auth_provider.dart';
+import 'package:frontend/providers/group_provider.dart';
+import 'package:frontend/pages/widgets/header.dart';
+import 'package:frontend/pages/widgets/footer.dart';
+import 'package:frontend/pages/widgets/input_dialog.dart';
+import 'package:frontend/models/group_state.dart';
+import 'package:frontend/pages/groupDetail_page.dart';
 
 class GroupsPage extends ConsumerWidget {
   const GroupsPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final groupState = ref.watch(groupProvider);
-    final groupNotifier = ref.read(groupProvider.notifier);
-    final apiService = ApiService();
-    // final authNotifier = ref.read(authProvider.notifier);
+    // Accessing the state of the groups
+    final groupState =
+        ref.watch(groupListProvider); // GroupListState from Riverpod
+    final groupNotifier =
+        ref.read(groupListProvider.notifier); // Accessing the notifier
+
+    // Fetch the groups initially if not already loaded
+    if (groupState.memberOf.isEmpty && groupState.managerOf.isEmpty) {
+      groupNotifier.getGroups();
+    }
 
     Future<void> _createGroup(String groupName) async {
       try {
-        final groupData = await apiService.createGroup(groupName);
-        await groupNotifier.createGroup(groupData['group_name']);
+        // Using the GroupNotifier to create a group and refresh the list
+        await groupNotifier.createGroup(groupName);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Group created successfully!')),
         );
@@ -34,8 +39,8 @@ class GroupsPage extends ConsumerWidget {
 
     Future<void> _joinGroup(String groupCode) async {
       try {
-        final groupDetail = await apiService.joinGroup(groupCode);
-        await groupNotifier.joinGroup(groupDetail['name']);
+        // Using the GroupNotifier to join a group and refresh the list
+        await groupNotifier.joinGroup(groupCode);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Joined group successfully!')),
         );
@@ -49,9 +54,7 @@ class GroupsPage extends ConsumerWidget {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
-        child: Header(
-          //canGoBack: false,
-        ),
+        child: Header(), // Custom header widget
       ),
       body: Column(
         children: [
@@ -75,9 +78,10 @@ class GroupsPage extends ConsumerWidget {
             child: ListView(
               children: [
                 _buildGroupSection(
-                  context: context, // Truyền context từ đây
+                  context: context,
                   title: "Manager of",
-                  groups: groupState.managedGroups,
+                  groups: groupState
+                      .managerOf, // Using managerOf from GroupListState
                   onAdd: () {
                     showDialog(
                       context: context,
@@ -95,9 +99,10 @@ class GroupsPage extends ConsumerWidget {
                 ),
                 SizedBox(height: 32),
                 _buildGroupSection(
-                  context: context, // Truyền context từ đây
+                  context: context,
                   title: "Member of",
-                  groups: groupState.memberGroups,
+                  groups:
+                      groupState.memberOf, // Using memberOf from GroupListState
                   onAdd: () {
                     showDialog(
                       context: context,
@@ -116,7 +121,7 @@ class GroupsPage extends ConsumerWidget {
               ],
             ),
           ),
-          Footer(currentIndex: 1),
+          Footer(currentIndex: 1), // Footer widget
         ],
       ),
     );
@@ -125,7 +130,7 @@ class GroupsPage extends ConsumerWidget {
   Widget _buildGroupSection({
     required BuildContext context,
     required String title,
-    required List<String> groups,
+    required List<Group> groups, // Expecting a list of Group objects
     required VoidCallback onAdd,
   }) {
     return Padding(
@@ -143,7 +148,6 @@ class GroupsPage extends ConsumerWidget {
                     fontFamily: 'Oxygen',
                     fontWeight: FontWeight.bold),
               ),
-              // Spacer(),
               SizedBox(width: 5),
               Expanded(
                 child: Divider(
@@ -163,7 +167,7 @@ class GroupsPage extends ConsumerWidget {
           ),
           SizedBox(height: 16),
           SizedBox(
-            height: 200, // Chiều cao cố định cho từng phần danh sách nhóm
+            height: 200,
             child: ListView(
               children: groups.map((group) {
                 return GestureDetector(
@@ -171,7 +175,8 @@ class GroupsPage extends ConsumerWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => GroupDetailPage(groupName: group),
+                        builder: (context) => GroupDetailPage(
+                            gid: group.gid, groupName: group.groupName),
                       ),
                     );
                   },
@@ -184,7 +189,7 @@ class GroupsPage extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      group,
+                      group.groupName,
                       style: TextStyle(
                         color: Color(0xFF010F07),
                         fontSize: 14,
@@ -200,31 +205,3 @@ class GroupsPage extends ConsumerWidget {
     );
   }
 }
-//           ...groups.map((group) {
-//             return GestureDetector(
-//               onTap: () {
-//                 Navigator.push(
-//                   context, // Sử dụng context đã được truyền vào
-//                   MaterialPageRoute(
-//                     builder: (buildContext) =>
-//                         GroupDetailPage(groupName: group),
-//                   ),
-//                 );
-//               },
-//               child: Container(
-//                 padding:
-//                     const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-//                 margin: const EdgeInsets.only(bottom: 8),
-//                 decoration: BoxDecoration(
-//                   color: Color(0xFFF1F1F1),
-//                   borderRadius: BorderRadius.circular(8),
-//                 ),
-//                 child: Text(group),
-//               ),
-//             );
-//           }).toList(),
-//         ],
-//       ),
-//     );
-//   }
-// }
