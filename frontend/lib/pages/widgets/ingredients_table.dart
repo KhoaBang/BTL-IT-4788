@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'confirmation_dialog.dart';
 import 'edit_ingredient_dialog.dart';
+import '../../api/api_user.dart';
 
 class IngredientsTable extends StatefulWidget {
   @override
@@ -8,29 +9,84 @@ class IngredientsTable extends StatefulWidget {
 }
 
 class _IngredientsTableState extends State<IngredientsTable> {
-  // Sample data for ingredients
-  final List<Map<String, String>> _ingredients = [
-    {"Name": "Flour", "Unit": "kg"},
-    {"Name": "Sugar", "Unit": "gr"},
-    {"Name": "Butter", "Unit": "gr"},
-  ];
+  bool _isLoading = true;
+  String? _errorMessage;
+  List<Map<String, dynamic>> _ingredients =
+      []; // Declare the _ingredients list here
 
+  // Fetch ingredients from the API
+  Future<void> _fetchIngredients() async {
+    try {
+      final api = ApiUser();
+      final data = await api.getUserIngredients();
+      setState(() {
+        _ingredients = data; // Populate _ingredients with fetched data
+        _isLoading = false;
+      });
+      print(_ingredients);
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = e.toString();
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchIngredients();
+  }
+
+  // currentName: _ingredients[index]["Name"]!,
+  // currentUnit: _ingredients[index]["Unit"]!,
   // Handle Modify button
+  // Handle Update button
   void _modifyIngredient(int index) {
+    final ingredient = _ingredients[index];
+    final currentName = ingredient["Name"]!;
+    final currentUnit = ingredient["Unit"]!;
+
+    // Ensure that `currentUnitId` is an integer, if needed
+    final currentUnitId = int.tryParse(ingredient["UnitId"]!) ?? 0;
+
+    // Ensure tags is a List<Map<String, String>>
+    // If the tags are stored as strings or another structure, map them to the required format.
+    List<Map<String, String>> tags = [];
+    if (ingredient["Tags"] != null) {
+      tags = List<Map<String, String>>.from(ingredient["Tags"].map((tag) {
+        return {"tag_name": tag}; // assuming tags are simple strings
+      }));
+    }
+
     showDialog(
       context: context,
       builder: (context) {
         return EditIngredientDialog(
-          title: 'Edit Ingredient',
-          hintText: 'Enter ingredient name',
-          currentName: _ingredients[index]["Name"]!,
-          currentUnit: _ingredients[index]["Unit"]!,
-          onConfirm: (inputValue, selectedUnit) {
-            setState(() {
-              _ingredients[index]["Name"] = inputValue;
-              _ingredients[index]["Unit"] = selectedUnit;
-            });
-            print('Ingredient updated: ${_ingredients[index]}');
+          title: 'Update Ingredient',
+          hintText: currentName,
+          currentName: currentName,
+          currentUnit: currentUnit,
+          currentUnitId: currentUnitId, // Pass as int if needed
+          allIngredientNames:
+              _ingredients.map((e) => e["Name"] as String).toList(),
+          onConfirm: (inputValue, selectedUnit) async {
+            final api = ApiUser();
+            try {
+              // Call the updateIngredient API
+              await api.updateIngredient(
+                oldIngredientName: currentName,
+                newIngredientName: inputValue,
+                unitId: selectedUnit, // Make sure to pass the correct unitId
+                tags: tags, // Pass the updated tags
+              );
+              // Reload the ingredient list after updating
+              await _fetchIngredients();
+            } catch (e) {
+              setState(() {
+                _errorMessage = e.toString();
+              });
+            }
           },
         );
       },
@@ -38,22 +94,51 @@ class _IngredientsTableState extends State<IngredientsTable> {
   }
 
   // Handle Remove button
-  void _removeIngredient(int index) {
-    // Show confirmation dialog
+  void _removeIngredient(int index) async {
+    final ingredientName = _ingredients[index]["Name"]!;
+    try {
+      final api = ApiUser();
+      await api.deleteIngredient(
+          ingredientName: ingredientName); // Call the delete API
+      await _fetchIngredients(); // Reload the ingredient list after deletion
+      print("Ingredient deleted: $ingredientName");
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+      });
+    }
+  }
+
+  // Handle Add button and integrate createIngredient API
+  Future<void> _addIngredient() async {
     showDialog(
       context: context,
       builder: (context) {
-        return ConfirmDialog(
-          title: 'Delete Ingredient',
-          content: 'Are you sure you want to delete this ingredient?',
-          confirmText: 'Delete',
-          cancelText: 'Cancel',
-          onConfirm: () {
-            setState(() {
-              _ingredients.removeAt(index);
-            });
-            Navigator.of(context).pop();
-            print("Removed ingredient at index: $index");
+        return EditIngredientDialog(
+          title: 'Add Ingredient',
+          hintText: 'Enter ingredient name',
+          currentName: '',
+          currentUnit: 'kg',
+          allIngredientNames:
+              _ingredients.map((e) => e["Name"] as String).toList(),
+          currentUnitId: 3, // Default to 'kg'
+          onConfirm: (inputValue, selectedUnitId) async {
+            try {
+              final api = ApiUser();
+              await api.createIngredient(
+                ingredientName: inputValue,
+                unitId: selectedUnitId,
+              );
+
+              // After successful addition, reload the ingredients
+              await _fetchIngredients();
+            } catch (e) {
+              print("Error adding ingredient: $e");
+              setState(() {
+                _errorMessage = "Failed to add ingredient.";
+              });
+              Navigator.of(context).pop();
+            }
           },
         );
       },
@@ -62,10 +147,15 @@ class _IngredientsTableState extends State<IngredientsTable> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+
+    if (_errorMessage != null) {
+      return Center(child: Text("Error: $_errorMessage"));
+    }
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Ingredients List"),
-      ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: LayoutBuilder(
@@ -150,6 +240,13 @@ class _IngredientsTableState extends State<IngredientsTable> {
             );
           },
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _addIngredient,
+        backgroundColor: Color(0xFFEF9920),
+        mini: true, // This makes the button smaller
+        shape: CircleBorder(), // Ensures the button remains round
+        child: Icon(Icons.add),
       ),
     );
   }
