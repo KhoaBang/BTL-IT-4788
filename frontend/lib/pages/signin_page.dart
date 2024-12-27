@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/api/auth_service.dart'; // Đảm bảo import đúng đường dẫn
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/providers/auth_provider.dart'; // Import the AuthProvider
 import 'signup_page.dart';
 import 'home_page.dart'; // Giả sử đây là trang HomePage
 import 'package:frontend/pages/widgets/notification_box.dart';
 
-class SignInPage extends StatefulWidget {
+class SignInPage extends ConsumerStatefulWidget {
   @override
-  State<SignInPage> createState() => _SignInPageState();
+  ConsumerState<SignInPage> createState() => _SignInPageState();
 }
 
-class _SignInPageState extends State<SignInPage> {
+class _SignInPageState extends ConsumerState<SignInPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
-  final AuthService _authService = AuthService();
   bool _isPasswordVisible = false;
   bool _isLoading = false;
 
@@ -27,42 +26,6 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  // Future<void> _handleSignIn() async {
-  //   setState(() {
-  //     _isLoading = true;
-  //   });
-
-  //   String email = _emailController.text.trim();
-  //   String password = _passwordController.text.trim();
-
-  //   try {
-  //     // Gọi hàm login và kiểm tra kết quả
-  //     bool isSuccess = await _authService.login(email, password);
-
-  //     if (isSuccess) {
-  //       // Hiển thị thông báo thành công
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(content: Text('Login successful!')),
-  //       );
-
-  //       // Chuyển sang trang HomePage
-  //       Navigator.pushReplacement(
-  //         context,
-  //         MaterialPageRoute(builder: (context) => HomePage()),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     // Hiển thị lỗi nếu đăng nhập thất bại
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Login failed: $e')),
-  //     );
-  //   } finally {
-  //     setState(() {
-  //       _isLoading = false;
-  //     });
-  //   }
-  // }
-
   Future<void> _handleSignIn() async {
     setState(() {
       _isLoading = true;
@@ -72,24 +35,25 @@ class _SignInPageState extends State<SignInPage> {
     String password = _passwordController.text.trim();
 
     try {
-      // Gọi hàm login và kiểm tra kết quả
-      bool isSuccess = await _authService.login(email, password);
+      // Use Riverpod's provider to call the login method
+      final authProviderNotifier = ref.read(authProvider.notifier);
+      bool isSuccess = await authProviderNotifier.login(email, password);
 
       if (isSuccess) {
-        // Hiển thị thông báo thành công
+        // Show success message
         NotificationBox.show(
           context: context,
           status: 200,
           message: 'Login successful!',
         );
 
-        // Chuyển sang trang HomePage
+        // Navigate to HomePage
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomePage()),
         );
       } else {
-        // Hiển thị thông báo thất bại
+        // Show failure message
         NotificationBox.show(
           context: context,
           status: 400,
@@ -99,7 +63,7 @@ class _SignInPageState extends State<SignInPage> {
     } catch (e) {
       print('Login error: $e');
 
-      // Hiển thị thông báo lỗi không mong muốn
+      // Show unexpected error message
       NotificationBox.show(
         context: context,
         status: 400,
@@ -114,6 +78,9 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Watch the authentication state
+    final authState = ref.watch(authProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(

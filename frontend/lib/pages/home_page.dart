@@ -32,7 +32,9 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const Footer(currentIndex: 0), // Thêm Footer vào đây
+      bottomNavigationBar: Footer(
+        currentIndex: 0, // Adjust the index based on which page is active
+      ),
     );
   }
 }
@@ -41,23 +43,27 @@ void main() {
   runApp(MaterialApp(
     home: HomePage(),
     routes: {
-      '/signIn': (context) => SignInPage(), // Placeholder for SignInPage()
+      '/signIn': (context) => SignInPage(),
     },
   ));
 }
 
-// Placeholder for SignInPage
+// SignInPage widget now correctly places Footer inside Scaffold
 class SignInPage extends StatelessWidget {
   const SignInPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text('Sign In')),
       body: Center(
         child: Text(
           'Sign In Page',
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
+      ),
+      bottomNavigationBar: Footer(
+        currentIndex: 1, // Adjust according to your navigation logic
       ),
     );
   }

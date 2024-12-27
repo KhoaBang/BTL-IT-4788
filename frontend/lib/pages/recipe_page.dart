@@ -332,25 +332,54 @@ class _RecipePageState extends State<RecipePage> {
     fetchRecipes();
   }
 
+  // Future<void> fetchRecipes() async {
+  //   try {
+  //     final data = await _recipeService.getAllRecipes();
+  //     setState(() {
+  //       recipes = (data as List)
+  //           .map((recipe) => {
+  //                 'name': recipe['name'] ?? '',
+  //                 'description': recipe['description'] ?? '',
+  //                 'prep_time_minutes': recipe['prep_time_minutes'] ?? 0,
+  //                 'cook_time_minutes': recipe['cook_time_minutes'] ?? 0,
+  //                 'servings': recipe['servings'] ?? 0,
+  //                 'ingredients': recipe['ingredients'] ?? [],
+  //                 'steps': recipe['steps'] ?? [],
+  //                 'notes': recipe['notes'] ?? '',
+  //               })
+  //           .toList();
+  //       filteredRecipes = recipes;
+  //     });
+  //   } catch (error) {
+  //     NotificationBox.show(
+  //       context: context,
+  //       status: 500,
+  //       message: 'Failed to fetch recipes!',
+  //     );
+  //   }
+  // }
+
   Future<void> fetchRecipes() async {
     try {
-      final data = await _recipeService.getAllRecipes();
-      setState(() {
-        recipes = (data as List)
-            .map((recipe) => {
-                  'name': recipe['name'] ?? '',
-                  'description': recipe['description'] ?? '',
-                  'prep_time_minutes': recipe['prep_time_minutes'] ?? 0,
-                  'cook_time_minutes': recipe['cook_time_minutes'] ?? 0,
-                  'servings': recipe['servings'] ?? 0,
-                  'ingredients': recipe['ingredients'] ?? [],
-                  'steps': recipe['steps'] ?? [],
-                  'notes': recipe['notes'] ?? '',
-                })
-            .toList();
-        filteredRecipes = recipes;
-      });
+      // Gọi API để lấy danh sách recipes (với đầy đủ thông tin).
+      final response = await _recipeService.getAllRecipes();
+      if (response != null) {
+        // Nếu API trả về danh sách recipes với tên, thực hiện lấy thêm chi tiết từng recipe.
+        final List<Map<String, dynamic>> fullRecipes = [];
+        for (var recipe in response) {
+          // Gọi API để lấy thông tin chi tiết của từng recipe bằng tên.
+          final recipeDetails =
+              await _recipeService.getRecipeDetails(recipe['recipe_name']);
+          fullRecipes.add(recipeDetails);
+        }
+
+        setState(() {
+          recipes = fullRecipes; // Cập nhật danh sách recipes đầy đủ.
+          filteredRecipes = fullRecipes; // Cập nhật danh sách hiển thị.
+        });
+      }
     } catch (error) {
+      debugPrint('Error fetching recipes: $error');
       NotificationBox.show(
         context: context,
         status: 500,
