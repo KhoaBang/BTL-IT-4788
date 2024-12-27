@@ -7,7 +7,7 @@ import 'package:frontend/pages/widgets/input_dialog.dart';
 import 'package:frontend/models/group_state.dart';
 import 'package:frontend/pages/groupDetail_page.dart';
 
-class GroupsPage extends StatelessWidget {
+class GroupsPage extends ConsumerWidget {
   const GroupsPage({super.key});
 
   @override
