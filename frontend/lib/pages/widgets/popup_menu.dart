@@ -78,7 +78,7 @@ void showAddMenu(BuildContext context, GlobalKey iconKey, String GID,
           _deleteGroup(context, ref, GID); // Gọi _deleteGroup với GID
           break;
         case 'Leave':
-          // Logic for leaving the group
+          _leaveGroup(context, ref, GID); // Gọi _leaveGroup với GID
           break;
       }
     }
@@ -142,6 +142,39 @@ void _deleteGroup(BuildContext context, WidgetRef ref, String GID) async {
             context: context,
             status: 200,
             message: 'Group deleted successfully',
+          );
+        } catch (e) {
+          NotificationBox.show(
+            context: context,
+            status: 400,
+            message: 'An error occurred: ${e.toString()}',
+          );
+        }
+        Navigator.of(context).pop();
+      },
+    ),
+  );
+}
+
+//leave group
+void _leaveGroup(BuildContext context, WidgetRef ref, String GID) async {
+  final groupState = ref.watch(groupListProvider);
+  final groupNotifier = ref.read(groupListProvider.notifier);
+
+  showDialog(
+    context: context,
+    builder: (context) => ConfirmDialog(
+      title: 'Leave Group',
+      content: 'Are you sure you want to leave this group?',
+      confirmText: 'Leave',
+      cancelText: 'Cancel',
+      onConfirm: () async {
+        try {
+          final success = await groupNotifier.leaveGroup(GID);
+          NotificationBox.show(
+            context: context,
+            status: 200,
+            message: 'Leave Group successfully',
           );
         } catch (e) {
           NotificationBox.show(

@@ -110,7 +110,7 @@ class GroupService {
 
       Response postResponse = await baseQuery.post('/group/$GID/leave', {});
 
-      if (postResponse.data['status'] == 1) {
+      if (postResponse.statusCode == 200) {
         print('Left group: ${postResponse.data}');
         return true;
       } else {
@@ -131,7 +131,7 @@ class GroupService {
       Response postResponse =
           await baseQuery.post('/group/$GID/ban/', {'UUID': UUID});
 
-      if (postResponse.data['status'] == 1) {
+      if (postResponse.statusCode == 200) {
         print('Banned member: ${postResponse.data}');
         return true;
       } else {
