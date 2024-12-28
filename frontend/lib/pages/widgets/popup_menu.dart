@@ -64,12 +64,12 @@ void showAddMenu(BuildContext context, GlobalKey iconKey, String GID,
     if (value != null) {
       switch (value) {
         case 'View Members':
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (context) => MemberTablePage(members: members),
-          //   ),
-          // );
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MemberTablePage(groupId: GID),
+            ),
+          );
           break;
         case 'Get Invite Code':
           _getInviteCode(context, GID); // Gọi _getInviteCode với GID

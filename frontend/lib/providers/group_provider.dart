@@ -113,6 +113,15 @@ class ChosenGroupNotifier extends StateNotifier<ChosenGroupState> {
     // Update the member list and role in the state
     state = state.updateMemberList(memberList);
   }
+
+  // Ban a member from a group
+  Future<void> banMember(String groupId, String memberId) async {
+    final success = await _groupService.banMember(groupId, memberId);
+    if (success) {
+      await updateMemberList(
+          groupId); // Refresh the groups after banning a member
+    }
+  }
 }
 
 // The chosenGroupProvider to manage ChosenGroupState using ChosenGroupNotifier
