@@ -83,10 +83,9 @@ class ChosenGroupNotifier extends StateNotifier<ChosenGroupState> {
 
   ChosenGroupNotifier(this._groupService)
       : super(ChosenGroupState(
-            GID: "",
-            memberList: [],
-            role: '',
-            groupListState: GroupListState(memberOf: [], managerOf: [])));
+          GID: "",
+          memberList: [],
+        ));
 
   // Set the currently selected group and load its members
   Future<void> selectGroup(String groupId) async {
@@ -99,20 +98,8 @@ class ChosenGroupNotifier extends StateNotifier<ChosenGroupState> {
             (json) => GroupMember.fromJson(json as Map<String, dynamic>))
         .toList();
 
-    // Check if the group is in the "managerOf" or "memberOf" lists
-    final isManager = state.managerOf.any((group) => group.gid == groupId);
-    final isMember = state.memberOf.any((group) => group.gid == groupId);
-
-    // Set role based on the group being in either "managerOf" or "memberOf"
-    String role = '';
-    if (isManager) {
-      role = 'manager';
-    } else if (isMember) {
-      role = 'member';
-    }
-
     // Update the state with selected group, its member list, and role
-    state = state.selectGroup(groupId, memberList, role);
+    state = state.selectGroup(groupId, memberList);
   }
 
   // Update the member list for the selected group
@@ -123,20 +110,8 @@ class ChosenGroupNotifier extends StateNotifier<ChosenGroupState> {
             (json) => GroupMember.fromJson(json as Map<String, dynamic>))
         .toList();
 
-    // Check if the group is in the "managerOf" or "memberOf" lists
-    final isManager = state.managerOf.any((group) => group.gid == groupId);
-    final isMember = state.memberOf.any((group) => group.gid == groupId);
-
-    // Set role based on the group being in either "managerOf" or "memberOf"
-    String role = '';
-    if (isManager) {
-      role = 'manager';
-    } else if (isMember) {
-      role = 'member';
-    }
-
     // Update the member list and role in the state
-    state = state.updateMemberList(memberList, role);
+    state = state.updateMemberList(memberList);
   }
 }
 

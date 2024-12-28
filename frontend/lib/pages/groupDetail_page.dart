@@ -75,7 +75,7 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                     ),
                     onPressed: () {
                       showAddMenu(context, _moreIconKey, widget.gid,
-                          widget.role); // Call the helper function
+                          widget.role, ref); // Call the helper function
                     },
                   ),
                 ],

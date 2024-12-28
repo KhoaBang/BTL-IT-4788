@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 import '../MemberTablePage.dart';
 import 'confirmation_dialog.dart';
 import '../../api/group_service.dart';
 import '../../pages/widgets/notification_box.dart';
+import '../../providers/group_provider.dart';
 
-void showAddMenu(
-    BuildContext context, GlobalKey iconKey, String GID, String role) {
+void showAddMenu(BuildContext context, GlobalKey iconKey, String GID,
+    String role, WidgetRef ref) {
   final RenderBox renderBox =
       iconKey.currentContext!.findRenderObject() as RenderBox;
   final position = renderBox.localToGlobal(Offset.zero);
@@ -73,7 +75,7 @@ void showAddMenu(
           _getInviteCode(context, GID); // Gọi _getInviteCode với GID
           break;
         case 'Delete':
-          // Logic for deleting the group
+          _deleteGroup(context, ref, GID); // Gọi _deleteGroup với GID
           break;
         case 'Leave':
           // Logic for leaving the group
@@ -119,4 +121,37 @@ void _getInviteCode(BuildContext context, String GID) async {
       message: 'Failed to get invite code',
     );
   }
+}
+
+//delete group
+void _deleteGroup(BuildContext context, WidgetRef ref, String GID) async {
+  final groupState = ref.watch(groupListProvider);
+  final groupNotifier = ref.read(groupListProvider.notifier);
+
+  showDialog(
+    context: context,
+    builder: (context) => ConfirmDialog(
+      title: 'Delete Group',
+      content: 'Are you sure you want to delete this group?',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      onConfirm: () async {
+        try {
+          final success = await groupNotifier.deleteGroup(GID);
+          NotificationBox.show(
+            context: context,
+            status: 200,
+            message: 'Group deleted successfully',
+          );
+        } catch (e) {
+          NotificationBox.show(
+            context: context,
+            status: 400,
+            message: 'An error occurred: ${e.toString()}',
+          );
+        }
+        Navigator.of(context).pop();
+      },
+    ),
+  );
 }

@@ -151,7 +151,7 @@ class GroupService {
 
       Response postResponse = await baseQuery.delete('/group/$GID');
 
-      if (postResponse.data['status'] == 1) {
+      if (postResponse.statusCode == 200) {
         print('Deleted group: ${postResponse.data}');
         return true;
       } else {
