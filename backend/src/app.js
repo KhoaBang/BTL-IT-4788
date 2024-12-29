@@ -18,6 +18,7 @@ dotenv.config();
 
 const app = express();
 app.set('trust proxy', true);
+
 const FRONTEND_URL = process.env.FRONTEND_URL ?? false;
 
 const corsURLs = [FRONTEND_URL].filter(
@@ -32,6 +33,7 @@ app.use(
     preflightContinue: true,
   }),
 );
+
 app.use(morgan('tiny'));
 
 app.use(express.json());

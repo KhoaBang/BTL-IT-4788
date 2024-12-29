@@ -19,7 +19,12 @@ class GroupsPage extends ConsumerWidget {
         ref.read(groupListProvider.notifier); // Accessing the notifier
 
     // Fetch the groups initially if not already loaded
-    if (groupState.memberOf.isEmpty && groupState.managerOf.isEmpty) {
+    print(groupState.memberOf);
+    print(groupState.managerOf);
+    print(groupState.isLoading);
+    if (groupState.memberOf.isEmpty &&
+        groupState.managerOf.isEmpty &&
+        !groupState.isLoading) {
       groupNotifier.getGroups();
     }
 

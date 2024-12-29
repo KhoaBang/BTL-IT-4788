@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'widgets/header.dart';
 import 'widgets/footer.dart';
 import 'widgets/confirmation_dialog.dart';
@@ -6,28 +7,17 @@ import 'widgets/input_dialog.dart';
 import 'widgets/list_section.dart';
 import 'widgets/list_section_noicon.dart';
 import 'shopping_list_details_page.dart';
+import 'package:frontend/providers/shopping_provider.dart';
 
-class ShoppingListPage extends StatefulWidget {
-  const ShoppingListPage({super.key});
-
-  @override
-  State<ShoppingListPage> createState() => _ShoppingListPageState();
-}
-
-class _ShoppingListPageState extends State<ShoppingListPage> {
-  final List<Map<String, String>> personalLists = [
-    {"name": "Weekly Groceries", "date": "2024-12-01"},
-    {"name": "Birthday Party Supplies", "date": "2024-12-03"},
-    {"name": "Holiday Shopping", "date": "2024-12-05"},
-  ];
-
-  final List<Map<String, String>> sharedLists = [
-    {"name": "Family Shopping", "date": "2024-11-28"},
-    {"name": "Office Party Planning", "date": "2024-11-30"},
-  ];
+class ShoppingListPage extends ConsumerWidget {
+  final String gid;
+  const ShoppingListPage({super.key, required this.gid});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Access the shopping list state
+    final shoppingLists = ref.watch(shoppingListProvider);
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
@@ -58,7 +48,13 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
               children: [
                 ListSection(
                   title: "Personal Lists",
-                  lists: personalLists,
+                  lists: shoppingLists
+                      .where((list) => list.status == 'personal')
+                      .map((list) => {
+                            'name': list.name,
+                            'date': list.createdAt.toIso8601String(),
+                          })
+                      .toList(),
                   onAdd: () {
                     showDialog(
                       context: context,
@@ -68,35 +64,50 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
                           hintText: 'Type list name here',
                           confirmText: 'Create',
                           cancelText: 'Cancel',
-                          onConfirm: (input) {
-                            print('New personal list created: $input');
+                          onConfirm: (input) async {
+                            final success = await ref
+                                .read(shoppingListProvider.notifier)
+                                .addShoppingList(gid, input);
+                            if (success) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('List created!')),
+                              );
+                            }
                           },
                         );
                       },
                     );
                   },
                   onItemTap: (list) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            ShoppingListDetailPage(listName: list),
-                      ),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => ShoppingListDetailPage(
+                    //       listName: list['name']!,
+                    //     ),
+                    //   ),
+                    // );
                   },
                 ),
                 SizedBox(height: 32),
                 ListSectionNoicon(
                   title: "Shared Lists",
-                  lists: sharedLists,
+                  lists: shoppingLists
+                      .where((list) => list.status == 'shared')
+                      .map((list) => {
+                            'name': list.name,
+                            'date': list.createdAt.toIso8601String(),
+                          })
+                      .toList(),
                   onItemTap: (list) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            ShoppingListDetailPage(listName: list),
-                      ),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => ShoppingListDetailPage(
+                    //       listName: list['name']!,
+                    //     ),
+                    //   ),
+                    // );
                   },
                 ),
               ],

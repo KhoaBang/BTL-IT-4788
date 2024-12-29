@@ -89,13 +89,19 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _buildFeatureBox(
-                      "Fridge", ShoppingListPage()), // Navigate to FridgePage
-                  const SizedBox(height: 30),
-                  _buildFeatureBox("Shopping",
-                      ShoppingListPage()), // Navigate to ShoppingPage
+                      "Fridge",
+                      ShoppingListPage(
+                          gid: widget.gid)), // Navigate to FridgePage
                   const SizedBox(height: 30),
                   _buildFeatureBox(
-                      "Meals", ShoppingListPage()), // Navigate to MealsPage
+                      "Shopping",
+                      ShoppingListPage(
+                          gid: widget.gid)), // Navigate to ShoppingPage
+                  const SizedBox(height: 30),
+                  _buildFeatureBox(
+                      "Meals",
+                      ShoppingListPage(
+                          gid: widget.gid)), // Navigate to MealsPage
                 ],
               ),
             ),

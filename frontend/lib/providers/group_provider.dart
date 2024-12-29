@@ -6,7 +6,18 @@ class GroupListNotifier extends StateNotifier<GroupListState> {
   final GroupService _groupService;
 
   GroupListNotifier(this._groupService)
-      : super(GroupListState(memberOf: [], managerOf: []));
+      : super(GroupListState(
+          memberOf: [],
+          managerOf: [],
+          isLoading: false,
+        ));
+  void resetState() {
+    state = GroupListState(
+      memberOf: [],
+      managerOf: [],
+      isLoading: false,
+    );
+  }
 
   // Fetch the groups and update state
   Future<void> getGroups() async {
@@ -18,6 +29,7 @@ class GroupListNotifier extends StateNotifier<GroupListState> {
       managerOf: (groups['manager_of'] as List)
           .map<Group>((json) => Group.fromJson(json as Map<String, dynamic>))
           .toList(),
+      // isLoading: false
     );
   }
 

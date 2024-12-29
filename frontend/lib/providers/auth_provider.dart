@@ -47,6 +47,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
           refreshToken: null); // Reset state
       _ref.invalidate(chosenGroupProvider);
       _ref.invalidate(groupListProvider);
+      // Reset GroupListNotifier state
+      _ref.read(groupListProvider.notifier).resetState();
+      print(_ref.read(groupListProvider).isLoading);
       return true;
     }
     return false;

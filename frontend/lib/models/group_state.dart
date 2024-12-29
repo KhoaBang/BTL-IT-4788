@@ -24,8 +24,12 @@ class Group {
 class GroupListState {
   List<Group> memberOf = [];
   List<Group> managerOf = [];
+  final bool isLoading;
 
-  GroupListState({required this.memberOf, required this.managerOf});
+  GroupListState(
+      {required this.memberOf,
+      required this.managerOf,
+      this.isLoading = false});
 
   // Factory method for creating a GroupListState instance from JSON
   factory GroupListState.fromJson(Map<String, dynamic> json) {
