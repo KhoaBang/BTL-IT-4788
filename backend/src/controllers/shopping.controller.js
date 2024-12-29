@@ -37,6 +37,20 @@ const getShoppingListById = async (req, res, next) => {
   }
 };
 
+//get all shopping list
+const getAllShoppingList = async (req, res, next) => {
+  const { GID } = req.params;
+  try {
+    const shoppingList = await sequelize.models._Shopping.findAll({
+      where: { GID },
+    });
+    if (!shoppingList) throw new NotFoundError("Shopping list not found.");
+    return res.status(200).json(shoppingList);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Update a shopping list info (not task) by ID
 const updateShoppingListById = async (req, res, next) => {
   const { GID, shopping_id } = req.params;
@@ -241,7 +255,8 @@ module.exports = {
   getTaskById,
   updateTaskById,
   deleteTaskById,
-  memCompleteTask
+  memCompleteTask,
+  getAllShoppingList
 };
 
 /**
