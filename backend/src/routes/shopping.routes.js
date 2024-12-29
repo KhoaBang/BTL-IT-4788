@@ -13,7 +13,8 @@ const {
   getTaskById,
   updateTaskById,
   deleteTaskById,
-  memCompleteTask
+  memCompleteTask,
+  getAllShoppingList
 } = require("../controllers/shopping.controller");
 
 const router = Router();
@@ -32,6 +33,12 @@ router.get(
   requireAppLogin,
   requireMember,
   getShoppingListById
+);
+router.get(
+  "/group/:GID/shopping",
+  requireAppLogin,
+  requireMangager,
+  getAllShoppingList
 );
 router.delete(
   "/group/:GID/shopping/:shopping_id",
