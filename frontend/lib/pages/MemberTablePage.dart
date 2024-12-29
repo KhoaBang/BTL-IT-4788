@@ -7,8 +7,9 @@ import '../providers/group_provider.dart';
 
 class MemberTablePage extends ConsumerWidget {
   final String groupId; // Pass the groupId for the group being displayed.
-
-  const MemberTablePage({Key? key, required this.groupId}) : super(key: key);
+  final String role;
+  const MemberTablePage({Key? key, required this.groupId, required this.role})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,7 +29,7 @@ class MemberTablePage extends ConsumerWidget {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
-        child: Header(),
+        child: Header(canGoBack: true),
       ),
       body:
           // chosenGroupState.GID != groupId
@@ -37,7 +38,7 @@ class MemberTablePage extends ConsumerWidget {
           Column(
         children: [
           Expanded(
-            child: ResponsiveMemberTable(),
+            child: ResponsiveMemberTable(role: role),
           ),
         ],
       ),

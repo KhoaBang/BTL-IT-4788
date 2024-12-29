@@ -67,7 +67,7 @@ void showAddMenu(BuildContext context, GlobalKey iconKey, String GID,
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => MemberTablePage(groupId: GID),
+              builder: (context) => MemberTablePage(groupId: GID, role: role),
             ),
           );
           break;

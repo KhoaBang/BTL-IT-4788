@@ -32,7 +32,7 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
         child: Header(
-          //canGoBack: false,
+          canGoBack: true,
         ),
       ),
       body: Column(

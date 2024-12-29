@@ -16,7 +16,7 @@ class AuthService {
         'password': password,
       });
 
-      if (postResponse.data['status'] == 1) {
+      if (postResponse.statusCode == 200) {
         print('Login successful: ${postResponse.data}');
         await _storeTokens(postResponse.data['data']);
         return true;
@@ -42,7 +42,7 @@ class AuthService {
         'phone': phone,
       });
 
-      if (postResponse.data['status'] == 1) {
+      if (postResponse.statusCode == 201) {
         print('Signup successful: ${postResponse.data}');
         await _storeTokens(postResponse.data['data']);
         return true;

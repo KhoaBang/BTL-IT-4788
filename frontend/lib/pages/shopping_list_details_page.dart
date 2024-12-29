@@ -23,7 +23,7 @@ class ShoppingListDetailPage extends StatelessWidget {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
         child: Header(
-          //canGoBack: false,
+          canGoBack: true,
         ),
       ),
       body: Column(

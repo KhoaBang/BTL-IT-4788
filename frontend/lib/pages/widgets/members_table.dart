@@ -4,21 +4,17 @@ import 'package:frontend/providers/group_provider.dart';
 import 'confirmation_dialog.dart';
 
 class ResponsiveMemberTable extends ConsumerWidget {
-  const ResponsiveMemberTable({Key? key}) : super(key: key);
+  final String role;
+  const ResponsiveMemberTable({Key? key, required this.role}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final chosenGroupState = ref.watch(chosenGroupProvider);
     final groupNotifier = ref.read(chosenGroupProvider.notifier);
-    // if (chosenGroupState.GID.isEmpty) {
-    //   return const Center(
-    //     child: CircularProgressIndicator(),
-    //   );
-    // }
     final groupId = chosenGroupState.GID;
     final members = chosenGroupState.memberList;
 
-    //ban member
+    // Ban member
     Future<void> _banMember(String memberID) async {
       try {
         if (groupId != null) {
@@ -60,19 +56,21 @@ class ResponsiveMemberTable extends ConsumerWidget {
               ),
               child: DataTable(
                 columnSpacing: 20,
-                columns: const <DataColumn>[
-                  DataColumn(
+                columns: <DataColumn>[
+                  const DataColumn(
                     label: Text(
                       'Member',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
-                  DataColumn(
-                    label: Text(
-                      'Option',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                  if (role ==
+                      'manager') // Only show the "Option" column if role is 'manager'
+                    const DataColumn(
+                      label: Text(
+                        'Option',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
                 ],
                 rows: members.map((member) {
                   return DataRow(
@@ -82,14 +80,12 @@ class ResponsiveMemberTable extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              member
-                                  .username, // Assuming GroupMember has a `name` property.
+                              member.username,
                               style: const TextStyle(fontSize: 16),
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              member
-                                  .email, // Assuming GroupMember has an `email` property.
+                              member.email,
                               style: const TextStyle(
                                 color: Colors.grey,
                                 fontSize: 12,
@@ -98,27 +94,29 @@ class ResponsiveMemberTable extends ConsumerWidget {
                           ],
                         ),
                       ),
-                      DataCell(
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          tooltip: 'Remove',
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (dialogContext) {
-                                return ConfirmDialog(
-                                  title: 'Ban Member',
-                                  content:
-                                      'Are you sure you want to ban this member?',
-                                  confirmText: 'Confirm',
-                                  cancelText: 'Cancel',
-                                  onConfirm: () => {_banMember(member.uuid)},
-                                );
-                              },
-                            );
-                          },
+                      if (role ==
+                          'manager') // Show the option button only if role is 'manager'
+                        DataCell(
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            tooltip: 'Remove',
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (dialogContext) {
+                                  return ConfirmDialog(
+                                    title: 'Ban Member',
+                                    content:
+                                        'Are you sure you want to ban this member?',
+                                    confirmText: 'Confirm',
+                                    cancelText: 'Cancel',
+                                    onConfirm: () => {_banMember(member.uuid)},
+                                  );
+                                },
+                              );
+                            },
+                          ),
                         ),
-                      ),
                     ],
                   );
                 }).toList(),
