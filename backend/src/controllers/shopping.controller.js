@@ -255,7 +255,8 @@ module.exports = {
   getTaskById,
   updateTaskById,
   deleteTaskById,
-  memCompleteTask
+  memCompleteTask,
+  getAllShoppingList
 };
 
 /**
