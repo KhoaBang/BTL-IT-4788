@@ -38,7 +38,7 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
-        child: Header(),
+        child: Header(canGoBack: true),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

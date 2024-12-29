@@ -62,9 +62,7 @@ class AuthService {
 
       Response postResponse = await baseQuery.post('/auth/logout', {});
 
-      if (postResponse.data['status'] == 1) {
-        print('Logout successful.');
-
+      if (postResponse.statusCode == 200) {
         // Clear tokens from storage
         await _clearTokens();
         return true;

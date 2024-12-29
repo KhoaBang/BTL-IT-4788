@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/api/auth_service.dart';
 import 'package:frontend/api/user_service.dart';
 import 'package:frontend/pages/signin_page.dart';
 import 'package:frontend/pages/widgets/notification_box.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/providers/auth_provider.dart';
 
-class Header extends StatefulWidget {
+class Header extends ConsumerStatefulWidget {
   final bool canGoBack;
   final VoidCallback? onBack;
 
@@ -15,9 +16,8 @@ class Header extends StatefulWidget {
   _HeaderState createState() => _HeaderState();
 }
 
-class _HeaderState extends State<Header> {
+class _HeaderState extends ConsumerState<Header> {
   final UserService _userService = UserService();
-  final AuthService _authService = AuthService();
 
   void _showProfileDialog() async {
     try {
@@ -98,26 +98,23 @@ class _HeaderState extends State<Header> {
                 final oldPassword = oldPasswordController.text;
                 final newPassword = newPasswordController.text;
 
-                // Xử lý cập nhật mật khẩu
+                // Handle password update
                 final result =
                     await _userService.updatePassword(oldPassword, newPassword);
 
                 Navigator.pop(context);
 
                 if (result) {
-                  // Thành công
                   NotificationBox.show(
                     context: context,
                     status: 200,
                     message: 'Password updated successfully.',
                   );
                 } else {
-                  // Thất bại
                   NotificationBox.show(
                     context: context,
                     status: 400,
-                    message:
-                        'Incorrect old Password. Please enter correct password',
+                    message: 'Incorrect old Password.',
                   );
                 }
               }
@@ -178,26 +175,23 @@ class _HeaderState extends State<Header> {
                 final username = usernameController.text;
                 final phone = phoneController.text;
 
-                // Xử lý cập nhật mật khẩu
+                // Handle profile update
                 final result =
                     await _userService.updateProfile(username, phone);
 
                 Navigator.pop(context);
 
                 if (result) {
-                  // Thành công
                   NotificationBox.show(
                     context: context,
                     status: 200,
                     message: 'Profile updated successfully.',
                   );
                 } else {
-                  // Thất bại
                   NotificationBox.show(
                     context: context,
                     status: 500,
-                    message:
-                        'Phone number has been used for another account. Please enter another phone number',
+                    message: 'Phone number has been used for another account.',
                   );
                 }
               }
@@ -209,36 +203,21 @@ class _HeaderState extends State<Header> {
     );
   }
 
-  // void _logout() async {
-  //   try {
-  //     await _authService.logout();
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text('Logout successful!')),
-  //     );
-  //     Navigator.pushReplacement(
-  //       context,
-  //       MaterialPageRoute(
-  //           builder: (context) => SignInPage()), // Giả sử HomePage đã có
-  //     );
-  //   } catch (e) {
-  //     print('Error logging out: $e');
-  //   }
-  // }
-
   void _logout() async {
     try {
-      // Gọi hàm logout từ _authService
-      final bool result = await _authService.logout();
+      // Call the logout method from the AuthNotifier
+      final authNotifier = ref.read(authProvider.notifier);
+      final bool result = await authNotifier.logout();
 
       if (result) {
-        // Hiển thị thông báo thành công
+        // Show success notification
         NotificationBox.show(
           context: context,
           status: 200,
           message: 'Logout successful!',
         );
 
-        // Chuyển đến trang SignInPage
+        // Navigate to SignInPage
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -246,7 +225,7 @@ class _HeaderState extends State<Header> {
           ),
         );
       } else {
-        // Hiển thị thông báo thất bại
+        // Show failure notification
         NotificationBox.show(
           context: context,
           status: 400,
@@ -256,7 +235,7 @@ class _HeaderState extends State<Header> {
     } catch (e) {
       print('Error logging out: $e');
 
-      // Hiển thị thông báo lỗi không mong muốn
+      // Show unexpected error notification
       NotificationBox.show(
         context: context,
         status: 400,

@@ -129,7 +129,7 @@ class GroupService {
       BaseQuery baseQuery = BaseQuery();
 
       Response postResponse =
-          await baseQuery.post('/group/$GID/ban/', {'UUID': UUID});
+          await baseQuery.post('/group/$GID/members/ban', {'UUID': UUID});
 
       if (postResponse.statusCode == 200) {
         print('Banned member: ${postResponse.data}');
