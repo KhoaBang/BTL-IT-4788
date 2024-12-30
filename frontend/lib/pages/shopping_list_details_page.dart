@@ -22,6 +22,10 @@ class ShoppingListDetailPage extends ConsumerWidget {
     final groupId = ref.watch(chosenGroupProvider).GID;
     final shoppingListNotifier = ref.read(shoppingListProvider.notifier);
 
+    // Use TaskNotifier to load tasks
+    final taskNotifier =
+        groupId != null ? ref.watch(taskProvider(groupId!)) : null;
+
     // StateProvider to manage the current name
     final nameProvider = StateProvider<String>((ref) => name);
     final currentName = ref.watch(nameProvider);
@@ -157,31 +161,41 @@ class ShoppingListDetailPage extends ConsumerWidget {
           ),
           SizedBox(height: 8),
           Expanded(
-            child: ListSection(
-              title: "Tasks",
-              lists: [
-                {"name": "Weekly Groceries", "date": "2024-12-01"},
-              ],
-              onAdd: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return InputDialog(
-                      groupId: groupId ?? '',
-                      title: 'Add new item',
-                      confirmText: 'Add',
-                      cancelText: 'Cancel',
-                      onConfirm: (groupId, ingredientName, unitId, assignedTo,
-                          quantity) {
-                        print(
-                            'Added: $groupId, $ingredientName, $unitId, $assignedTo, $quantity');
+            child: Consumer(
+              builder: (context, ref, _) {
+                final taskState = ref.watch(taskProvider(
+                    shopping_id)); // Assuming _shoppingId is available
+
+                return ListSection(
+                  title: "Tasks",
+                  lists: taskState.map((task) {
+                    return {
+                      "name": task.ingredientName,
+                      "date": task.status, // Example, modify as per your data
+                    };
+                  }).toList(),
+                  onAdd: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return InputDialog(
+                          groupId: groupId ?? '',
+                          title: 'Add new item',
+                          confirmText: 'Add',
+                          cancelText: 'Cancel',
+                          onConfirm: (groupId, ingredientName, unitId,
+                              assignedTo, quantity) {
+                            print(
+                                'Added: $groupId, $ingredientName, $unitId, $assignedTo, $quantity');
+                          },
+                        );
                       },
                     );
                   },
+                  onItemTap: (id, itemName) {
+                    print('Tapped item: $itemName');
+                  },
                 );
-              },
-              onItemTap: (id, itemName) {
-                print('Tapped item: $itemName');
               },
             ),
           ),

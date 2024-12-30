@@ -46,13 +46,36 @@ class ShoppingList {
   }
 }
 
-// task
+// Unit class to represent the unit information in the task
+class Unit {
+  final int id;
+  final String unitName;
+  final String unitDescription;
+
+  Unit({
+    required this.id,
+    required this.unitName,
+    required this.unitDescription,
+  });
+
+  // Factory method to create a Unit from JSON
+  factory Unit.fromJson(Map<String, dynamic> json) {
+    return Unit(
+      id: json['id'] ?? 0,
+      unitName: json['unit_name'] ?? '',
+      unitDescription: json['unit_description'] ?? '',
+    );
+  }
+}
+
+// Task class to represent a task
 class Task {
   final String assignedTo;
   final String taskId;
   final String ingredientName;
   final int unitId;
   final String status;
+  final Unit unit;
 
   Task({
     required this.assignedTo,
@@ -60,5 +83,18 @@ class Task {
     required this.ingredientName,
     required this.unitId,
     required this.status,
+    required this.unit,
   });
+
+  // Factory method to create a Task from JSON
+  factory Task.fromJson(Map<String, dynamic> json) {
+    return Task(
+      assignedTo: json['username'] ?? '',
+      taskId: json['task_id'] ?? '',
+      ingredientName: json['ingredient_name'] ?? '',
+      unitId: json['unit_id'] ?? 0,
+      status: json['status'] ?? '',
+      unit: Unit.fromJson(json['unit'] ?? {}),
+    );
+  }
 }

@@ -78,8 +78,18 @@ class TaskNotifier extends StateNotifier<List<Task>> {
 
   TaskNotifier(this._shoppingService, this._shoppingId) : super([]);
 
+  /// Load tasks for the specific shopping list
   Future<void> loadTasks(String groupId) async {
-    // Fetch tasks for the specific shopping list
+    try {
+      // Fetch tasks from the service
+      final tasksData = await _shoppingService.getAllTasksForShoppingList(
+          groupId, _shoppingId);
+
+      // Map fetched data to a list of `Task` objects
+      state = tasksData.map((data) => Task.fromJson(data)).toList();
+    } catch (e) {
+      print('Error loading tasks: $e');
+    }
   }
 
   Future<bool> addTask(String groupId, String ingredientName, String unitId,

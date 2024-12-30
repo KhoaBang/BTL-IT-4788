@@ -159,6 +159,33 @@ class ShoppingService {
     }
   }
 
+// get All Tasks
+  Future<List<Map<String, dynamic>>> getAllTasksForShoppingList(
+    String groupId,
+    String shoppingId,
+  ) async {
+    try {
+      BaseQuery baseQuery = BaseQuery();
+
+      // Make the GET request to the backend
+      Response getResponse = await baseQuery.get(
+        '/group/$groupId/shopping/$shoppingId/task',
+      );
+
+      if (getResponse.statusCode == 200) {
+        List<dynamic> tasks = getResponse.data;
+        print('Tasks fetched: $tasks');
+        return tasks.cast<Map<String, dynamic>>();
+      } else {
+        print('Failed to fetch tasks: ${getResponse.data['message']}');
+        return [];
+      }
+    } catch (e) {
+      print('Error fetching tasks: $e');
+      return [];
+    }
+  }
+
   // Get task by ID
   Future<Map<String, dynamic>?> getTaskById(
       String groupId, String shoppingId, String taskId) async {
