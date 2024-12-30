@@ -26,7 +26,6 @@ class GroupsPage extends ConsumerWidget {
 
     // Watch the groupsFutureProvider to trigger data fetching
     final groupsFetch = ref.watch(groupsFutureProvider);
-    print(groupsFetch);
     Future<void> _createGroup(String groupName) async {
       try {
         // Using the GroupNotifier to create a group and refresh the list
