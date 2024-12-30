@@ -30,6 +30,7 @@ class BaseQuery {
           if (accessToken != null) {
             e.requestOptions.headers['Authorization'] = 'Bearer $accessToken';
             final response = await _dio.fetch(e.requestOptions);
+            print(e.requestOptions);
             return handler.resolve(response);
           }
         }
@@ -61,7 +62,7 @@ class BaseQuery {
       });
 
       final data = response.data;
-      if (data != null && data['status'] == 1) {
+      if (data != null && response.statusCode == 200) {
         final newAccessToken = data['data']['access_token'] as String?;
         if (newAccessToken != null) {
           await _storage.write(key: 'access_token', value: newAccessToken);

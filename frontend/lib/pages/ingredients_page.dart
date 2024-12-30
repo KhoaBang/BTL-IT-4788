@@ -136,6 +136,15 @@ class _IngredientPageState extends State<IngredientPage> {
   void _showInputDialog({String? oldName}) {
     final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+    // Define unit options
+    final List<Map<String, dynamic>> units = [
+      {"id": 1, "name": "cái"},
+      {"id": 2, "name": "g"},
+      {"id": 3, "name": "kg"},
+      {"id": 4, "name": "ml"},
+      {"id": 5, "name": "l"},
+    ];
+
     showDialog(
       context: context,
       builder: (context) {
@@ -156,18 +165,25 @@ class _IngredientPageState extends State<IngredientPage> {
                     return null;
                   },
                 ),
-                TextFormField(
-                  controller: _unitIdController,
-                  decoration: InputDecoration(
-                      labelText: "Unit ID (1: cái, 2: g, 3: kg, 4: ml, 5: l)"),
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    final number = int.tryParse(value ?? '');
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please enter unit ID';
+                DropdownButtonFormField<int>(
+                  value: _unitIdController.text.isEmpty
+                      ? null
+                      : int.tryParse(_unitIdController.text),
+                  decoration: InputDecoration(labelText: "Select Unit"),
+                  items: units.map((unit) {
+                    return DropdownMenuItem<int>(
+                      value: unit['id'],
+                      child: Text(unit['name']),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      _unitIdController.text = value.toString();
                     }
-                    if (number == null || number < 1 || number > 5) {
-                      return 'Please enter number from 1 to 5';
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Please select a unit';
                     }
                     return null;
                   },

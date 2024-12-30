@@ -3,8 +3,10 @@ import '../widgets/header.dart';
 import '../widgets/footer.dart';
 import '../widgets/list_section.dart';
 import '../widgets/create_task_dialog.dart';
+import 'package:frontend/providers/group_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ShoppingListDetailPage extends StatelessWidget {
+class ShoppingListDetailPage extends ConsumerWidget {
   final String name;
   final String shopping_id;
 
@@ -15,24 +17,18 @@ class ShoppingListDetailPage extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    // Example items in the shopping list
-    final List<Map<String, String>> items = [
-      {"name": "Weekly Groceries", "date": "2024-12-01"},
-      {"name": "Birthday Party Supplies", "date": "2024-12-03"},
-      {"name": "Holiday Shopping", "date": "2024-12-05"},
-    ];
+  Widget build(BuildContext context, WidgetRef ref) {
+    final groupId = ref.watch(chosenGroupProvider).GID;
 
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
         child: Header(
-          canGoBack: true, // Allow navigation back
+          canGoBack: true,
         ),
       ),
       body: Column(
         children: [
-          // Page Title
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Align(
@@ -52,33 +48,33 @@ class ShoppingListDetailPage extends StatelessWidget {
           Expanded(
             child: ListSection(
               title: "Items in $name",
-              lists: items,
+              lists: [
+                {"name": "Weekly Groceries", "date": "2024-12-01"},
+              ],
               onAdd: () {
                 showDialog(
                   context: context,
                   builder: (context) {
                     return InputDialog(
+                      groupId: groupId ?? '',
                       title: 'Add new item',
-                      hintText: 'Fill in the details',
                       confirmText: 'Add',
                       cancelText: 'Cancel',
                       onConfirm: (groupId, ingredientName, unitId, assignedTo,
                           quantity) {
-                        // Handle adding new item logic
                         print(
-                            'New item added: Group ID=$groupId, Ingredient Name=$ingredientName, Unit ID=$unitId, Assigned To=$assignedTo, Quantity=$quantity');
+                            'Added: $groupId, $ingredientName, $unitId, $assignedTo, $quantity');
                       },
                     );
                   },
                 );
               },
               onItemTap: (id, itemName) {
-                // Handle item tap
-                print('Tapped on item: $itemName with id: $id');
+                print('Tapped item: $itemName');
               },
             ),
           ),
-          Footer(currentIndex: 0), // Update index to match the detail page
+          Footer(currentIndex: 0),
         ],
       ),
     );

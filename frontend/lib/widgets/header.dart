@@ -217,12 +217,13 @@ class _HeaderState extends ConsumerState<Header> {
           message: 'Logout successful!',
         );
 
-        // Navigate to SignInPage
-        Navigator.pushReplacement(
+        // Navigate to SignInPage and remove all previous routes
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
             builder: (context) => SignInPage(),
           ),
+          (route) => false, // Remove all previous routes
         );
       } else {
         // Show failure notification
