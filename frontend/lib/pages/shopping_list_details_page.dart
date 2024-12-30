@@ -184,9 +184,22 @@ class ShoppingListDetailPage extends ConsumerWidget {
                           confirmText: 'Add',
                           cancelText: 'Cancel',
                           onConfirm: (groupId, ingredientName, unitId,
-                              assignedTo, quantity) {
-                            print(
-                                'Added: $groupId, $ingredientName, $unitId, $assignedTo, $quantity');
+                              assignedTo, quantity) async {
+                            final success = await ref
+                                .read(taskProvider(shopping_id).notifier)
+                                .addTask(groupId, ingredientName, unitId,
+                                    assignedTo, quantity);
+
+                            if (success) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text('Task added successfully')),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Failed to add task')),
+                              );
+                            }
                           },
                         );
                       },
