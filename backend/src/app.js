@@ -5,11 +5,11 @@ const morgan = require("morgan");
 const { errorHandler } = require("./middleware/errorHandler");
 
 const admin = require("firebase-admin");
-const serviceAccount = require("./firebase.json");
+// const serviceAccount = require("./firebase.json");
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+// });
 
 /*
 Import routes here:
