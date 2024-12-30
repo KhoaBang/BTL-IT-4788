@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../pages/home_page.dart'; // Thay bằng đường dẫn chính xác tới HomePage
-import '../pages/groups_page.dart'; // Thay bằng đường dẫn chính xác tới GroupsPage
 import '../pages/ingredients_page.dart';
 // import '../recipe_page.dart';
+import 'package:frontend/pages/groups_page_wrapper.dart';
 
 class Footer extends StatefulWidget {
   final int currentIndex; // Index của trang hiện tại
@@ -28,7 +28,7 @@ class _FooterState extends State<Footer> {
       case 1:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => GroupsPage()),
+          MaterialPageRoute(builder: (context) => GroupsPageWrapper()),
         );
         break;
       case 2:

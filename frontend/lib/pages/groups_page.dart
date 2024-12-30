@@ -7,6 +7,12 @@ import 'package:frontend/widgets/input_dialog.dart';
 import 'package:frontend/models/group_state.dart';
 import 'package:frontend/pages/groupDetail_page.dart';
 
+// Define groupsFutureProvider at the global scope
+final groupsFutureProvider = FutureProvider<void>((ref) async {
+  final groupNotifier = ref.read(groupListProvider.notifier);
+  await groupNotifier.getGroups();
+});
+
 class GroupsPage extends ConsumerWidget {
   const GroupsPage({super.key});
 
@@ -18,16 +24,9 @@ class GroupsPage extends ConsumerWidget {
     final groupNotifier =
         ref.read(groupListProvider.notifier); // Accessing the notifier
 
-    // Fetch the groups initially if not already loaded
-    print(groupState.memberOf);
-    print(groupState.managerOf);
-    print(groupState.isLoading);
-    if (groupState.memberOf.isEmpty &&
-        groupState.managerOf.isEmpty &&
-        !groupState.isLoading) {
-      groupNotifier.getGroups();
-    }
-
+    // Watch the groupsFutureProvider to trigger data fetching
+    final groupsFetch = ref.watch(groupsFutureProvider);
+    print(groupsFetch);
     Future<void> _createGroup(String groupName) async {
       try {
         // Using the GroupNotifier to create a group and refresh the list
@@ -61,75 +60,77 @@ class GroupsPage extends ConsumerWidget {
         preferredSize: Size.fromHeight(60),
         child: Header(), // Custom header widget
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Your Groups",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 24,
-                  fontFamily: 'Oxygen',
-                  fontWeight: FontWeight.bold,
+      body: groupsFetch.when(
+        loading: () => Center(child: CircularProgressIndicator()),
+        error: (error, _) => Center(child: Text('Error: $error')),
+        data: (_) => Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Your Groups",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 24,
+                    fontFamily: 'Oxygen',
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
-          ),
-          SizedBox(height: 8),
-          Expanded(
-            child: ListView(
-              children: [
-                _buildGroupSection(
-                  context: context,
-                  title: "Manager of",
-                  groups: groupState
-                      .managerOf, // Using managerOf from GroupListState
-                  onAdd: () {
-                    showDialog(
-                      context: context,
-                      builder: (dialogContext) {
-                        return InputDialog(
-                          title: 'Create new group',
-                          hintText: 'Type group name here',
-                          confirmText: 'Create',
-                          cancelText: 'Cancel',
-                          onConfirm: (input) => _createGroup(input),
-                        );
-                      },
-                    );
-                  },
-                  role: 'manager',
-                ),
-                SizedBox(height: 32),
-                _buildGroupSection(
-                  context: context,
-                  title: "Member of",
-                  groups:
-                      groupState.memberOf, // Using memberOf from GroupListState
-                  onAdd: () {
-                    showDialog(
-                      context: context,
-                      builder: (dialogContext) {
-                        return InputDialog(
-                          title: 'Join a group',
-                          hintText: 'Type group code here',
-                          confirmText: 'Join',
-                          cancelText: 'Cancel',
-                          onConfirm: (input) => _joinGroup(input),
-                        );
-                      },
-                    );
-                  },
-                  role: 'member',
-                ),
-              ],
+            SizedBox(height: 8),
+            Expanded(
+              child: ListView(
+                children: [
+                  _buildGroupSection(
+                    context: context,
+                    title: "Manager of",
+                    groups: groupState.managerOf,
+                    onAdd: () {
+                      showDialog(
+                        context: context,
+                        builder: (dialogContext) {
+                          return InputDialog(
+                            title: 'Create new group',
+                            hintText: 'Type group name here',
+                            confirmText: 'Create',
+                            cancelText: 'Cancel',
+                            onConfirm: (input) => _createGroup(input),
+                          );
+                        },
+                      );
+                    },
+                    role: 'manager',
+                  ),
+                  SizedBox(height: 32),
+                  _buildGroupSection(
+                    context: context,
+                    title: "Member of",
+                    groups: groupState.memberOf,
+                    onAdd: () {
+                      showDialog(
+                        context: context,
+                        builder: (dialogContext) {
+                          return InputDialog(
+                            title: 'Join a group',
+                            hintText: 'Type group code here',
+                            confirmText: 'Join',
+                            cancelText: 'Cancel',
+                            onConfirm: (input) => _joinGroup(input),
+                          );
+                        },
+                      );
+                    },
+                    role: 'member',
+                  ),
+                ],
+              ),
             ),
-          ),
-          Footer(currentIndex: 1), // Footer widget
-        ],
+            Footer(currentIndex: 1), // Footer widget
+          ],
+        ),
       ),
     );
   }
@@ -137,7 +138,7 @@ class GroupsPage extends ConsumerWidget {
   Widget _buildGroupSection({
     required BuildContext context,
     required String title,
-    required List<Group> groups, // Expecting a list of Group objects
+    required List<Group> groups,
     required VoidCallback onAdd,
     required String role,
   }) {
