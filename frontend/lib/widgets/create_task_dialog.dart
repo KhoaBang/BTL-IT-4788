@@ -25,6 +25,7 @@ class InputDialog extends ConsumerStatefulWidget {
 }
 
 class _InputDialogState extends ConsumerState<InputDialog> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _quantityController = TextEditingController();
   String? _selectedIngredientName;
   String? _selectedUnitId;
@@ -33,7 +34,6 @@ class _InputDialogState extends ConsumerState<InputDialog> {
   List<Map<String, dynamic>> _ingredients = [];
   bool _isLoading = true;
 
-  // Map unit IDs to their names
   final Map<String, String> unitMappings = {
     "1": "cái",
     "2": "g",
@@ -85,56 +85,81 @@ class _InputDialogState extends ConsumerState<InputDialog> {
       content: _isLoading
           ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Group ID: ${widget.groupId}'),
-                  DropdownButtonFormField<String>(
-                    value: _selectedIngredientName,
-                    items: _ingredients.map((ingredient) {
-                      return DropdownMenuItem<String>(
-                        value: ingredient['name'],
-                        child: Text(ingredient['name']),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedIngredientName = value;
-                        _selectedUnitId = _ingredients.firstWhere(
-                            (ing) => ing['name'] == value)['unitId'];
-                      });
-                    },
-                    decoration: InputDecoration(labelText: 'Ingredient'),
-                  ),
-                  if (_selectedUnitId != null)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Text(
-                        'Unit: ${unitMappings[_selectedUnitId] ?? "Unknown"}',
-                        style: TextStyle(fontSize: 16),
-                      ),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Group ID: ${widget.groupId}'),
+                    DropdownButtonFormField<String>(
+                      value: _selectedIngredientName,
+                      items: _ingredients.map((ingredient) {
+                        return DropdownMenuItem<String>(
+                          value: ingredient['name'],
+                          child: Text(ingredient['name']),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedIngredientName = value;
+                          _selectedUnitId = _ingredients.firstWhere(
+                              (ing) => ing['name'] == value)['unitId'];
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please choose ingredient name';
+                        }
+                        return null;
+                      },
+                      decoration: InputDecoration(labelText: 'Ingredient'),
                     ),
-                  DropdownButtonFormField<String>(
-                    value: _selectedAssignedTo,
-                    items: groupState.memberList.map((member) {
-                      return DropdownMenuItem<String>(
-                        value: member.uuid,
-                        child: Text('${member.username} (${member.email})'),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedAssignedTo = value;
-                      });
-                    },
-                    decoration: InputDecoration(labelText: 'Assigned To'),
-                  ),
-                  TextField(
-                    controller: _quantityController,
-                    decoration: InputDecoration(labelText: 'Quantity'),
-                    keyboardType: TextInputType.number,
-                  ),
-                ],
+                    if (_selectedUnitId != null)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Text(
+                          'Unit: ${unitMappings[_selectedUnitId] ?? "Unknown"}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    DropdownButtonFormField<String>(
+                      value: _selectedAssignedTo,
+                      items: groupState.memberList.map((member) {
+                        return DropdownMenuItem<String>(
+                          value: member.uuid,
+                          child: Text('${member.username} (${member.email})'),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedAssignedTo = value;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please choose anyone to assign';
+                        }
+                        return null;
+                      },
+                      decoration: InputDecoration(labelText: 'Assigned To'),
+                    ),
+                    TextFormField(
+                      controller: _quantityController,
+                      decoration: InputDecoration(labelText: 'Quantity'),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter quantity';
+                        }
+                        final quantity = double.tryParse(value);
+                        if (quantity == null || quantity <= 0) {
+                          return 'Quantity must be more than 0';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
       actions: [
@@ -144,25 +169,17 @@ class _InputDialogState extends ConsumerState<InputDialog> {
         ),
         TextButton(
           onPressed: () {
-            if (_selectedIngredientName == null ||
-                _selectedUnitId == null ||
-                _selectedAssignedTo == null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Please complete all fields')),
+            if (_formKey.currentState!.validate()) {
+              final quantity = double.parse(_quantityController.text);
+              widget.onConfirm(
+                widget.groupId,
+                _selectedIngredientName!,
+                _selectedUnitId!,
+                _selectedAssignedTo!,
+                quantity,
               );
-              return;
+              Navigator.of(context).pop();
             }
-
-            final quantity = double.tryParse(_quantityController.text) ?? 0.0;
-
-            widget.onConfirm(
-              widget.groupId,
-              _selectedIngredientName!,
-              _selectedUnitId!,
-              _selectedAssignedTo!,
-              quantity,
-            );
-            Navigator.of(context).pop();
           },
           child: Text(widget.confirmText),
         ),

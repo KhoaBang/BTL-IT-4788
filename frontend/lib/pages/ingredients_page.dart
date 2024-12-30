@@ -242,9 +242,10 @@ class _IngredientPageState extends State<IngredientPage> {
             child: TextField(
               controller: _searchController,
               onChanged: _filterIngredients,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: "Search by tag",
                 border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.search),
               ),
             ),
           ),
