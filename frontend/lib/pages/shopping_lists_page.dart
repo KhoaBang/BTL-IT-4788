@@ -102,19 +102,19 @@ class _ShoppingListPageState extends ConsumerState<ShoppingListPage> {
                   },
                 ),
                 SizedBox(height: 32),
-                ListSectionNoicon(
-                  title: "Shared Lists",
-                  lists: shoppingLists
-                      .where((list) => list.status == 'shared')
-                      .map((list) => {
-                            'name': list.name,
-                            'date': list.createdAt.toIso8601String(),
-                          })
-                      .toList(),
-                  onItemTap: (list) {
-                    // Handle item tap if needed
-                  },
-                ),
+                // ListSectionNoicon(
+                //   title: "Shared Lists",
+                //   lists: shoppingLists
+                //       .where((list) => list.status == 'shared')
+                //       .map((list) => {
+                //             'name': list.name,
+                //             'date': list.createdAt.toIso8601String(),
+                //           })
+                //       .toList(),
+                //   onItemTap: (list) {
+                //     // Handle item tap if needed
+                //   },
+                // ),
               ],
             ),
           ),
