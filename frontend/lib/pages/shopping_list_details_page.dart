@@ -12,12 +12,14 @@ import 'package:frontend/models/shopping_state.dart';
 class ShoppingListDetailPage extends ConsumerStatefulWidget {
   final String name;
   final String shopping_id;
+  final String role;
 
-  const ShoppingListDetailPage({
-    Key? key,
-    required this.name,
-    required this.shopping_id,
-  }) : super(key: key);
+  const ShoppingListDetailPage(
+      {Key? key,
+      required this.name,
+      required this.shopping_id,
+      required this.role})
+      : super(key: key);
 
   @override
   _ShoppingListDetailPageState createState() => _ShoppingListDetailPageState();
@@ -221,18 +223,19 @@ class _ShoppingListDetailPageState
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.edit, color: Colors.blue),
-                      onPressed: _editShoppingList,
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.delete, color: Colors.red),
-                      onPressed: _deleteShoppingList,
-                    ),
-                  ],
-                ),
+                if (widget.role == 'manager')
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.edit, color: Colors.blue),
+                        onPressed: _editShoppingList,
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        onPressed: _deleteShoppingList,
+                      ),
+                    ],
+                  ),
               ],
             ),
           ),

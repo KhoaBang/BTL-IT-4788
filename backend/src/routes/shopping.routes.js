@@ -39,7 +39,7 @@ router.get(
 router.get(
   "/group/:GID/shopping",
   requireAppLogin,
-  requireMangager,
+  requireMember,
   getAllShoppingList
 );
 router.delete(
@@ -93,7 +93,7 @@ router.patch(
 router.get(
   "/group/:GID/shopping/:shopping_id/task",
   requireAppLogin,
-  requireMangager,
+  requireMember,
   getAllTask
 )
 module.exports = router;

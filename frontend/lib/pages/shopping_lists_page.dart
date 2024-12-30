@@ -11,7 +11,8 @@ import 'package:frontend/providers/shopping_provider.dart';
 
 class ShoppingListPage extends ConsumerStatefulWidget {
   final String gid;
-  const ShoppingListPage({super.key, required this.gid});
+  final String role;
+  const ShoppingListPage({super.key, required this.gid, required this.role});
 
   @override
   _ShoppingListPageState createState() => _ShoppingListPageState();
@@ -94,9 +95,7 @@ class _ShoppingListPageState extends ConsumerState<ShoppingListPage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => ShoppingListDetailPage(
-                          name: name,
-                          shopping_id: id,
-                        ),
+                            name: name, shopping_id: id, role: widget.role),
                       ),
                     );
                   },
