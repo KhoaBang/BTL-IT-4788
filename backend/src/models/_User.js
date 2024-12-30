@@ -177,6 +177,16 @@ module.exports = async (sequelize) => {
         allowNull: false,
         defaultValue: 'Active',
       },
+      firebase_token:{
+        type: DataTypes.STRING(256),
+        allowNull: false,
+        defaultValue: 'EMPTY',
+      },
+      badge:{
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
       member_of: {
         type: DataTypes.JSON,
         defaultValue: [],

@@ -269,6 +269,27 @@ const memCompleteTask = async (req, res, next) => {
   }
 };
 
+// Get all tasks
+const getAllTask = async (req, res, next) => {
+  const { shopping_id, GID } = req.params;
+  const list = await sequelize.models._Shopping.findOne({where:{ shopping_id, GID }})
+  const task_list = list.task_list || [];
+  const tasks=[]
+  try {
+    for(let i =0; i<task_list.length; i++){
+      const task = await sequelize.models._Task.findOne({where:{task_id:task_list[i]}})
+      const {task_id,ingredient_name,unit_id, updatedAt,status}= task
+      const assignee = await sequelize.models._User.findOne({where:{UUID:task.assigned_to}})
+      const unit = await sequelize.models._Unit.findOne({where:{id: unit_id}})
+      const {username,email}=assignee
+      tasks.push({task_id,ingredient_name,unit_id,updatedAt,username,email,status,unit})
+    }
+    return res.status(200).json(tasks);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createShoppingList,
   getShoppingListById,
@@ -281,4 +302,5 @@ module.exports = {
   memCompleteTask,
   getAllShoppingList,
   getTaskInShoppingList,
+  getAllTask
 };
