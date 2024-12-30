@@ -71,15 +71,17 @@ class Unit {
 // Task class to represent a task
 class Task {
   final String assignedTo;
+  final String email; // New field for email
   final String taskId;
   final String ingredientName;
   final int unitId;
   final String status;
   final Unit unit;
-  final int quantity; // Add a default value for quantity
+  final int quantity;
 
   Task({
     required this.assignedTo,
+    required this.email, // Initialize email
     required this.taskId,
     required this.ingredientName,
     required this.unitId,
@@ -92,6 +94,7 @@ class Task {
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
       assignedTo: json['username'] ?? '',
+      email: json['email'] ?? '', // Extract email from JSON
       taskId: json['task_id'] ?? '',
       ingredientName: json['ingredient_name'] ?? '',
       unitId: json['unit_id'] ?? 0,

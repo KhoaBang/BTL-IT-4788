@@ -6,6 +6,7 @@ import '../widgets/create_task_dialog.dart';
 import 'package:frontend/providers/group_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/providers/shopping_provider.dart';
+import 'package:frontend/models/shopping_state.dart';
 
 class ShoppingListDetailPage extends ConsumerStatefulWidget {
   final String name;
@@ -43,6 +44,23 @@ class _ShoppingListDetailPageState
     if (groupId != null) {
       final taskNotifier = ref.read(taskProvider(shoppingId).notifier);
       taskNotifier.loadTasks(groupId); // Load tasks
+    }
+  }
+
+  void _toggleCompletion(Task task) async {
+    final groupId = ref.read(chosenGroupProvider).GID;
+    if (groupId != null) {
+      final taskNotifier = ref.read(taskProvider(shoppingId).notifier);
+      bool success = await taskNotifier.completeTask(groupId, task.taskId);
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Task marked as completed')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to mark task as completed')),
+        );
+      }
     }
   }
 
@@ -188,7 +206,7 @@ class _ShoppingListDetailPageState
 
                 return ListSection(
                   title: "Tasks",
-                  tasks: taskState, // Pass the task list to ListSectionTask
+                  tasks: taskState,
                   onAdd: () {
                     showDialog(
                       context: context,
@@ -222,6 +240,48 @@ class _ShoppingListDetailPageState
                   },
                   onItemTap: (taskId, ingredientName) {
                     print('Tapped task: $taskId - $ingredientName');
+                  },
+                  onEditTask: (task) {
+                    // Open edit dialog
+                  },
+                  onDeleteTask: (task) async {
+                    // Confirm before deletion
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text('Delete Task'),
+                          content: Text(
+                              'Are you sure you want to delete "${task.ingredientName}"?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              child: Text('Delete',
+                                  style: TextStyle(color: Colors.red)),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+
+                    if (confirm == true) {
+                      final groupId = ref.read(chosenGroupProvider).GID;
+                      if (groupId != null) {
+                        await ref
+                            .read(taskProvider(shoppingId).notifier)
+                            .removeTask(groupId, task.taskId);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Task deleted successfully')),
+                        );
+                      }
+                    }
+                  },
+                  onToggleCompletion: (task, isCompleted) {
+                    _toggleCompletion(task); // Handle task completion toggle
                   },
                 );
               },

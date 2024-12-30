@@ -6,6 +6,9 @@ class ListSection extends StatelessWidget {
   final List<Task> tasks; // Updated to accept a list of Task objects
   final VoidCallback onAdd;
   final void Function(String taskId, String ingredientName) onItemTap;
+  final void Function(Task task) onEditTask;
+  final void Function(Task task) onDeleteTask;
+  final void Function(Task task, bool isCompleted) onToggleCompletion;
 
   const ListSection({
     Key? key,
@@ -13,6 +16,9 @@ class ListSection extends StatelessWidget {
     required this.tasks,
     required this.onAdd,
     required this.onItemTap,
+    required this.onEditTask,
+    required this.onDeleteTask,
+    required this.onToggleCompletion,
   }) : super(key: key);
 
   @override
@@ -65,45 +71,77 @@ class ListSection extends StatelessWidget {
                       color: Color(0xFFF1F1F1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          task.ingredientName,
-                          style: TextStyle(
-                            color: Color(0xFF010F07),
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        // Task Details
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              task.ingredientName,
+                              style: TextStyle(
+                                color: Color(0xFF010F07),
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'Assigned to: ${task.email}',
+                              style: TextStyle(
+                                color: Color(0xFF8D8D8D),
+                                fontSize: 12,
+                              ),
+                            ),
+                            Text(
+                              'Status: ${task.status}',
+                              style: TextStyle(
+                                color: Color(0xFF8D8D8D),
+                                fontSize: 12,
+                              ),
+                            ),
+                            Text(
+                              'Quantity: ${task.quantity} ${task.unit.unitName}',
+                              style: TextStyle(
+                                color: Color(0xFF8D8D8D),
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 4),
-                        Text(
-                          'Assigned to: ${task.assignedTo}',
-                          style: TextStyle(
-                            color: Color(0xFF8D8D8D),
-                            fontSize: 12,
-                          ),
-                        ),
-                        Text(
-                          'Status: ${task.status}',
-                          style: TextStyle(
-                            color: Color(0xFF8D8D8D),
-                            fontSize: 12,
-                          ),
-                        ),
-                        Text(
-                          'Quantity: ${task.quantity} ${task.unit.unitName}',
-                          style: TextStyle(
-                            color: Color(0xFF8D8D8D),
-                            fontSize: 12,
-                          ),
-                        ),
-                        Text(
-                          'Task ID: ${task.taskId}',
-                          style: TextStyle(
-                            color: Color(0xFF8D8D8D),
-                            fontSize: 12,
-                          ),
+                        // Action Buttons
+                        PopupMenuButton<String>(
+                          onSelected: (value) {
+                            switch (value) {
+                              case 'complete':
+                                onToggleCompletion(
+                                    task, task.status != 'Completed');
+                                break;
+                              case 'edit':
+                                onEditTask(task);
+                                break;
+                              case 'delete':
+                                onDeleteTask(task);
+                                break;
+                            }
+                          },
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              value: 'complete',
+                              child: Text(task.status == 'Completed'
+                                  ? 'Mark as Not Completed'
+                                  : 'Mark as Completed'),
+                            ),
+                            PopupMenuItem(
+                              value: 'edit',
+                              child: Text('Edit Task'),
+                            ),
+                            PopupMenuItem(
+                              value: 'delete',
+                              child: Text('Delete Task'),
+                            ),
+                          ],
                         ),
                       ],
                     ),

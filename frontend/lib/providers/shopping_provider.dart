@@ -118,4 +118,38 @@ class TaskNotifier extends StateNotifier<List<Task>> {
       state = state.where((task) => task.taskId != taskId).toList();
     }
   }
+
+  // Complete a task by its taskId and update the state
+  Future<bool> completeTask(String groupId, String taskId) async {
+    try {
+      // Call the memCompleteTask method from ShoppingService
+      bool success =
+          await _shoppingService.memCompleteTask(groupId, _shoppingId, taskId);
+
+      if (success) {
+        // Update the state by marking the task as completed
+        state = state.map((task) {
+          if (task.taskId == taskId) {
+            return Task(
+              assignedTo: task.assignedTo,
+              email: task.email,
+              taskId: task.taskId,
+              ingredientName: task.ingredientName,
+              unitId: task.unitId,
+              status: 'completed', // Update status to 'completed'
+              unit: task.unit,
+              quantity: task.quantity,
+            );
+          }
+          return task;
+        }).toList();
+        return true; // Return true if the task was successfully completed
+      } else {
+        return false; // Return false if task completion failed
+      }
+    } catch (e) {
+      print('Error completing task: $e');
+      return false; // Return false if an error occurs
+    }
+  }
 }
