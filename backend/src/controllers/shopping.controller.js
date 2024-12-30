@@ -131,57 +131,59 @@ const getTaskInShoppingList = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-}
+};
 
 // Add a task to a shopping list
 const addTaskToShoppingList = async (req, res, next) => {
-    const { GID, shopping_id } = req.params;
-    const { ingredient_name, unit_id, assigned_to, quantity } = req.body;
-  
-    try {
-      // Fetch the shopping list
-      const shoppingList = await sequelize.models._Shopping.findOne({
-        where: { GID, shopping_id },
-      });
-      if (!shoppingList) throw new NotFoundError("Shopping list not found.");
-  
-      // Fetch the group data
-      const group = await sequelize.models._Group.findOne({ where: { GID } });
-      if (!group) {
-        throw new BadRequestError(`No group found with ID: ${GID}`);
-      }
-  
-      // Check if user is a group member or manager
-      const isMember = group.member_ids?.some((member) => member.UUID === assigned_to);
-      const isManager = group.manager_id === assigned_to;
-  
-      if (!(isMember || isManager)) {
-        throw new ForbiddenError("You are not authorized to assign this task.");
-      }
-  
-      // Create the new task
-      const task = await sequelize.models._Task.create({
-        ingredient_name,
-        unit_id,
-        assigned_to,
-        quantity,
-      });
-  
-      // Update the shopping list
-      const taskList = shoppingList.getDataValue("task_list") || [];
-      taskList.push(task.task_id);
-      shoppingList.setDataValue("task_list", taskList);
-  
-      await shoppingList.save();
-  
-      // Respond with the created task
-      return res.status(201).json(task);
-    } catch (error) {
-      // Pass error to middleware
-      next(error);
+  const { GID, shopping_id } = req.params;
+  const { ingredient_name, unit_id, assigned_to, quantity } = req.body;
+
+  try {
+    // Fetch the shopping list
+    const shoppingList = await sequelize.models._Shopping.findOne({
+      where: { GID, shopping_id },
+    });
+    if (!shoppingList) throw new NotFoundError("Shopping list not found.");
+
+    // Fetch the group data
+    const group = await sequelize.models._Group.findOne({ where: { GID } });
+    if (!group) {
+      throw new BadRequestError(`No group found with ID: ${GID}`);
     }
-  };
-  
+
+    // Check if user is a group member or manager
+    const isMember = group.member_ids?.some(
+      (member) => member.UUID === assigned_to
+    );
+    const isManager = group.manager_id === assigned_to;
+
+    if (!(isMember || isManager)) {
+      throw new ForbiddenError("You are not authorized to assign this task.");
+    }
+
+    // Create the new task
+    const task = await sequelize.models._Task.create({
+      ingredient_name,
+      unit_id,
+      assigned_to,
+      quantity,
+    });
+
+    // Update the shopping list
+    const taskList = shoppingList.getDataValue("task_list") || [];
+    taskList.push(task.task_id);
+    shoppingList.setDataValue("task_list", taskList);
+
+    await shoppingList.save();
+
+    // Respond with the created task
+    return res.status(201).json(task);
+  } catch (error) {
+    // Pass error to middleware
+    next(error);
+  }
+};
+
 // Get a task by ID
 const getTaskById = async (req, res, next) => {
   const { task_id } = req.params;
@@ -249,22 +251,23 @@ const deleteTaskById = async (req, res, next) => {
 };
 
 //member completed task
-const memCompleteTask = async(req,res,next)=>{
-    const {task_id}= req.params;
-    try{
-        const {UUID}=req.Userdata
-        const task = await sequelize.models._Task.findOne({where:{task_id:task_id}})
-        if(task.assigned_to===UUID){
-            task.status="completed"
-            task.changed("status",true);
-            task.save()
-            return res.status(200).json({message: "Complete successfully"})
-        }else
-            throw new ForbiddenError("not your task")
-    }catch(err){
-        next(err)
-    }
-}
+const memCompleteTask = async (req, res, next) => {
+  const { task_id } = req.params;
+  try {
+    const { UUID } = req.Userdata;
+    const task = await sequelize.models._Task.findOne({
+      where: { task_id: task_id },
+    });
+    if (task.assigned_to === UUID) {
+      task.status = "completed";
+      task.changed("status", true);
+      task.save();
+      return res.status(200).json({ message: "Complete successfully" });
+    } else throw new ForbiddenError("not your task");
+  } catch (err) {
+    next(err);
+  }
+};
 
 module.exports = {
   createShoppingList,
@@ -276,6 +279,6 @@ module.exports = {
   updateTaskById,
   deleteTaskById,
   memCompleteTask,
-  getAllShoppingList
+  getAllShoppingList,
+  getTaskInShoppingList,
 };
-
