@@ -8,6 +8,7 @@ import 'package:frontend/providers/group_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/providers/shopping_provider.dart';
 import 'package:frontend/models/shopping_state.dart';
+import 'package:frontend/widgets/notification_box.dart';
 
 class ShoppingListDetailPage extends ConsumerStatefulWidget {
   final String name;
@@ -56,12 +57,17 @@ class _ShoppingListDetailPageState
       final taskNotifier = ref.read(taskProvider(shoppingId).notifier);
       bool success = await taskNotifier.completeTask(groupId, task.taskId);
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Task marked as completed')),
+        NotificationBox.show(
+          context: context,
+          status: 200,
+          message: 'Task marked as completed!',
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to mark task as completed')),
+        NotificationBox.show(
+          context: context,
+          status: 200,
+          message:
+              'Failed to mark task as completed. Task not assigned to you?',
         );
       }
     }
@@ -247,6 +253,7 @@ class _ShoppingListDetailPageState
 
                 return ListSection(
                   title: "Tasks",
+                  role: widget.role,
                   tasks: taskState,
                   onAdd: () {
                     showDialog(

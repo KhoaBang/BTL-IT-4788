@@ -9,17 +9,19 @@ class ListSection extends StatelessWidget {
   final void Function(Task task) onEditTask;
   final void Function(Task task) onDeleteTask;
   final void Function(Task task, bool isCompleted) onToggleCompletion;
+  final String role;
 
-  const ListSection({
-    Key? key,
-    required this.title,
-    required this.tasks,
-    required this.onAdd,
-    required this.onItemTap,
-    required this.onEditTask,
-    required this.onDeleteTask,
-    required this.onToggleCompletion,
-  }) : super(key: key);
+  const ListSection(
+      {Key? key,
+      required this.title,
+      required this.tasks,
+      required this.onAdd,
+      required this.onItemTap,
+      required this.onEditTask,
+      required this.onDeleteTask,
+      required this.onToggleCompletion,
+      required this.role})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -47,13 +49,14 @@ class ListSection extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 5),
-              GestureDetector(
-                onTap: onAdd,
-                child: Icon(
-                  Icons.add,
-                  color: Color(0xFFEF9920),
+              if (role == 'manager')
+                GestureDetector(
+                  onTap: onAdd,
+                  child: Icon(
+                    Icons.add,
+                    color: Color(0xFFEF9920),
+                  ),
                 ),
-              ),
             ],
           ),
           SizedBox(height: 16),
@@ -111,38 +114,41 @@ class ListSection extends StatelessWidget {
                           ],
                         ),
                         // Action Buttons
-                        PopupMenuButton<String>(
-                          onSelected: (value) {
-                            switch (value) {
-                              case 'complete':
-                                onToggleCompletion(
-                                    task, task.status != 'Completed');
-                                break;
-                              case 'edit':
-                                onEditTask(task);
-                                break;
-                              case 'delete':
-                                onDeleteTask(task);
-                                break;
-                            }
-                          },
-                          itemBuilder: (context) => [
-                            PopupMenuItem(
-                              value: 'complete',
-                              child: Text(task.status == 'Completed'
-                                  ? 'Mark as Not Completed'
-                                  : 'Mark as Completed'),
-                            ),
-                            PopupMenuItem(
-                              value: 'edit',
-                              child: Text('Edit Task'),
-                            ),
-                            PopupMenuItem(
-                              value: 'delete',
-                              child: Text('Delete Task'),
-                            ),
-                          ],
-                        ),
+                        if (role == 'manager' ||
+                            (role != 'manager' && task.status != 'completed'))
+                          PopupMenuButton<String>(
+                            onSelected: (value) {
+                              switch (value) {
+                                case 'complete':
+                                  onToggleCompletion(
+                                      task, task.status != 'Completed');
+                                  break;
+                                case 'edit':
+                                  onEditTask(task);
+                                  break;
+                                case 'delete':
+                                  onDeleteTask(task);
+                                  break;
+                              }
+                            },
+                            itemBuilder: (context) => [
+                              if (role != 'manager' &&
+                                  task.status != 'completed')
+                                PopupMenuItem(
+                                  value: 'complete',
+                                  child: Text('Mark as Completed'),
+                                ),
+                              if (role == 'manager')
+                                PopupMenuItem(
+                                  value: 'edit',
+                                  child: Text('Edit Task'),
+                                ),
+                              // PopupMenuItem(
+                              //   value: 'delete',
+                              //   child: Text('Delete Task'),
+                              // ),
+                            ],
+                          ),
                       ],
                     ),
                   ),
