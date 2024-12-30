@@ -5,12 +5,12 @@ import 'package:frontend/api/group_service.dart'; // Add GroupService
 import 'package:frontend/widgets/footer.dart';
 import 'package:frontend/widgets/header.dart';
 
-class TaskPage extends StatefulWidget {
+class HomePage extends StatefulWidget {
   @override
-  _TaskPageState createState() => _TaskPageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _TaskPageState extends State<TaskPage> {
+class _HomePageState extends State<HomePage> {
   late Future<List<dynamic>> _tasksFuture;
   late Future<Map<String, dynamic>> _groupsFuture; // Add future for groups
   final ShoppingService _shoppingService = ShoppingService();

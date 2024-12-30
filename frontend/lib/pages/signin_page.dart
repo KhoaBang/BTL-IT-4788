@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/providers/auth_provider.dart'; // Import the AuthProvider
+import 'package:frontend/providers/auth_provider.dart';
 import 'signup_page.dart';
-import 'home_page.dart'; // Giả sử đây là trang HomePage
+import 'home_page_task.dart';
 import 'package:frontend/widgets/notification_box.dart';
 
 class SignInPage extends ConsumerStatefulWidget {
