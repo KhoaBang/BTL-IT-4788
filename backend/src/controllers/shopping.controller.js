@@ -173,7 +173,7 @@ const addTaskToShoppingList = async (req, res, next) => {
     const taskList = shoppingList.getDataValue("task_list") || [];
     taskList.push(task.task_id);
     shoppingList.setDataValue("task_list", taskList);
-
+    shoppingList.changed("task_list", true);
     await shoppingList.save();
 
     // Respond with the created task
