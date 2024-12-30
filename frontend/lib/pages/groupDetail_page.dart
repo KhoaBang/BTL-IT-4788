@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod for state management
-import 'widgets/header.dart';
-import 'widgets/footer.dart';
-import 'widgets/popup_menu.dart'; // Import the helper file
+import '../widgets/header.dart';
+import '../widgets/footer.dart';
+import '../widgets/popup_menu.dart'; // Import the helper file
 import 'shopping_lists_page.dart';
 import 'package:frontend/providers/group_provider.dart'; // Import the chosen group provider
 

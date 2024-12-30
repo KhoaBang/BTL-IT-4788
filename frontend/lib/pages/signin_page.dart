@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/providers/auth_provider.dart'; // Import the AuthProvider
 import 'signup_page.dart';
 import 'home_page.dart'; // Giả sử đây là trang HomePage
-import 'package:frontend/pages/widgets/notification_box.dart';
+import 'package:frontend/widgets/notification_box.dart';
 
 class SignInPage extends ConsumerStatefulWidget {
   @override

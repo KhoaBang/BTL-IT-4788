@@ -1,7 +1,7 @@
-import 'widgets/ingredients_table.dart';
+import '../widgets/ingredients_table.dart';
 import 'package:flutter/material.dart';
-import 'widgets/header.dart';
-import 'widgets/footer.dart';
+import '../widgets/header.dart';
+import '../widgets/footer.dart';
 
 class IngredientsPage extends StatelessWidget {
   @override
@@ -10,8 +10,8 @@ class IngredientsPage extends StatelessWidget {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
         child: Header(
-          //canGoBack: false,
-        ),
+            //canGoBack: false,
+            ),
       ),
       body: Column(
         children: [

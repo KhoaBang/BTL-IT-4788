@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'signin_page.dart';
 import 'package:frontend/api/auth_service.dart';
-import 'package:frontend/pages/widgets/notification_box.dart';
+import 'package:frontend/widgets/notification_box.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});

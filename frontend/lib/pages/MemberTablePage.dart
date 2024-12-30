@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'widgets/header.dart';
-import 'widgets/footer.dart';
-import 'widgets/members_table.dart';
+import '../widgets/header.dart';
+import '../widgets/footer.dart';
+import '../widgets/members_table.dart';
 import '../providers/group_provider.dart';
 
 class MemberTablePage extends ConsumerWidget {

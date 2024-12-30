@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/providers/group_provider.dart';
-import 'package:frontend/pages/widgets/header.dart';
-import 'package:frontend/pages/widgets/footer.dart';
-import 'package:frontend/pages/widgets/input_dialog.dart';
+import 'package:frontend/widgets/header.dart';
+import 'package:frontend/widgets/footer.dart';
+import 'package:frontend/widgets/input_dialog.dart';
 import 'package:frontend/models/group_state.dart';
 import 'package:frontend/pages/groupDetail_page.dart';
 

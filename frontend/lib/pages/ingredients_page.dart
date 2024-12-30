@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/api/ingredient_service.dart';
-import 'package:frontend/pages/widgets/header.dart';
-import 'package:frontend/pages/widgets/footer.dart';
-import 'package:frontend/pages/widgets/notification_box.dart';
+import 'package:frontend/widgets/header.dart';
+import 'package:frontend/widgets/footer.dart';
+import 'package:frontend/widgets/notification_box.dart';
 
 class IngredientPage extends StatefulWidget {
   const IngredientPage({Key? key}) : super(key: key);
@@ -158,7 +158,8 @@ class _IngredientPageState extends State<IngredientPage> {
                 ),
                 TextFormField(
                   controller: _unitIdController,
-                  decoration: InputDecoration(labelText: "Unit ID (1: cái, 2: g, 3: kg, 4: ml, 5: l)"),
+                  decoration: InputDecoration(
+                      labelText: "Unit ID (1: cái, 2: g, 3: kg, 4: ml, 5: l)"),
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     final number = int.tryParse(value ?? '');

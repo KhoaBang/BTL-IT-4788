@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/api/user_service.dart';
 import 'package:frontend/pages/signin_page.dart';
-import 'package:frontend/pages/widgets/notification_box.dart';
+import 'package:frontend/widgets/notification_box.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/providers/auth_provider.dart';
 

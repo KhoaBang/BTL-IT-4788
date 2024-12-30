@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
-import '../MemberTablePage.dart';
+import '../pages/MemberTablePage.dart';
 import 'confirmation_dialog.dart';
-import '../../api/group_service.dart';
-import '../../pages/widgets/notification_box.dart';
-import '../../providers/group_provider.dart';
+import '../api/group_service.dart';
+import 'notification_box.dart';
+import '../providers/group_provider.dart';
 
 void showAddMenu(BuildContext context, GlobalKey iconKey, String GID,
     String role, WidgetRef ref) {

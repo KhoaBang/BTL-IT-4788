@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 
 class ListSection extends StatelessWidget {
   final String title;
-  final List<Map<String, String>>
-      lists; // Updated to a list of maps for name and date
+  final List<Map<String, String>> lists;
   final VoidCallback onAdd;
-  final void Function(String listName) onItemTap;
+  final void Function(String id, String name) onItemTap;
 
   const ListSection({
     Key? key,
@@ -51,13 +50,12 @@ class ListSection extends StatelessWidget {
             ],
           ),
           SizedBox(height: 16),
-          // Scrollable list for shopping lists
           SizedBox(
             height: 200,
             child: ListView(
               children: lists.map((list) {
                 return GestureDetector(
-                  onTap: () => onItemTap(list['name']!),
+                  onTap: () => onItemTap(list['id']!, list['name']!),
                   child: Container(
                     padding:
                         const EdgeInsets.symmetric(vertical: 8, horizontal: 12),

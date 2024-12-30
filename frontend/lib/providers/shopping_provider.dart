@@ -16,15 +16,32 @@ class ShoppingListNotifier extends StateNotifier<List<ShoppingList>> {
 
   ShoppingListNotifier(this._shoppingService) : super([]);
 
-  Future<void> loadShoppingLists(String groupId) async {
-    // Implement API call to fetch all shopping lists for a group.
+  // Load shopping lists for a specific group
+  Future<void> getAllShoppingLists(String groupId) async {
+    try {
+      // Fetch shopping lists from the API
+      List<dynamic>? shoppingListsData =
+          await _shoppingService.getAllShoppingLists(groupId);
+
+      if (shoppingListsData != null) {
+        // Map the data to ShoppingList objects, handle null values
+        state = shoppingListsData
+            .map((data) => ShoppingList.fromJson(
+                data ?? {})) // Fallback to empty map if null
+            .toList();
+      } else {
+        print('No shopping lists found');
+      }
+    } catch (e) {
+      print('Error loading shopping lists: $e');
+    }
   }
 
   Future<bool> addShoppingList(String groupId, String name) async {
     final success = await _shoppingService.createShoppingList(groupId, name);
     if (success) {
       // Reload the shopping lists after adding a new one
-      await loadShoppingLists(groupId);
+      await getAllShoppingLists(groupId);
     }
     return success;
   }
@@ -42,7 +59,7 @@ class ShoppingListNotifier extends StateNotifier<List<ShoppingList>> {
     final success = await _shoppingService.updateShoppingListById(
         groupId, shoppingId, name, status);
     if (success) {
-      await loadShoppingLists(groupId);
+      await getAllShoppingLists(groupId);
     }
   }
 }

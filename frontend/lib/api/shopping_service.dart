@@ -2,6 +2,26 @@ import 'package:dio/dio.dart';
 import 'package:frontend/api/base_query.dart';
 
 class ShoppingService {
+  // Get all shopping lists for a group
+  Future<List<dynamic>?> getAllShoppingLists(String groupId) async {
+    try {
+      BaseQuery baseQuery = BaseQuery();
+      // Send GET request to the backend to fetch all shopping lists
+      Response response = await baseQuery.get('/group/$groupId/shopping');
+
+      if (response.statusCode == 200) {
+        print('Shopping lists fetched successfully: ${response.data}');
+        return response.data; // Return the list of shopping lists
+      } else {
+        print('Failed to fetch shopping lists: ${response.data['message']}');
+        return null; // Return null if the fetch fails
+      }
+    } catch (e) {
+      print('Error fetching shopping lists: $e');
+      return null; // Return null if an error occurs
+    }
+  }
+
   // create a new shopping list
   Future<bool> createShoppingList(String groupId, String name) async {
     try {

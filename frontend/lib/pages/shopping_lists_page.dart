@@ -1,21 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'widgets/header.dart';
-import 'widgets/footer.dart';
-import 'widgets/confirmation_dialog.dart';
-import 'widgets/input_dialog.dart';
-import 'widgets/list_section.dart';
-import 'widgets/list_section_noicon.dart';
+import '../widgets/header.dart';
+import '../widgets/footer.dart';
+import '../widgets/confirmation_dialog.dart';
+import '../widgets/input_dialog.dart';
+import '../widgets/list_section.dart';
+import '../widgets/list_section_noicon.dart';
 import 'shopping_list_details_page.dart';
 import 'package:frontend/providers/shopping_provider.dart';
 
-class ShoppingListPage extends ConsumerWidget {
+class ShoppingListPage extends ConsumerStatefulWidget {
   final String gid;
   const ShoppingListPage({super.key, required this.gid});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Access the shopping list state
+  _ShoppingListPageState createState() => _ShoppingListPageState();
+}
+
+class _ShoppingListPageState extends ConsumerState<ShoppingListPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch all shopping lists when the page is loaded
+    ref.read(shoppingListProvider.notifier).getAllShoppingLists(widget.gid);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final shoppingLists = ref.watch(shoppingListProvider);
 
     return Scaffold(
@@ -47,12 +58,12 @@ class ShoppingListPage extends ConsumerWidget {
             child: ListView(
               children: [
                 ListSection(
-                  title: "Personal Lists",
+                  title: "Plan",
                   lists: shoppingLists
-                      .where((list) => list.status == 'personal')
                       .map((list) => {
                             'name': list.name,
                             'date': list.createdAt.toIso8601String(),
+                            'id': list.shoppingId,
                           })
                       .toList(),
                   onAdd: () {
@@ -67,7 +78,7 @@ class ShoppingListPage extends ConsumerWidget {
                           onConfirm: (input) async {
                             final success = await ref
                                 .read(shoppingListProvider.notifier)
-                                .addShoppingList(gid, input);
+                                .addShoppingList(widget.gid, input);
                             if (success) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text('List created!')),
@@ -78,15 +89,16 @@ class ShoppingListPage extends ConsumerWidget {
                       },
                     );
                   },
-                  onItemTap: (list) {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => ShoppingListDetailPage(
-                    //       listName: list['name']!,
-                    //     ),
-                    //   ),
-                    // );
+                  onItemTap: (id, name) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ShoppingListDetailPage(
+                          name: name,
+                          shopping_id: id,
+                        ),
+                      ),
+                    );
                   },
                 ),
                 SizedBox(height: 32),
@@ -100,14 +112,7 @@ class ShoppingListPage extends ConsumerWidget {
                           })
                       .toList(),
                   onItemTap: (list) {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => ShoppingListDetailPage(
-                    //       listName: list['name']!,
-                    //     ),
-                    //   ),
-                    // );
+                    // Handle item tap if needed
                   },
                 ),
               ],
