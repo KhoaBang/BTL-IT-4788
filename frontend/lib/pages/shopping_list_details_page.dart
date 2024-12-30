@@ -251,86 +251,190 @@ class _ShoppingListDetailPageState
               builder: (context, ref, _) {
                 final taskState = ref.watch(taskProvider(shoppingId));
 
-                return ListSection(
-                  title: "Tasks",
-                  role: widget.role,
-                  tasks: taskState,
-                  onAdd: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return InputDialog(
-                          groupId: groupId ?? '',
-                          title: 'Add new item',
-                          confirmText: 'Add',
-                          cancelText: 'Cancel',
-                          onConfirm: (groupId, ingredientName, unitId,
-                              assignedTo, quantity) async {
-                            final success = await ref
-                                .read(taskProvider(shoppingId).notifier)
-                                .addTask(groupId, ingredientName, unitId,
-                                    assignedTo, quantity);
+                if (taskState == null) {
+                  return Center(child: CircularProgressIndicator());
+                }
 
-                            if (success) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content: Text('Task added successfully')),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Failed to add task')),
-                              );
-                            }
+                final completedTasks = taskState
+                    .where((task) => task.status == 'completed')
+                    .toList();
+                final pendingTasks = taskState
+                    .where((task) => task.status != 'completed')
+                    .toList();
+
+                return ListView(
+                  children: [
+                    ListSection(
+                      title: "Pending Tasks",
+                      role: widget.role,
+                      tasks: pendingTasks,
+                      onAdd: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return InputDialog(
+                              groupId: groupId ?? '',
+                              title: 'Add new item',
+                              confirmText: 'Add',
+                              cancelText: 'Cancel',
+                              onConfirm: (groupId, ingredientName, unitId,
+                                  assignedTo, quantity) async {
+                                final success = await ref
+                                    .read(taskProvider(shoppingId).notifier)
+                                    .addTask(groupId, ingredientName, unitId,
+                                        assignedTo, quantity);
+
+                                if (success) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text('Task added successfully')),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text('Failed to add task')),
+                                  );
+                                }
+                              },
+                            );
                           },
                         );
                       },
-                    );
-                  },
-                  onItemTap: (taskId, ingredientName) {
-                    print('Tapped task: $taskId - $ingredientName');
-                  },
-                  onEditTask: (task) {
-                    _editTask(task); // Open edit dialog
-                  },
-                  onDeleteTask: (task) async {
-                    // Confirm before deletion
-                    final confirm = await showDialog<bool>(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: Text('Delete Task'),
-                          content: Text(
-                              'Are you sure you want to delete "${task.ingredientName}"?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, false),
-                              child: Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, true),
-                              child: Text('Delete',
-                                  style: TextStyle(color: Colors.red)),
-                            ),
-                          ],
+                      onItemTap: (taskId, ingredientName) {
+                        print('Tapped task: $taskId - $ingredientName');
+                      },
+                      onEditTask: (task) {
+                        _editTask(task); // Open edit dialog
+                      },
+                      onDeleteTask: (task) async {
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text('Delete Task'),
+                              content: Text(
+                                  'Are you sure you want to delete "${task.ingredientName}"?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(context, false),
+                                  child: Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, true),
+                                  child: Text('Delete',
+                                      style: TextStyle(color: Colors.red)),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+
+                        if (confirm == true) {
+                          final groupId = ref.read(chosenGroupProvider).GID;
+                          if (groupId != null) {
+                            await ref
+                                .read(taskProvider(shoppingId).notifier)
+                                .removeTask(groupId, task.taskId);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text('Task deleted successfully')),
+                            );
+                          }
+                        }
+                      },
+                      onToggleCompletion: (task, isCompleted) {
+                        _toggleCompletion(
+                            task); // Handle task completion toggle
+                      },
+                    ),
+                    ListSection(
+                      title: "Completed Tasks",
+                      role: widget.role,
+                      tasks: completedTasks,
+                      onAdd: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return InputDialog(
+                              groupId: groupId ?? '',
+                              title: 'Add new item',
+                              confirmText: 'Add',
+                              cancelText: 'Cancel',
+                              onConfirm: (groupId, ingredientName, unitId,
+                                  assignedTo, quantity) async {
+                                final success = await ref
+                                    .read(taskProvider(shoppingId).notifier)
+                                    .addTask(groupId, ingredientName, unitId,
+                                        assignedTo, quantity);
+
+                                if (success) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text('Task added successfully')),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text('Failed to add task')),
+                                  );
+                                }
+                              },
+                            );
+                          },
                         );
                       },
-                    );
-
-                    if (confirm == true) {
-                      final groupId = ref.read(chosenGroupProvider).GID;
-                      if (groupId != null) {
-                        await ref
-                            .read(taskProvider(shoppingId).notifier)
-                            .removeTask(groupId, task.taskId);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Task deleted successfully')),
+                      onItemTap: (taskId, ingredientName) {
+                        print('Tapped task: $taskId - $ingredientName');
+                      },
+                      onEditTask: (task) {
+                        _editTask(task); // Open edit dialog
+                      },
+                      onDeleteTask: (task) async {
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text('Delete Task'),
+                              content: Text(
+                                  'Are you sure you want to delete "${task.ingredientName}"?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(context, false),
+                                  child: Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, true),
+                                  child: Text('Delete',
+                                      style: TextStyle(color: Colors.red)),
+                                ),
+                              ],
+                            );
+                          },
                         );
-                      }
-                    }
-                  },
-                  onToggleCompletion: (task, isCompleted) {
-                    _toggleCompletion(task); // Handle task completion toggle
-                  },
+
+                        if (confirm == true) {
+                          final groupId = ref.read(chosenGroupProvider).GID;
+                          if (groupId != null) {
+                            await ref
+                                .read(taskProvider(shoppingId).notifier)
+                                .removeTask(groupId, task.taskId);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text('Task deleted successfully')),
+                            );
+                          }
+                        }
+                      },
+                      onToggleCompletion: (task, isCompleted) {
+                        _toggleCompletion(
+                            task); // Handle task completion toggle
+                      },
+                    ),
+                  ],
                 );
               },
             ),

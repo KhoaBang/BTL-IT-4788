@@ -49,7 +49,7 @@ class ListSection extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 5),
-              if (role == 'manager')
+              if (role == 'manager' && title == 'Pending Tasks')
                 GestureDetector(
                   onTap: onAdd,
                   child: Icon(
