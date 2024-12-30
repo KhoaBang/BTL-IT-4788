@@ -273,7 +273,7 @@ const memCompleteTask = async (req, res, next) => {
 const getAllTask = async (req, res, next) => {
   const { shopping_id, GID } = req.params;
   const list = await sequelize.models._Shopping.findOne({where:{ shopping_id, GID }})
-  const task_list = list.task_list || [];
+  const task_list = list?.task_list || [];
   const tasks=[]
   try {
     for(let i =0; i<task_list.length; i++){
