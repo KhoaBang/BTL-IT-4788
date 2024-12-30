@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/header.dart';
 import '../widgets/footer.dart';
 import '../widgets/list_section_task.dart';
+import '../widgets/edit_task_dialog.dart'; // Import the EditTaskDialog
 import '../widgets/create_task_dialog.dart';
 import 'package:frontend/providers/group_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -156,6 +157,43 @@ class _ShoppingListDetailPageState
     }
   }
 
+  void _editTask(Task task) async {
+    final groupId = ref.read(chosenGroupProvider).GID;
+    if (groupId != null) {
+      final result = await showDialog(
+        context: context,
+        builder: (context) {
+          return EditTaskDialog(
+              groupId: groupId,
+              title: 'Edit Task',
+              confirmText: 'Save',
+              cancelText: 'Cancel',
+              onConfirm: (groupId, ingredientName, unitId, assignedTo, quantity,
+                  additionalString) async {
+                final taskNotifier =
+                    ref.read(taskProvider(shoppingId).notifier);
+
+                // Prepare the updates object
+                final updates = {
+                  'ingredientName': ingredientName,
+                  'unitId': unitId,
+                  'assignedTo': assignedTo,
+                  'quantity': quantity,
+                };
+
+                // Call updateTask without checking the result (since it returns void)
+                await taskNotifier.updateTask(groupId, task.taskId, updates);
+
+                // Show success/failure message based on outcome
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Task updated successfully')),
+                );
+              });
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final groupId = ref.watch(chosenGroupProvider).GID;
@@ -242,7 +280,7 @@ class _ShoppingListDetailPageState
                     print('Tapped task: $taskId - $ingredientName');
                   },
                   onEditTask: (task) {
-                    // Open edit dialog
+                    _editTask(task); // Open edit dialog
                   },
                   onDeleteTask: (task) async {
                     // Confirm before deletion
