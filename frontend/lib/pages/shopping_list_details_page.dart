@@ -29,14 +29,20 @@ class _ShoppingListDetailPageState
   void initState() {
     super.initState();
     shoppingId = widget.shopping_id;
-    _loadTasks();
+    _loadTasks(); // Load tasks the first time the widget initializes
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadTasks(); // Ensure tasks are reloaded when navigating back to this page
   }
 
   void _loadTasks() {
     final groupId = ref.read(chosenGroupProvider).GID;
     if (groupId != null) {
-      final taskNotifier = ref.read(taskProvider(groupId).notifier);
-      taskNotifier.loadTasks(groupId); // Load tasks when the page loads
+      final taskNotifier = ref.read(taskProvider(shoppingId).notifier);
+      taskNotifier.loadTasks(groupId); // Load tasks
     }
   }
 
