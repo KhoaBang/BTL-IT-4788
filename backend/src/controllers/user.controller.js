@@ -2,6 +2,7 @@ const { BadRequestError } = require("../errors/error");
 const sequelize = require("../config/database");
 const { _User } = sequelize.models;
 const bcrypt = require("bcrypt");
+const { Op } = require('sequelize');
 
 const getUserProfile = async (req, res, next) => {
   try {
@@ -344,6 +345,46 @@ const matchTagAndIngredient = async (req, res, next) => {
   }
 };
 
+// get all incompleted task
+const getTaskList = async (req, res, next) => {
+  try {
+    const { UUID } = req.Userdata;  // Extract user UUID
+
+    // Fetch tasks assigned to the user with "not completed" status
+    const tasks = await sequelize.models._Task.findAll({
+      where: {
+        assigned_to: UUID,  // Filtering tasks by the user's UUID
+        status: "not completed",  // Only tasks that are "not completed"
+      },
+    });
+
+    // Now fetch corresponding shopping lists for each task
+    const result = await Promise.all(
+      tasks.map(async (task) => {
+        const escapedTaskId = sequelize.escape(task.task_id);  // Safely escape task_id
+        
+        const shoppingLists = await sequelize.models._Shopping.findAll({
+          where: sequelize.where(
+            sequelize.json('task_list'),  // Referencing the `task_list` JSON column
+            {
+              [Op.ne]: sequelize.literal(
+                `JSON_SEARCH(task_list, 'one', ${escapedTaskId})`  // Search for task_id in task_list
+              )
+            }
+          ),
+        });
+
+        // Return task data along with its related shopping lists
+        return { ...task.dataValues, shopping_list: shoppingLists };
+      })
+    );
+
+    return res.status(200).json(result);  // Return tasks with their shopping lists
+  } catch (error) {
+    console.error(error);  // Log the error for debugging
+    next(error);  // Pass the error to the next middleware
+  }
+};
 module.exports = {
   getIngredientList,
   addIngredient,
@@ -357,4 +398,5 @@ module.exports = {
   getUserProfile,
   updateUserProfile,
   updateUserPassword,
+  getTaskList
 };
