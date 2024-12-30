@@ -33,7 +33,7 @@ class HomePage extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: Footer(
-        currentIndex: 0, // Adjust the index based on which page is active
+        currentIndex: 0,
       ),
     );
   }

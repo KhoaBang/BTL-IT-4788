@@ -3,6 +3,7 @@ import '../pages/home_page.dart'; // Thay bằng đường dẫn chính xác t�
 import '../pages/ingredients_page.dart';
 // import '../recipe_page.dart';
 import 'package:frontend/pages/groups_page_wrapper.dart';
+import 'package:frontend/pages/home_page_task.dart';
 
 class Footer extends StatefulWidget {
   final int currentIndex; // Index của trang hiện tại
@@ -22,7 +23,7 @@ class _FooterState extends State<Footer> {
       case 0:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomePage()),
+          MaterialPageRoute(builder: (context) => TaskPage()),
         );
         break;
       case 1:

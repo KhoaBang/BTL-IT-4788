@@ -54,4 +54,30 @@ class UserService {
       throw Exception('Get profile failed: $e');
     }
   }
+
+  // Function: Get User Tasks with Shopping Lists
+  Future<List<dynamic>> getTasksWithShoppingLists() async {
+    try {
+      // Initialize the base query for API calls
+      BaseQuery baseQuery = BaseQuery();
+
+      // Make a GET request to the "/userIfo/task" endpoint
+      Response response = await baseQuery.get('/userIfo/task');
+
+      // Print the response data for debugging
+      print('Fetched tasks successfully: ${response.data}');
+
+      // Return the list of tasks with shopping lists
+      return response.data;
+    } catch (e) {
+      // Handle errors during API call
+      if (e is DioException) {
+        print('Error fetching tasks: ${e.response?.data ?? e.message}');
+      } else {
+        print('Unexpected error: $e');
+      }
+      // Return an empty list in case of error
+      return [];
+    }
+  }
 }
