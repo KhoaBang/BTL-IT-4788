@@ -13,6 +13,7 @@ const {
   getUserProfile,
   updateUserProfile,
   updateUserPassword,
+  getTaskList
 } = require("../controllers/user.controller");
 
 const router = Router();
@@ -52,6 +53,9 @@ router.patch(
   requireAppLogin,
   matchTagAndIngredient
 ); // thêm 1 tag vào 1 nguyên liệu -> gửi tên nguyên liệu + tên tag (đòi hỏi tag phải có sẵn)
+
+// get all incompleted task
+router.get("/userIfo/task", requireAppLogin, getTaskList);
 
 // tương tác tag và nguyên liệu:
 /**
