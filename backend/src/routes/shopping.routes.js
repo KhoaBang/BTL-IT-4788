@@ -14,7 +14,8 @@ const {
   updateTaskById,
   deleteTaskById,
   memCompleteTask,
-  getAllShoppingList
+  getAllShoppingList,
+  getTaskInShoppingList
 } = require("../controllers/shopping.controller");
 
 const router = Router();
@@ -51,6 +52,12 @@ router.patch(
   requireAppLogin,
   requireMangager,
   updateShoppingListById
+);
+router.get(
+  "/group/:GID/shopping/:shopping_id",
+  requireAppLogin,
+  requireMangager,
+  getTaskInShoppingList
 );
 router.post(
   "/group/:GID/shopping/:shopping_id/task",
