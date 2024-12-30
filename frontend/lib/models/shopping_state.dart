@@ -76,6 +76,7 @@ class Task {
   final int unitId;
   final String status;
   final Unit unit;
+  final int quantity; // Add a default value for quantity
 
   Task({
     required this.assignedTo,
@@ -84,6 +85,7 @@ class Task {
     required this.unitId,
     required this.status,
     required this.unit,
+    required this.quantity,
   });
 
   // Factory method to create a Task from JSON
@@ -95,6 +97,7 @@ class Task {
       unitId: json['unit_id'] ?? 0,
       status: json['status'] ?? '',
       unit: Unit.fromJson(json['unit'] ?? {}),
+      quantity: json['quantity'] ?? 0,
     );
   }
 }
