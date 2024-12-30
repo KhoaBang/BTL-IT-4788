@@ -1,3 +1,4 @@
+const { default: def } = require("ajv/dist/vocabularies/discriminator");
 const { DataTypes } = require("sequelize");
 
 module.exports = async (sequelize) => {
@@ -28,6 +29,11 @@ module.exports = async (sequelize) => {
       status: {
         type: DataTypes.STRING,
         defaultValue: "not completed",
+      },
+      quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
       },
     },
     {
