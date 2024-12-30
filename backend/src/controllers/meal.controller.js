@@ -135,6 +135,7 @@ const convertMeal = async (req, res, next) => {
 
     // Update shopping list's task list
     shoppingList.setDataValue("task_list", task_list);
+    shoppingList.changed("task_list", true);
     await shoppingList.save();
 
     // Respond with the created shopping list
