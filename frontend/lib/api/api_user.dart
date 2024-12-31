@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiUser {
-  static late final String _baseUrl = _initializeBaseUrl();
+  static final String _baseUrl = _initializeBaseUrl();
 
   static String _initializeBaseUrl() {
     if (kIsWeb) {

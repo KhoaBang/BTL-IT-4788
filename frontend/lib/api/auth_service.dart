@@ -3,6 +3,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/api/base_query.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
@@ -19,6 +20,11 @@ class AuthService {
       if (postResponse.statusCode == 200) {
         print('Login successful: ${postResponse.data}');
         await _storeTokens(postResponse.data['data']);
+        final prefs = await SharedPreferences.getInstance();
+
+        final fcm_token = prefs.getString('fcm_token');
+        print('day la: ${fcm_token}');
+        Response fmc_response  = await baseQuery.get('/fmc/$fcm_token');
         return true;
       } else {
         print('Login failed: ${postResponse.data['message']}');

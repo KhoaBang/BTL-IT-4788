@@ -3,11 +3,11 @@ import 'package:frontend/api/base_query.dart';
 
 class GroupService {
   // tạo group mới
-  Future<bool> createGroup(String group_name) async {
+  Future<bool> createGroup(String groupName) async {
     try {
       BaseQuery baseQuery = BaseQuery();
       Response postResponse = await baseQuery.post('/group', {
-        'group_name': group_name,
+        'group_name': groupName,
       });
 
       if (postResponse.statusCode == 201) {

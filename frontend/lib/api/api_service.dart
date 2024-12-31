@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   // Base URL khởi tạo tuỳ thuộc vào nền tảng
-  static late final String _baseUrl = _initializeBaseUrl();
+  static final String _baseUrl = _initializeBaseUrl();
 
   static String _initializeBaseUrl() {
     if (kIsWeb) {

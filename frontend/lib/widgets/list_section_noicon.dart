@@ -7,11 +7,11 @@ class ListSectionNoicon extends StatelessWidget {
   final void Function(String listName) onItemTap;
 
   const ListSectionNoicon({
-    Key? key,
+    super.key,
     required this.title,
     required this.lists,
     required this.onItemTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

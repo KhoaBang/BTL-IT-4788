@@ -3,10 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../widgets/header.dart';
 import '../widgets/footer.dart';
-import '../widgets/confirmation_dialog.dart';
 import '../widgets/input_dialog.dart';
 import '../widgets/list_section.dart';
-import '../widgets/list_section_noicon.dart';
 import 'shopping_list_details_page.dart';
 import 'package:frontend/providers/shopping_provider.dart';
 

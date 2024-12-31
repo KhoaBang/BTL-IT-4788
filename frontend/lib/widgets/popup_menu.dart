@@ -70,16 +70,12 @@ void showAddMenu(BuildContext context, GlobalKey iconKey, String GID,
               builder: (context) => MemberTablePage(groupId: GID, role: role),
             ),
           );
-          break;
         case 'Get Invite Code':
           _getInviteCode(context, GID); // Gọi _getInviteCode với GID
-          break;
         case 'Delete':
           _deleteGroup(context, ref, GID); // Gọi _deleteGroup với GID
-          break;
         case 'Leave':
           _leaveGroup(context, ref, GID); // Gọi _leaveGroup với GID
-          break;
       }
     }
   });

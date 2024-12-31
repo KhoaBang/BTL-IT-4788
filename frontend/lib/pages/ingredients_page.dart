@@ -5,7 +5,7 @@ import 'package:frontend/widgets/footer.dart';
 import 'package:frontend/widgets/notification_box.dart';
 
 class IngredientPage extends StatefulWidget {
-  const IngredientPage({Key? key}) : super(key: key);
+  const IngredientPage({super.key});
 
   @override
   _IngredientPageState createState() => _IngredientPageState();
@@ -134,7 +134,7 @@ class _IngredientPageState extends State<IngredientPage> {
   }
 
   void _showInputDialog({String? oldName}) {
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
     // Define unit options
     final List<Map<String, dynamic>> units = [
@@ -151,7 +151,7 @@ class _IngredientPageState extends State<IngredientPage> {
         return AlertDialog(
           title: Text(oldName == null ? "Add Ingredient" : "Update Ingredient"),
           content: Form(
-            key: _formKey,
+            key: formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -211,7 +211,7 @@ class _IngredientPageState extends State<IngredientPage> {
             ),
             ElevatedButton(
               onPressed: () {
-                if (_formKey.currentState!.validate()) {
+                if (formKey.currentState!.validate()) {
                   Navigator.of(context).pop();
                   if (oldName == null) {
                     _handleAddIngredient();

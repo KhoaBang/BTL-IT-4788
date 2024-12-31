@@ -10,7 +10,7 @@ class EditIngredientDialog extends StatefulWidget {
   final void Function(String input, int unitId) onConfirm;
 
   const EditIngredientDialog({
-    Key? key,
+    super.key,
     required this.title,
     required this.hintText,
     required this.currentName,
@@ -18,7 +18,7 @@ class EditIngredientDialog extends StatefulWidget {
     required this.allIngredientNames,
     required this.currentUnitId,
     required this.onConfirm,
-  }) : super(key: key);
+  });
 
   @override
   _EditIngredientDialogState createState() => _EditIngredientDialogState();

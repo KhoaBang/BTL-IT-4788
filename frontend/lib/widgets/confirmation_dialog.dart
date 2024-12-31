@@ -8,13 +8,13 @@ class ConfirmDialog extends StatelessWidget {
   final VoidCallback onConfirm;
 
   const ConfirmDialog({
-    Key? key,
+    super.key,
     required this.title,
     required this.content,
     this.confirmText = 'Confirm',
     this.cancelText = 'Cancel',
     required this.onConfirm,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
