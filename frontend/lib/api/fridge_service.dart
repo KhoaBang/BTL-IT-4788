@@ -5,7 +5,7 @@ class FridgeService {
   final BaseQuery baseQuery = BaseQuery();
 
   // Hàm xử lý lỗi chung
-  void _handleError(DioError error) {
+  void _handleError(DioException error) {
     if (error.response != null) {
       print('Server responded with error: ${error.response?.data}');
     } else {
@@ -22,7 +22,7 @@ class FridgeService {
       });
 
       return response.data;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       _handleError(e);
       return [];
     }
@@ -33,7 +33,7 @@ class FridgeService {
     try {
       Response response = await baseQuery.get('/group/$GID/fridge');
       return response.data;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       _handleError(e);
       return [];
     }
@@ -48,7 +48,7 @@ class FridgeService {
         'ingredient': updatedIngredient,
       });
       return response.data;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       _handleError(e);
       return [];
     }
@@ -62,7 +62,7 @@ class FridgeService {
         'ingredient_name': ingredientName,
       });
       return response.data;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       _handleError(e);
       return [];
     }
