@@ -168,8 +168,8 @@ class _InputDialogState extends ConsumerState<InputDialog> {
       actions: [
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFEF9920), // Orange background
-            foregroundColor: Colors.white, // White text
+            backgroundColor: const Color(0xFFEF9920),
+            foregroundColor: Colors.white,
           ),
           onPressed: () {
             final quantity = double.tryParse(_quantityController.text) ?? 0.0;
@@ -198,8 +198,8 @@ class _InputDialogState extends ConsumerState<InputDialog> {
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white, // White background
-            foregroundColor: Colors.black, // Black text
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.black,
           ),
           onPressed: () {
             Navigator.of(context).pop(); // Close dialog without action
