@@ -157,55 +157,72 @@ class _CreateMealDialogState extends ConsumerState<CreateMealDialog> {
                               (selected) =>
                                   selected['ingredient_name'] ==
                                   ingredient['name']);
+
+                          // Kiểm tra và khởi tạo TextEditingController nếu chưa tồn tại
+                          if (!_quantityControllers
+                              .containsKey(ingredient['name'])) {
+                            final initialQuantity = isSelected
+                                ? _selectedIngredients.firstWhere((selected) =>
+                                    selected['ingredient_name'] ==
+                                    ingredient['name'])['quantity']
+                                : 1.0;
+                            _quantityControllers[ingredient['name']] =
+                                TextEditingController(
+                              text: initialQuantity.toString(),
+                            );
+                          }
+
                           return CheckboxListTile(
                             title: Text(ingredient['name']),
-                            subtitle: isSelected
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      // Map the ingredient's unitId to the corresponding unit name
-                                      Text(
-                                          'Unit: ${unitMappings[ingredient['unitId']] ?? "Unknown"}'),
-                                      TextFormField(
-                                        controller: _quantityControllers[
-                                                ingredient['name']] ??
-                                            TextEditingController(text: '1.0'),
-                                        decoration: const InputDecoration(
-                                            labelText: 'Quantity'),
-                                        keyboardType: TextInputType.number,
-                                        onChanged: (value) {
-                                          final parsedValue =
-                                              double.tryParse(value) ?? 1.0;
-                                          setState(() {
-                                            final ingredientIndex =
-                                                _selectedIngredients.indexWhere(
-                                                    (selected) =>
-                                                        selected[
-                                                            'ingredient_name'] ==
-                                                        ingredient['name']);
-                                            _selectedIngredients[
-                                                    ingredientIndex]
-                                                ['quantity'] = parsedValue;
-                                          });
-                                        },
-                                      ),
-                                    ],
-                                  )
-                                : Text(
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
                                     'Unit: ${unitMappings[ingredient['unitId']] ?? "Unknown"}'),
+                                if (isSelected)
+                                  TextFormField(
+                                    controller: _quantityControllers[
+                                        ingredient['name']],
+                                    decoration: const InputDecoration(
+                                        labelText: 'Quantity'),
+                                    keyboardType: TextInputType.number,
+                                    onChanged: (value) {
+                                      final parsedValue =
+                                          double.tryParse(value) ?? 1.0;
+                                      setState(() {
+                                        // Cập nhật giá trị vào _selectedIngredients
+                                        final ingredientIndex =
+                                            _selectedIngredients
+                                                .indexWhere((selected) =>
+                                                    selected[
+                                                        'ingredient_name'] ==
+                                                    ingredient['name']);
+                                        if (ingredientIndex != -1) {
+                                          _selectedIngredients[ingredientIndex]
+                                              ['quantity'] = parsedValue;
+                                        }
+                                      });
+                                    },
+                                  ),
+                              ],
+                            ),
                             value: isSelected,
                             onChanged: (checked) {
                               setState(() {
                                 if (checked == true) {
+                                  // Thêm nguyên liệu vào danh sách đã chọn
                                   _selectedIngredients.add({
                                     'ingredient_name': ingredient['name'],
                                     'unit_id': int.parse(ingredient['unitId']),
-                                    'quantity': 1.0,
+                                    'quantity': double.tryParse(
+                                            _quantityControllers[
+                                                        ingredient['name']]
+                                                    ?.text ??
+                                                '1.0') ??
+                                        1.0,
                                   });
-                                  _quantityControllers[ingredient['name']] =
-                                      TextEditingController(text: '1.0');
                                 } else {
+                                  // Xóa nguyên liệu khỏi danh sách đã chọn
                                   _selectedIngredients.removeWhere((selected) =>
                                       selected['ingredient_name'] ==
                                       ingredient['name']);

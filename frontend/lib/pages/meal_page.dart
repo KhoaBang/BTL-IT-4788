@@ -5,6 +5,7 @@ import 'package:frontend/widgets/create_meal_dialog.dart';
 import 'package:frontend/widgets/header.dart';
 import 'package:frontend/widgets/footer.dart';
 import 'package:frontend/widgets/notification_box.dart';
+import 'package:intl/intl.dart';
 
 class MealPage extends ConsumerStatefulWidget {
   final String groupId;
@@ -198,7 +199,9 @@ class _MealPageState extends ConsumerState<MealPage> {
                           child: ExpansionTile(
                             title: Text(meal['meal_name']),
                             subtitle: Text(
-                              'Consume Date: ${meal['consume_date'] ?? 'N/A'}',
+                              meal['consume_date'] != null
+                                  ? 'Consume Date: ${DateFormat('MMMM dd, yyyy').format(DateTime.parse(meal['consume_date']))}'
+                                  : 'Consume Date: N/A',
                             ),
                             children: [
                               ...(meal['ingredient_list'] as List<dynamic>)
