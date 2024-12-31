@@ -5,6 +5,7 @@ import 'package:frontend/widgets/create_fridge_dialog.dart';
 import 'package:frontend/widgets/header.dart';
 import 'package:frontend/widgets/footer.dart';
 import 'package:frontend/widgets/notification_box.dart';
+import 'package:frontend/widgets/confirmation_dialog.dart';
 
 class FridgePage extends ConsumerStatefulWidget {
   final String groupId;
@@ -165,9 +166,21 @@ class _FridgePageState extends ConsumerState<FridgePage> {
   }
 
   void _deleteIngredient(String ingredientName) async {
-    await _performAction(
-      () => fridgeService.deleteIngredient(widget.groupId, ingredientName),
-      "Deleted ingredient successfully!",
+    showDialog(
+      context: context,
+      builder: (context) => ConfirmDialog(
+        title: 'Delete Ingredient',
+        content: 'Are you sure you want to delete "$ingredientName"?',
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+        onConfirm: () async {
+          await _performAction(
+            () =>
+                fridgeService.deleteIngredient(widget.groupId, ingredientName),
+            "Deleted ingredient successfully!",
+          );
+        },
+      ),
     );
   }
 

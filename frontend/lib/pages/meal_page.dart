@@ -6,6 +6,7 @@ import 'package:frontend/widgets/header.dart';
 import 'package:frontend/widgets/footer.dart';
 import 'package:frontend/widgets/notification_box.dart';
 import 'package:intl/intl.dart';
+import 'package:frontend/widgets/confirmation_dialog.dart';
 
 class MealPage extends ConsumerStatefulWidget {
   final String groupId;
@@ -152,10 +153,21 @@ class _MealPageState extends ConsumerState<MealPage> {
     );
   }
 
-  void _deleteMeal(String mealId) async {
-    await _performAction(
-      () => mealService.deleteMeal(widget.groupId, mealId),
-      "Deleted ingredient successfully!",
+  void _deleteMeal(String mealId) {
+    showDialog(
+      context: context,
+      builder: (context) => ConfirmDialog(
+        title: "Confirm Delete",
+        content: "Are you sure you want to delete this meal?",
+        confirmText: "Delete",
+        cancelText: "Cancel",
+        onConfirm: () async {
+          await _performAction(
+            () => mealService.deleteMeal(widget.groupId, mealId),
+            "Meal deleted successfully!",
+          );
+        },
+      ),
     );
   }
 
