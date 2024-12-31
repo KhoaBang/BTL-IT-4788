@@ -5,16 +5,18 @@ import '../widgets/footer.dart';
 import '../widgets/popup_menu.dart'; // Import the helper file
 import 'shopping_lists_page.dart';
 import 'package:frontend/providers/group_provider.dart'; // Import the chosen group provider
+import 'package:frontend/pages/fridge_page.dart'; // Import the FridgePage
 
 class GroupDetailPage extends ConsumerStatefulWidget {
   final String gid; // Group ID passed from the previous page
   final String groupName;
   final String role;
-  const GroupDetailPage(
-      {super.key,
-      required this.gid,
-      required this.groupName,
-      required this.role});
+  const GroupDetailPage({
+    super.key,
+    required this.gid,
+    required this.groupName,
+    required this.role,
+  });
 
   @override
   _GroupDetailPageState createState() => _GroupDetailPageState();
@@ -89,10 +91,13 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _buildFeatureBox(
-                      "Fridge",
-                      ShoppingListPage(
-                          gid: widget.gid,
-                          role: widget.role)), // Navigate to FridgePage
+                    "Fridge",
+                    FridgePage(
+                      groupId: widget.gid,
+                      isManager: widget.role.toLowerCase() == 'manager',
+                    ),
+                  ),
+                  // Navigate to FridgePage
                   const SizedBox(height: 30),
                   _buildFeatureBox(
                       "Shopping",

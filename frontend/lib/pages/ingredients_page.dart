@@ -133,6 +133,41 @@ class _IngredientPageState extends State<IngredientPage> {
     }
   }
 
+  Future<void> _showDeleteConfirmationDialog(String name) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Confirm Deletion"),
+          content: Text("Are you sure you want to delete '$name'?"),
+          actions: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFEF9920),
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                _handleDeleteIngredient(name); // Proceed with deletion
+              },
+              child: const Text("Delete"),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text("Cancel"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _showInputDialog({String? oldName}) {
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -203,13 +238,11 @@ class _IngredientPageState extends State<IngredientPage> {
             ),
           ),
           actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("Cancel"),
-            ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFEF9920),
+                foregroundColor: Colors.white,
+              ),
               onPressed: () {
                 if (formKey.currentState!.validate()) {
                   Navigator.of(context).pop();
@@ -221,6 +254,16 @@ class _IngredientPageState extends State<IngredientPage> {
                 }
               },
               child: Text("Submit"),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white, // White background
+                foregroundColor: Colors.black, // Black text
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancel"),
             ),
           ],
         );
@@ -242,9 +285,10 @@ class _IngredientPageState extends State<IngredientPage> {
             child: TextField(
               controller: _searchController,
               onChanged: _filterIngredients,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: "Search by tag",
                 border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.search),
               ),
             ),
           ),
@@ -282,7 +326,7 @@ class _IngredientPageState extends State<IngredientPage> {
                           color: Colors.red,
                         ),
                         onPressed: () {
-                          _handleDeleteIngredient(
+                          _showDeleteConfirmationDialog(
                               ingredient['ingredient_name']);
                         },
                       ),
