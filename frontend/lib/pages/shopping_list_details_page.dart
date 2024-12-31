@@ -65,7 +65,7 @@ class _ShoppingListDetailPageState
       } else {
         NotificationBox.show(
           context: context,
-          status: 200,
+          status: 400,
           message:
               'Failed to mark task as completed. Task not assigned to you?',
         );
@@ -85,13 +85,21 @@ class _ShoppingListDetailPageState
             title: Text('Delete Shopping List'),
             content: Text('Are you sure you want to delete "${widget.name}"?'),
             actions: [
-              TextButton(
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFFEF9920),
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () => Navigator.pop(context, true),
+                child: Text('Delete', style: TextStyle(color: Colors.white)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                ),
                 onPressed: () => Navigator.pop(context, false),
                 child: Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: Text('Delete', style: TextStyle(color: Colors.red)),
               ),
             ],
           );
@@ -103,8 +111,10 @@ class _ShoppingListDetailPageState
         Navigator.pop(context); // Navigate back to the previous page
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Group ID is not available')),
+      NotificationBox.show(
+        context: context,
+        status: 400,
+        message: 'Group ID is not available',
       );
     }
   }
@@ -134,13 +144,21 @@ class _ShoppingListDetailPageState
             ],
           ),
           actions: [
-            TextButton(
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFEF9920), // Blue background for OK
+                foregroundColor: Colors.white, // White text
+              ),
+              onPressed: () => Navigator.pop(context, true),
+              child: Text('Save', style: TextStyle(color: Colors.white)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+              ),
               onPressed: () => Navigator.pop(context, false),
               child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: Text('Save', style: TextStyle(color: Colors.blue)),
             ),
           ],
         );
@@ -158,8 +176,10 @@ class _ShoppingListDetailPageState
               null, // No status field to update
             );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Group ID is not available')),
+        NotificationBox.show(
+          context: context,
+          status: 400,
+          message: 'Group ID is not available',
         );
       }
     }
@@ -193,8 +213,10 @@ class _ShoppingListDetailPageState
                 await taskNotifier.updateTask(groupId, task.taskId, updates);
 
                 // Show success/failure message based on outcome
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Task updated successfully')),
+                NotificationBox.show(
+                  context: context,
+                  status: 200,
+                  message: 'Task updated successfully',
                 );
               });
         },
@@ -285,15 +307,16 @@ class _ShoppingListDetailPageState
                                         assignedTo, quantity);
 
                                 if (success) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content:
-                                            Text('Task added successfully')),
+                                  NotificationBox.show(
+                                    context: context,
+                                    status: 200,
+                                    message: 'Task added successfully',
                                   );
                                 } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content: Text('Failed to add task')),
+                                  NotificationBox.show(
+                                    context: context,
+                                    status: 400,
+                                    message: 'Failed to add task',
                                   );
                                 }
                               },
@@ -316,15 +339,23 @@ class _ShoppingListDetailPageState
                               content: Text(
                                   'Are you sure you want to delete "${task.ingredientName}"?'),
                               actions: [
-                                TextButton(
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xFFEF9920),
+                                    foregroundColor: Colors.white,
+                                  ),
+                                  onPressed: () => Navigator.pop(context, true),
+                                  child: Text('Delete',
+                                      style: TextStyle(color: Colors.white)),
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    foregroundColor: Colors.black,
+                                  ),
                                   onPressed: () =>
                                       Navigator.pop(context, false),
                                   child: Text('Cancel'),
-                                ),
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context, true),
-                                  child: Text('Delete',
-                                      style: TextStyle(color: Colors.red)),
                                 ),
                               ],
                             );
@@ -337,9 +368,10 @@ class _ShoppingListDetailPageState
                             await ref
                                 .read(taskProvider(shoppingId).notifier)
                                 .removeTask(groupId, task.taskId);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text('Task deleted successfully')),
+                            NotificationBox.show(
+                              context: context,
+                              status: 200,
+                              message: 'Task deleted successfully',
                             );
                           }
                         }
@@ -370,15 +402,16 @@ class _ShoppingListDetailPageState
                                         assignedTo, quantity);
 
                                 if (success) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content:
-                                            Text('Task added successfully')),
+                                  NotificationBox.show(
+                                    context: context,
+                                    status: 200,
+                                    message: 'Task added successfully',
                                   );
                                 } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content: Text('Failed to add task')),
+                                  NotificationBox.show(
+                                    context: context,
+                                    status: 400,
+                                    message: 'Failed to add task',
                                   );
                                 }
                               },
@@ -422,9 +455,10 @@ class _ShoppingListDetailPageState
                             await ref
                                 .read(taskProvider(shoppingId).notifier)
                                 .removeTask(groupId, task.taskId);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text('Task deleted successfully')),
+                            NotificationBox.show(
+                              context: context,
+                              status: 200,
+                              message: 'Task deleted successfully',
                             );
                           }
                         }

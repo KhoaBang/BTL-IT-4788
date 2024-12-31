@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/api/ingredient_service.dart';
 import 'package:frontend/providers/group_provider.dart';
+import 'package:frontend/widgets/notification_box.dart';
 
 class EditTaskDialog extends ConsumerStatefulWidget {
   final String groupId;
@@ -64,8 +65,10 @@ class _EditTaskDialogState extends ConsumerState<EditTaskDialog> {
         _isLoading = false;
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to fetch ingredients')),
+      NotificationBox.show(
+        context: context,
+        status: 400,
+        message: 'Failed to fetch ingredients',
       );
       setState(() {
         _isLoading = false;
@@ -159,22 +162,24 @@ class _EditTaskDialogState extends ConsumerState<EditTaskDialog> {
               ),
             ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(widget.cancelText),
-        ),
-        TextButton(
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color(0xFFEF9920), // Blue background for OK
+            foregroundColor: Colors.white, // White text
+          ),
           onPressed: () {
+            final quantity = double.tryParse(_quantityController.text) ?? 0.0;
             if (_selectedIngredientName == null ||
                 _selectedUnitId == null ||
-                _selectedAssignedTo == null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Please complete all fields')),
+                _selectedAssignedTo == null ||
+                quantity == 0.0) {
+              NotificationBox.show(
+                context: context,
+                status: 400,
+                message: 'Please complete all fields',
               );
               return;
             }
-
-            final quantity = double.tryParse(_quantityController.text) ?? 0.0;
 
             widget.onConfirm(
               widget.groupId,
@@ -187,6 +192,14 @@ class _EditTaskDialogState extends ConsumerState<EditTaskDialog> {
             Navigator.of(context).pop();
           },
           child: Text(widget.confirmText),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.black, // White text
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(widget.cancelText),
         ),
       ],
     );
