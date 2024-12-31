@@ -229,19 +229,19 @@ const updateTaskById = async (req, res, next) => {
     }
 
     // Dynamically update only allowed fields that are not null
+    const updatedFields = {};
     for (const key of Object.keys(updates)) {
       if (
         allowedUpdates.includes(key) &&
         updates[key] !== null &&
         updates[key] !== undefined
       ) {
-        task[key] = updates[key];
+        updatedFields[key] = updates[key];
       }
     }
 
-    task.changed(true);
-    // Save the updated task
-    await task.save();
+    // Update the task using the allowed updates
+    await task.update(updatedFields);
 
     // Respond with the updated task
     return res.status(200).json(task);
@@ -249,6 +249,7 @@ const updateTaskById = async (req, res, next) => {
     next(error);
   }
 };
+
 
 // Delete a task by ID
 const deleteTaskById = async (req, res, next) => {

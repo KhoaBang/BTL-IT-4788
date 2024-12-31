@@ -238,11 +238,11 @@ class _CreateMealDialogState extends ConsumerState<CreateMealDialog> {
                   ),
                 ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(widget.cancelText),
-        ),
-        TextButton(
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color(0xFFEF9920), // Orange background for OK
+            foregroundColor: Colors.white, // White text
+          ),
           onPressed: () {
             if (!_formKey.currentState!.validate() ||
                 _selectedDate == null ||
@@ -262,6 +262,14 @@ class _CreateMealDialogState extends ConsumerState<CreateMealDialog> {
             Navigator.of(context).pop();
           },
           child: Text(widget.confirmText),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white, // White background for Cancel
+            foregroundColor: Colors.black, // Black text
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(widget.cancelText),
         ),
       ],
     );

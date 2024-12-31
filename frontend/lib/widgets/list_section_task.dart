@@ -138,7 +138,7 @@ class ListSection extends StatelessWidget {
                                   value: 'complete',
                                   child: Text('Mark as Completed'),
                                 ),
-                              if (role == 'manager')
+                              if (role == 'manager' && false)
                                 PopupMenuItem(
                                   value: 'edit',
                                   child: Text('Edit Task'),

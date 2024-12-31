@@ -318,7 +318,7 @@ class _ShoppingListDetailPageState
                           builder: (context) {
                             return InputDialog(
                               groupId: groupId ?? '',
-                              title: 'Add new item',
+                              title: 'Add new task',
                               confirmText: 'Add',
                               cancelText: 'Cancel',
                               onConfirm: (groupId, ingredientName, unitId,
