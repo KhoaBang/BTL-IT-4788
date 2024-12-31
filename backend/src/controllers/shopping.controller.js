@@ -239,6 +239,7 @@ const updateTaskById = async (req, res, next) => {
       }
     }
 
+    task.changed(true);
     // Save the updated task
     await task.save();
 
@@ -289,12 +290,7 @@ const getAllTask = async (req, res, next) => {
     where: { shopping_id, GID },
   });
   const task_list = list?.task_list || [];
-<<<<<<< HEAD
-  console.log(typeof task_list)
-  const tasks=[]
-=======
   const tasks = [];
->>>>>>> 9dd4c9f (final)
   try {
     for (let i = 0; i < task_list.length; i++) {
       const task = await sequelize.models._Task.findOne({
