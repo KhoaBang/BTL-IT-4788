@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import '../widgets/header.dart';
 import '../widgets/footer.dart';
 import '../widgets/confirmation_dialog.dart';
@@ -29,6 +30,15 @@ class _ShoppingListPageState extends ConsumerState<ShoppingListPage> {
   @override
   Widget build(BuildContext context) {
     final shoppingLists = ref.watch(shoppingListProvider);
+
+    final formattedShoppingLists = shoppingLists.map((list) {
+      final formattedDate = DateFormat('MMM d, yyyy').format(list.createdAt);
+      return {
+        'name': list.name,
+        'date': formattedDate,
+        'id': list.shoppingId,
+      };
+    }).toList();
 
     return Scaffold(
       appBar: PreferredSize(
@@ -60,13 +70,7 @@ class _ShoppingListPageState extends ConsumerState<ShoppingListPage> {
               children: [
                 ListSection(
                   title: "Plan",
-                  lists: shoppingLists
-                      .map((list) => {
-                            'name': list.name,
-                            'date': list.createdAt.toIso8601String(),
-                            'id': list.shoppingId,
-                          })
-                      .toList(),
+                  lists: formattedShoppingLists,
                   onAdd: () {
                     showDialog(
                       context: context,

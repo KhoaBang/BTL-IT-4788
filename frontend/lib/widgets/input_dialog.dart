@@ -39,8 +39,8 @@ class _InputDialogState extends State<InputDialog> {
       actions: [
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Color(0xFFEF9920), // Blue background for OK
-            foregroundColor: Colors.white, // White text
+            backgroundColor: Color(0xFFEF9920),
+            foregroundColor: Colors.white,
           ),
           onPressed: () {
             widget.onConfirm(_controller.text); // Pass the input value
@@ -51,7 +51,7 @@ class _InputDialogState extends State<InputDialog> {
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.white,
-            foregroundColor: Colors.black, // White text
+            foregroundColor: Colors.black,
           ),
           onPressed: () {
             Navigator.of(context).pop(); // Close dialog without action
