@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/services.dart';
 
 class BaseQuery {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
@@ -42,9 +46,20 @@ class BaseQuery {
 
   void _initialize() {
     try {
-      _baseUrl = dotenv.env['MODE'] == 'android'
-          ? 'http://10.0.2.2:9000/api'
-          : 'http://localhost:9000/api';
+      if (Platform.isAndroid) {
+        // Running on Android
+        _baseUrl = 'http://10.0.2.2:9000/api';
+      } else if (Platform.isIOS) {
+        // Running on iOS
+        _baseUrl = 'http://localhost:9000/api';
+      } else if (kIsWeb) {
+        // Running in a web environment
+        _baseUrl = 'http://localhost:9000/api';
+      } else {
+        // Default or fallback for other platforms
+        _baseUrl = 'http://localhost:9000/api';
+      }
+
       refreshTokenUrl = '$_baseUrl/refreshToken';
     } catch (e) {
       throw Exception('Failed to initialize BaseQuery: $e');
