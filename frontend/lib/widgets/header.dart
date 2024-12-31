@@ -9,8 +9,7 @@ class Header extends ConsumerStatefulWidget {
   final bool canGoBack;
   final VoidCallback? onBack;
 
-  const Header({Key? key, this.canGoBack = false, this.onBack})
-      : super(key: key);
+  const Header({super.key, this.canGoBack = false, this.onBack});
 
   @override
   _HeaderState createState() => _HeaderState();
@@ -266,16 +265,12 @@ class _HeaderState extends ConsumerState<Header> {
               switch (value) {
                 case 'View profile':
                   _showProfileDialog();
-                  break;
                 case 'Update Password':
                   _showUpdatePasswordDialog();
-                  break;
                 case 'Update username and phone':
                   _showUpdateProfileDialog();
-                  break;
                 case 'Logout':
                   _logout();
-                  break;
               }
             },
             itemBuilder: (context) => [

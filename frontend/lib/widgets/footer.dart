@@ -6,7 +6,7 @@ import '../pages/ingredients_page.dart';
 
 class Footer extends StatefulWidget {
   final int currentIndex; // Index của trang hiện tại
-  const Footer({Key? key, required this.currentIndex}) : super(key: key);
+  const Footer({super.key, required this.currentIndex});
 
   @override
   _FooterState createState() => _FooterState();
@@ -14,8 +14,9 @@ class Footer extends StatefulWidget {
 
 class _FooterState extends State<Footer> {
   void _onItemTapped(int index) {
-    if (index == widget.currentIndex)
+    if (index == widget.currentIndex) {
       return; // Nếu đang ở trang này, không điều hướng nữa
+    }
 
     // Điều hướng tới các trang tương ứng
     switch (index) {
@@ -24,19 +25,16 @@ class _FooterState extends State<Footer> {
           context,
           MaterialPageRoute(builder: (context) => HomePage()),
         );
-        break;
       case 1:
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => GroupsPage()),
         );
-        break;
       case 2:
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => IngredientPage()),
         );
-        break;
       // case 3:
       //   Navigator.pushReplacement(
       //     context,
@@ -48,7 +46,7 @@ class _FooterState extends State<Footer> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> _footerItems = [
+    final List<Map<String, dynamic>> footerItems = [
       {'icon': Icons.home, 'label': 'Home'},
       {'icon': Icons.group, 'label': 'Groups'},
       {'icon': Icons.food_bank, 'label': 'Ingredients'},
@@ -63,8 +61,8 @@ class _FooterState extends State<Footer> {
           color: Colors.white,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: List.generate(_footerItems.length, (index) {
-              final item = _footerItems[index];
+            children: List.generate(footerItems.length, (index) {
+              final item = footerItems[index];
               final isSelected = widget.currentIndex == index;
 
               return GestureDetector(

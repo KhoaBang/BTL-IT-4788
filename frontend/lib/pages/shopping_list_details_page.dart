@@ -12,10 +12,10 @@ class ShoppingListDetailPage extends ConsumerWidget {
   final String shopping_id;
 
   const ShoppingListDetailPage({
-    Key? key,
+    super.key,
     required this.name,
     required this.shopping_id,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,13 +24,13 @@ class ShoppingListDetailPage extends ConsumerWidget {
 
     // Use TaskNotifier to load tasks
     final taskNotifier =
-        groupId != null ? ref.watch(taskProvider(groupId!)) : null;
+        groupId != null ? ref.watch(taskProvider(groupId)) : null;
 
     // StateProvider to manage the current name
     final nameProvider = StateProvider<String>((ref) => name);
     final currentName = ref.watch(nameProvider);
 
-    void _deleteShoppingList() async {
+    void deleteShoppingList() async {
       if (groupId != null) {
         final confirm = await showDialog<bool>(
           context: context,
@@ -63,7 +63,7 @@ class ShoppingListDetailPage extends ConsumerWidget {
       }
     }
 
-    void _editShoppingList() async {
+    void editShoppingList() async {
       String? newName;
 
       // Initialize TextEditingController with current name
@@ -148,11 +148,11 @@ class ShoppingListDetailPage extends ConsumerWidget {
                   children: [
                     IconButton(
                       icon: Icon(Icons.edit, color: Colors.blue),
-                      onPressed: _editShoppingList,
+                      onPressed: editShoppingList,
                     ),
                     IconButton(
                       icon: Icon(Icons.delete, color: Colors.red),
-                      onPressed: _deleteShoppingList,
+                      onPressed: deleteShoppingList,
                     ),
                   ],
                 ),

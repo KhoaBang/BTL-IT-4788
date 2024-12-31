@@ -21,7 +21,8 @@ class BaseQuery {
       },
       onError: (DioException e, handler) async {
         // Handle token expiration
-        if (e.response?.statusCode == 403) {
+         if ((e.response?.statusCode == 403) &&
+            (e.response?.data['error']?['message']) == "Token expired.") {
           print('Access token expired. Attempting to refresh...');
           await refreshToken();
 

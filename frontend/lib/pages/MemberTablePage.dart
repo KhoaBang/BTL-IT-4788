@@ -8,8 +8,7 @@ import '../providers/group_provider.dart';
 class MemberTablePage extends ConsumerWidget {
   final String groupId; // Pass the groupId for the group being displayed.
   final String role;
-  const MemberTablePage({Key? key, required this.groupId, required this.role})
-      : super(key: key);
+  const MemberTablePage({super.key, required this.groupId, required this.role});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

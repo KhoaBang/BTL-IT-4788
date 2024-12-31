@@ -7,12 +7,12 @@ class ListSection extends StatelessWidget {
   final void Function(String id, String name) onItemTap;
 
   const ListSection({
-    Key? key,
+    super.key,
     required this.title,
     required this.lists,
     required this.onAdd,
     required this.onItemTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

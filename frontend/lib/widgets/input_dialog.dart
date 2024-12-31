@@ -8,13 +8,13 @@ class InputDialog extends StatefulWidget {
   final void Function(String input) onConfirm;
 
   const InputDialog({
-    Key? key,
+    super.key,
     required this.title,
     required this.hintText,
     this.confirmText = 'OK',
     this.cancelText = 'Cancel',
     required this.onConfirm,
-  }) : super(key: key);
+  });
 
   @override
   _InputDialogState createState() => _InputDialogState();

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'confirmation_dialog.dart';
 import 'edit_ingredient_dialog.dart';
 import '../api/api_user.dart';
 

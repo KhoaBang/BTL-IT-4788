@@ -23,16 +23,12 @@ class ShoppingListNotifier extends StateNotifier<List<ShoppingList>> {
       List<dynamic>? shoppingListsData =
           await _shoppingService.getAllShoppingLists(groupId);
 
-      if (shoppingListsData != null) {
-        // Map the data to ShoppingList objects, handle null values
-        state = shoppingListsData
-            .map((data) => ShoppingList.fromJson(
-                data ?? {})) // Fallback to empty map if null
-            .toList();
-      } else {
-        print('No shopping lists found');
-      }
-    } catch (e) {
+      // Map the data to ShoppingList objects, handle null values
+      state = shoppingListsData!
+          .map((data) => ShoppingList.fromJson(
+              data ?? {})) // Fallback to empty map if null
+          .toList();
+        } catch (e) {
       print('Error loading shopping lists: $e');
     }
   }

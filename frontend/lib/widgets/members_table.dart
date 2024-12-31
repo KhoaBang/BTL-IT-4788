@@ -5,7 +5,7 @@ import 'confirmation_dialog.dart';
 
 class ResponsiveMemberTable extends ConsumerWidget {
   final String role;
-  const ResponsiveMemberTable({Key? key, required this.role}) : super(key: key);
+  const ResponsiveMemberTable({super.key, required this.role});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -15,7 +15,7 @@ class ResponsiveMemberTable extends ConsumerWidget {
     final members = chosenGroupState.memberList;
 
     // Ban member
-    Future<void> _banMember(String memberID) async {
+    Future<void> banMember(String memberID) async {
       try {
         if (groupId != null) {
           await groupNotifier.banMember(groupId, memberID);
@@ -110,7 +110,7 @@ class ResponsiveMemberTable extends ConsumerWidget {
                                         'Are you sure you want to ban this member?',
                                     confirmText: 'Confirm',
                                     cancelText: 'Cancel',
-                                    onConfirm: () => {_banMember(member.uuid)},
+                                    onConfirm: () => {banMember(member.uuid)},
                                   );
                                 },
                               );

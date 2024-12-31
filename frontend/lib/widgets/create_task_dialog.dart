@@ -12,13 +12,13 @@ class InputDialog extends ConsumerStatefulWidget {
       String assignedTo, double quantity) onConfirm;
 
   const InputDialog({
-    Key? key,
+    super.key,
     required this.groupId,
     required this.title,
     required this.confirmText,
     required this.cancelText,
     required this.onConfirm,
-  }) : super(key: key);
+  });
 
   @override
   _InputDialogState createState() => _InputDialogState();
