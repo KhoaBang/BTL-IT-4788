@@ -1,5 +1,5 @@
-const sequelize= require('../config/database');
-const {_Group,_User,_Unit} = sequelize.models
+const sequelize = require("../config/database");
+const { _Group, _User, _Unit } = sequelize.models;
 
 const {
   getUserByUUID,
@@ -22,20 +22,22 @@ const {
   ForbiddenError,
 } = require("../errors/error");
 
+const { sendPushNotification } = require("../services/push.services");
+
 /*
  * Create a new group:
  * +, tao group moi voi manager_id la UUID cua user
  * +, them GID vao manger_of cua user
  */
-const createGroup = async (req, res,next) => {
+const createGroup = async (req, res, next) => {
   const { UUID, ...restUserData } = req.Userdata;
   const { group_name } = req.body;
   try {
-  if (!group_name)
-    throw new BadRequestError(`Group name: ${group_name} is required.`);
-  if (!UUID) {
-    throw new NotAuthenticateError("You are not authenticated.");
-  }
+    if (!group_name)
+      throw new BadRequestError(`Group name: ${group_name} is required.`);
+    if (!UUID) {
+      throw new NotAuthenticateError("You are not authenticated.");
+    }
     const groupData = {
       group_name: group_name,
       manager_id: UUID,
@@ -59,7 +61,7 @@ const inviteCode = (req, res) => {
  * +, kiem tra xem neu user bi ban
  * +,Them UUID vao member_ids cua group
  * +,Them GID vao member_of cua user
- *
+ * +,Gui thong tin toi manager rang co 1 nguoi vua tham gia nhom
  */
 const joinGroup = async (req, res, next) => {
   const { group_code } = req.params;
@@ -85,22 +87,31 @@ const joinGroup = async (req, res, next) => {
     }
     // thoa man dieu kien, -> thuc hien them UUID vao member_ids cua group, them GID vao member_of cua user
 
-    const newMember = await _User.findOne({where:{UUID:UUID}});
+    const newMember = await _User.findOne({ where: { UUID: UUID } });
     //thuc hien them UUID vao member_ids cua group
     Groupdata.member_ids.push({ UUID: UUID, email: newMember.email });
-    Groupdata.changed('member_ids', true);
+    Groupdata.changed("member_ids", true);
     await Groupdata.save();
 
     //them GID vao member_of cua user
-     newMember.member_of.push({
+    newMember.member_of.push({
       GID: Groupdata.GID,
       group_name: Groupdata.group_name,
     });
-    newMember.changed('member_of', true);
-    const result = await newMember.update({member_of: newMember.member_of});
-    console.log(result)
-    
-    res.status(200).json({ message: "Joined group successfully", group_detail: {GID: Groupdata.GID, name: Groupdata.group_name} });
+    newMember.changed("member_of", true);
+    const result = await newMember.update({ member_of: newMember.member_of });
+
+    sendPushNotification(
+      `new member joined`,
+      `${newMember.username} join ${Groupdata.group_name}`,
+      Groupdata.manager_id
+    );
+    res
+      .status(200)
+      .json({
+        message: "Joined group successfully",
+        group_detail: { GID: Groupdata.GID, name: Groupdata.group_name },
+      });
   } catch (error) {
     next(error);
   }
@@ -188,7 +199,9 @@ const banMember = async (req, res, next) => {
     const { GID } = req.params;
     //find group by GID
     console.log(GID);
-    const group = await sequelize.models._Group.findOne({where:{GID:GID}});
+    const group = await sequelize.models._Group.findOne({
+      where: { GID: GID },
+    });
     const { blacklist, member_ids } = group;
     //push UUID to blacklist of group
     const isBanned = blacklist.some((member) => member.UUID === UUID);
@@ -251,16 +264,16 @@ const deleteGroup = async (req, res, next) => {
 };
 
 // danh sach group cua 1 user
-const getGroupList = async (req,res,next)=>{
-  const {UUID} = req.Userdata
-  try{
-    const user = await _User.findOne({where:{UUID:UUID}})
-    const {member_of,manager_of}= user
-    return res.status(200).json({member_of,manager_of})
-  }catch(error){
-    next(error)
+const getGroupList = async (req, res, next) => {
+  const { UUID } = req.Userdata;
+  try {
+    const user = await _User.findOne({ where: { UUID: UUID } });
+    const { member_of, manager_of } = user;
+    return res.status(200).json({ member_of, manager_of });
+  } catch (error) {
+    next(error);
   }
-}
+};
 module.exports = {
   createGroup,
   inviteCode,
@@ -269,5 +282,5 @@ module.exports = {
   leaveGroup,
   banMember,
   deleteGroup,
-  getGroupList
+  getGroupList,
 };

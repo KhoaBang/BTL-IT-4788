@@ -239,6 +239,7 @@ const updateTaskById = async (req, res, next) => {
       }
     }
 
+    task.changed(true);
     // Save the updated task
     await task.save();
 
