@@ -101,17 +101,15 @@ const joinGroup = async (req, res, next) => {
     newMember.changed("member_of", true);
     const result = await newMember.update({ member_of: newMember.member_of });
 
-    sendPushNotification(
+    await sendPushNotification(
       `new member joined`,
       `${newMember.username} join ${Groupdata.group_name}`,
       Groupdata.manager_id
     );
-    res
-      .status(200)
-      .json({
-        message: "Joined group successfully",
-        group_detail: { GID: Groupdata.GID, name: Groupdata.group_name },
-      });
+    res.status(200).json({
+      message: "Joined group successfully",
+      group_detail: { GID: Groupdata.GID, name: Groupdata.group_name },
+    });
   } catch (error) {
     next(error);
   }
@@ -221,6 +219,11 @@ const banMember = async (req, res, next) => {
         member_ids: member_ids,
       });
       await deleteGroupFromMemberList(UUID, GID);
+      await sendPushNotification(
+        `you are banned`,
+        `you are banned from group ${group}. Please contact manager for more detail`,
+        UUID
+      );
       return res.status(200).json({ message: "User banned successfully" });
     } catch (error) {
       throw new InternalServerError(`Error banning user: ${error.message}`);

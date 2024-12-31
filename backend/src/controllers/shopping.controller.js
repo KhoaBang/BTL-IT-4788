@@ -183,7 +183,7 @@ const addTaskToShoppingList = async (req, res, next) => {
     });
 
     //send notice to assignee
-    sendPushNotification(
+    await sendPushNotification(
       "You got new task",
       `ingredient: ${ingredient_name}; unit: ${unit.unit_name}; quantity: ${quantity}`,
       assigned_to
