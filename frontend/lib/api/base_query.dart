@@ -1,10 +1,7 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
 
 class BaseQuery {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
@@ -46,18 +43,21 @@ class BaseQuery {
 
   void _initialize() {
     try {
-      if (Platform.isAndroid) {
-        // Running on Android
-        _baseUrl = 'http://10.0.2.2:9000/api';
-      } else if (Platform.isIOS) {
-        // Running on iOS
-        _baseUrl = 'http://localhost:9000/api';
-      } else if (kIsWeb) {
+      if (kIsWeb) {
         // Running in a web environment
         _baseUrl = 'http://localhost:9000/api';
       } else {
-        // Default or fallback for other platforms
-        _baseUrl = 'http://localhost:9000/api';
+        // Running on non-web platforms
+        switch (defaultTargetPlatform) {
+          case TargetPlatform.android:
+            _baseUrl = 'http://10.0.2.2:9000/api'; // Android emulator
+            break;
+          case TargetPlatform.iOS:
+            _baseUrl = 'http://localhost:9000/api'; // iOS simulator
+            break;
+          default:
+            _baseUrl = 'http://localhost:9000/api'; // Fallback for other platforms
+        }
       }
 
       refreshTokenUrl = '$_baseUrl/refreshToken';
