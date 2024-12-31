@@ -6,6 +6,7 @@ import '../widgets/popup_menu.dart'; // Import the helper file
 import 'shopping_lists_page.dart';
 import 'package:frontend/providers/group_provider.dart'; // Import the chosen group provider
 import 'package:frontend/pages/fridge_page.dart'; // Import the FridgePage
+import 'package:frontend/pages/meal_page.dart'; // Import the MealPage
 
 class GroupDetailPage extends ConsumerStatefulWidget {
   final String gid; // Group ID passed from the previous page
@@ -100,16 +101,21 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                   // Navigate to FridgePage
                   const SizedBox(height: 30),
                   _buildFeatureBox(
+                    "Shopping",
+                    ShoppingListPage(gid: widget.gid),
+                  ), // Navigate to MealsPage
                       "Shopping",
                       ShoppingListPage(
                           gid: widget.gid,
                           role: widget.role)), // Navigate to ShoppingPage
                   const SizedBox(height: 30),
                   _buildFeatureBox(
-                      "Meals",
-                      ShoppingListPage(
-                          gid: widget.gid,
-                          role: widget.role)), // Navigate to MealsPage
+                    "Meal",
+                    MealPage(
+                      groupId: widget.gid,
+                      isManager: widget.role.toLowerCase() == 'manager',
+                    ),
+                  ), // Navigate to ShoppingPage
                 ],
               ),
             ),
@@ -117,7 +123,7 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
         ),
       ),
       bottomNavigationBar:
-          Footer(currentIndex: -1), // Footer without active item
+          Footer(currentIndex: 1), // Footer without active item
     );
   }
 

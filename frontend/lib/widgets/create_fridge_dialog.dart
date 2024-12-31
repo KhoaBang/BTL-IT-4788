@@ -113,7 +113,6 @@ class _InputDialogState extends ConsumerState<InputDialog> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Group ID: ${widget.groupId}'),
                         DropdownButtonFormField<String>(
                           value: _selectedIngredientName,
                           items: _ingredients.map((ingredient) {
