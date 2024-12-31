@@ -124,43 +124,65 @@ class _ShoppingListDetailPageState
 
     // Initialize TextEditingController with current name
     final nameController = TextEditingController(text: widget.name);
+    String? errorMessage; // To store the validation error message
 
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text('Edit Shopping List'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController, // Set controller with current name
-                decoration: InputDecoration(
-                  labelText: 'Name',
-                  hintText: 'Enter shopping list name',
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Edit Shopping List'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller:
+                        nameController, // Set controller with current name
+                    decoration: InputDecoration(
+                      labelText: 'Name',
+                      hintText: 'Enter shopping list name',
+                      errorText: errorMessage, // Show error message
+                    ),
+                    onChanged: (value) {
+                      newName = value.trim();
+                      if (errorMessage != null) {
+                        setState(() {
+                          errorMessage = null; // Clear error on input change
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFEF9920),
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () {
+                    if (nameController.text.trim().isEmpty) {
+                      setState(() {
+                        errorMessage = 'Please enter a valid name.';
+                      });
+                      return;
+                    }
+                    Navigator.pop(context, true);
+                  },
+                  child: Text('Save', style: TextStyle(color: Colors.white)),
                 ),
-                onChanged: (value) => newName = value,
-              ),
-            ],
-          ),
-          actions: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFEF9920), // Blue background for OK
-                foregroundColor: Colors.white, // White text
-              ),
-              onPressed: () => Navigator.pop(context, true),
-              child: Text('Save', style: TextStyle(color: Colors.white)),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
-              ),
-              onPressed: () => Navigator.pop(context, false),
-              child: Text('Cancel'),
-            ),
-          ],
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                  ),
+                  onPressed: () => Navigator.pop(context, false),
+                  child: Text('Cancel'),
+                ),
+              ],
+            );
+          },
         );
       },
     );

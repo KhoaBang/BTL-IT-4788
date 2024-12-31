@@ -22,19 +22,26 @@ class InputDialog extends StatefulWidget {
 
 class _InputDialogState extends State<InputDialog> {
   final TextEditingController _controller = TextEditingController();
+  String? _errorMessage;
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(widget.title),
-      content: TextField(
-        controller: _controller,
-        decoration: InputDecoration(
-          hintText: widget.hintText,
-          filled: true, // Enables background color
-          fillColor: Colors.grey[200], // Gray background
-          border: OutlineInputBorder(), // Adds border
-        ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _controller,
+            decoration: InputDecoration(
+              hintText: widget.hintText,
+              filled: true, // Enables background color
+              fillColor: Colors.grey[200], // Gray background
+              border: OutlineInputBorder(), // Adds border
+              errorText: _errorMessage, // Display error message
+            ),
+          ),
+        ],
       ),
       actions: [
         ElevatedButton(
@@ -43,7 +50,14 @@ class _InputDialogState extends State<InputDialog> {
             foregroundColor: Colors.white,
           ),
           onPressed: () {
-            widget.onConfirm(_controller.text); // Pass the input value
+            final input = _controller.text.trim();
+            if (input.isEmpty) {
+              setState(() {
+                _errorMessage = 'Input cannot be empty';
+              });
+              return;
+            }
+            widget.onConfirm(input); // Pass the input value
             Navigator.of(context).pop(); // Close dialog
           },
           child: Text(widget.confirmText),

@@ -68,6 +68,7 @@ class _ShoppingListPageState extends ConsumerState<ShoppingListPage> {
               children: [
                 ListSection(
                   title: "Plan",
+                  role: widget.role,
                   lists: formattedShoppingLists,
                   onAdd: () {
                     showDialog(

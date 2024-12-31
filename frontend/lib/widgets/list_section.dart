@@ -5,14 +5,14 @@ class ListSection extends StatelessWidget {
   final List<Map<String, String>> lists;
   final VoidCallback onAdd;
   final void Function(String id, String name) onItemTap;
-
-  const ListSection({
-    super.key,
-    required this.title,
-    required this.lists,
-    required this.onAdd,
-    required this.onItemTap,
-  });
+  final String role;
+  const ListSection(
+      {super.key,
+      required this.title,
+      required this.lists,
+      required this.onAdd,
+      required this.onItemTap,
+      required this.role});
 
   @override
   Widget build(BuildContext context) {
@@ -40,13 +40,14 @@ class ListSection extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 5),
-              GestureDetector(
-                onTap: onAdd,
-                child: Icon(
-                  Icons.add,
-                  color: Color(0xFFEF9920),
+              if (role == 'manager')
+                GestureDetector(
+                  onTap: onAdd,
+                  child: Icon(
+                    Icons.add,
+                    color: Color(0xFFEF9920),
+                  ),
                 ),
-              ),
             ],
           ),
           SizedBox(height: 16),

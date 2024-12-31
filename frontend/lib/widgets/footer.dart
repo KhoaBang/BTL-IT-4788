@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../pages/ingredients_page.dart';
-// import '../recipe_page.dart';
+import 'package:frontend/pages/recipe_page.dart';
 import 'package:frontend/pages/groups_page_wrapper.dart';
 import 'package:frontend/pages/home_page_task.dart';
 
@@ -35,12 +35,12 @@ class _FooterState extends State<Footer> {
           context,
           MaterialPageRoute(builder: (context) => IngredientPage()),
         );
-      // case 3:
-      //   Navigator.pushReplacement(
-      //     context,
-      //     MaterialPageRoute(builder: (context) => RecipePage()),
-      //   );
-      //   break;
+      case 3:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => RecipePage()),
+        );
+        break;
     }
   }
 

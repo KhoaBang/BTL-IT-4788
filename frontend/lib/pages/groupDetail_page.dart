@@ -101,13 +101,12 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                   // Navigate to FridgePage
                   const SizedBox(height: 30),
                   _buildFeatureBox(
-                    "Shopping",
-                    ShoppingListPage(gid: widget.gid),
-                  ), // Navigate to MealsPage
                       "Shopping",
                       ShoppingListPage(
                           gid: widget.gid,
                           role: widget.role)), // Navigate to ShoppingPage
+                  // Navigate to MealsPage
+
                   const SizedBox(height: 30),
                   _buildFeatureBox(
                     "Meal",
