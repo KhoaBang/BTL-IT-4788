@@ -32,7 +32,7 @@ const corsURLs = [FRONTEND_URL].filter((v) => v);
 
 app.use(
   cors({
-    origin:  "*",
+    origin: "*",
     methods: ["POST", "GET", "PUT", "DELETE", "PATCH"],
     optionsSuccessStatus: 200,
     preflightContinue: true,
